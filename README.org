@@ -7,6 +7,10 @@ A shameless extraction of Spacemac's startup screen.
   3. Bookmarks list
   4. Recent projectile projects list
 
+* Screenshot
+
+[[./screenshot.png]]
+
 * Usage
 
 This package is not yet available on Melpa, so until then:
