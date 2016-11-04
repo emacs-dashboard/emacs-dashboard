@@ -1,0 +1,38 @@
+* Emacs Dashboard
+A shameless extraction of Spacemac's startup screen.
+
+* Features
+  1. Displays an awesome Emacs banner!
+  2. Recent files
+  3. Bookmarks list
+  4. Recent projectile projects list
+
+* Usage
+
+This package is not yet available on Melpa, so until then:
+
+#+BEGIN_SRC shell
+git clone https://github.com/rakanalh/emacs-dashboard ~/.emacs.d/dashboard
+#+END_SRC
+
+ #+BEGIN_SRC elisp
+(add-to-list 'load-path (concat user-emacs-directory "/dashboard/"))
+
+;; And either one of:
+(require 'dashboard)
+(dashboard/setup-startup-hook)
+;; - OR -
+(use-package dashboard-startup
+  :config
+  (dashboard/setup-startup-hook))
+ #+END_SRC
+
+* Wish List
+  1. Center content
+  2. Integrate Org-mode's agenda
+  3. Listing Perspectives
+  4. More banner options
+  5. Customizing the list of widgets to display
+
+* Contributions
+Contributions are very welcome :)
