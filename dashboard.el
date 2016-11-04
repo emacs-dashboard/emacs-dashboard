@@ -5,6 +5,8 @@
 ;;; Code:
 
 (require 'bookmark)
+(require 'projectile)
+(require 'page-break-lines)
 
 ;; Custom splash screen
 (defvar dashboard-mode-map

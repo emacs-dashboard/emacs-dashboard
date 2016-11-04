@@ -11,6 +11,12 @@ A shameless extraction of Spacemac's startup screen.
 
 [[./screenshot.png]]
 
+* Dependencies
+You will need the following packages which are all available on Melpa:
+
+1. page-break-lines - [[https://github.com/purcell/page-break-lines]]
+2. projectile - [[https://github.com/bbatsov/projectile]]
+
 * Usage
 
 This package is not yet available on Melpa, so until then:
