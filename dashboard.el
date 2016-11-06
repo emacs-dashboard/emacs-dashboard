@@ -22,8 +22,15 @@
 ;;; Code:
 
 (eval-when-compile (require 'bookmark))
-(eval-when-compile (require 'projectile))
 (eval-when-compile (require 'page-break-lines))
+
+(defun dashboard-subseq (seq start end)
+  "Use `cl-subseq`, but accounting for end points greater than the size of the
+list. Return entire list if `END' is omitted."
+  (let ((len (length seq)))
+    (cl-subseq seq start (and (number-or-marker-p end)
+                              (min len end)))))
+
 
 ;; Custom splash screen
 (defvar dashboard-mode-map
@@ -70,35 +77,11 @@
 
 (defun dashboard-insert-banner ()
   "Insert Banner at the top of the dashboard."
+  (goto-char (point-max))
   (dashboard-insert-ascii-banner-centered
    (concat (file-name-directory
 	    (locate-library "dashboard"))
 	   "banner.txt")))
-
-(defun dashboard-insert-startupify-lists ()
-  "Insert the list of widgets into the buffer."
-  (interactive)
-  (with-current-buffer (get-buffer-create "*dashboard*")
-    (let ((buffer-read-only nil)
-          (list-separator "\n\n"))
-      (goto-char (point-max))
-      (dashboard-insert-banner)
-      (dashboard-insert-page-break)
-
-      (recentf-mode)
-      (when (dashboard-insert-file-list "Recent Files:" (recentf-elements 5))
-	(dashboard-insert--shortcut "r" "Recent Files:")
-	(dashboard-insert-page-break))
-
-      (when (dashboard-insert-bookmark-list "Bookmarks:" (bookmark-all-names))
-	(dashboard-insert--shortcut "m" "Bookmarks:")
-	(dashboard-insert-page-break))
-
-      (projectile-mode)
-      (when (dashboard-insert-project-list "Projects:" (projectile-relevant-known-projects))
-	(dashboard-insert--shortcut "p" "Projects:")
-	(dashboard-insert-page-break)))
-    (dashboard-mode)))
 
 (defun dashboard-insert-file-list (list-display-name list)
   "Render LIST-DISPLAY-NAME title and items of LIST."
@@ -179,6 +162,67 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (re-search-forward "Homepage")
     (beginning-of-line)
     (widget-forward 1)))
+
+(defun dashboard-insert-recents ()
+  (recentf-mode)
+  (when (dashboard-insert-file-list
+	 "Recent Files:"
+	 (dashboard-subseq recentf-list 0 list-size))
+    (dashboard-insert--shortcut "r" "Recent Files:")))
+
+(defun dashboard-insert-bookmarks ()
+  (require 'bookmark)
+  (when (dashboard-insert-bookmark-list
+	 "Bookmarks:"
+	 (dashboard-subseq (bookmark-all-names)
+			   0 list-size))
+    (dashboard-insert--shortcut "m" "Bookmarks:")))
+
+(defun dashboard-insert-projects ()
+  (require 'projectile)
+  (projectile-mode)
+  (when (dashboard-insert-file-list
+	 "Projects:"
+	 (dashboard-subseq (projectile-relevant-known-projects)
+			   0 list-size))
+    (dashboard-insert--shortcut "p" "Projects:")))
+
+(defvar dashboard-item-generators  '((recents   . dashboard-insert-recents)
+                                     (bookmarks . dashboard-insert-bookmarks)
+                                     (projects  . dashboard-insert-projects)))
+(defvar dashboard-items '((recents   . 5)
+			  (bookmarks . 5)
+			  (projects  . 7))
+  "Association list of items to show in the startup buffer of the form
+`(list-type . list-size)`. If nil it is disabled.
+Possible values for list-type are:
+`recents' `bookmarks' `projects'
+")
+(defvar dashboard-items-default-length 20
+  "Length used for startup lists with otherwise unspecified bounds.
+Set to nil for unbounded.")
+
+(defun dashboard-insert-startupify-lists ()
+  "Insert the list of widgets into the buffer."
+  (interactive)
+  (with-current-buffer (get-buffer-create "*dashboard*")
+    (let ((buffer-read-only nil)
+          (list-separator "\n\n"))
+      (dashboard-insert-banner)
+      (dashboard-insert-page-break)
+      (mapc (lambda (els)
+	      (let* ((el (or (car-safe els) els))
+		     (list-size
+		      (or (cdr-safe els)
+			  dashboard-items-default-length))
+		     (item-generator
+		      (cdr-safe (assoc el dashboard-item-generators))
+		      ))
+		(funcall item-generator)
+		(dashboard-insert-page-break)
+		))
+	    dashboard-items))
+    (dashboard-mode)))
 
 ;;;###autoload
 (defun dashboard-setup-startup-hook ()

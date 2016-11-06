@@ -37,6 +37,24 @@ git clone https://github.com/rakanalh/emacs-dashboard ~/.emacs.d/dashboard
   (dashboard-setup-startup-hook))
  #+END_SRC
 
+To only display the 5 most recent files and projects:
+#+BEGIN_SRC elisp
+(require 'dashboard)
+(setq dashboard-items '((recents  . 5)
+			(projects . 5)))
+(dashboard-setup-startup-hook)
+ #+END_SRC
+
+To add custom items:
+#+BEGIN_SRC elisp
+(require 'dashboard)
+(defun dashboard-insert-custom ()
+  (insert "Custom text"))
+(add-to-list 'dashboard-item-generators  '(custom . dashboard-insert-custom))
+(add-to-list 'dashboard-items '(custom) t)
+(dashboard-setup-startup-hook)
+ #+END_SRC
+
 * Shortcuts
 
 You can use any of the following shortcuts inside Dashboard
