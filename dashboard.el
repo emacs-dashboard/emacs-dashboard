@@ -1,12 +1,27 @@
-;;; Package --- Summary
+;;; dashboard.el --- Emacs startup screen extracted from Spacemacs
+
+;; Copyright (c) 2016 Rakan Al-Hneiti & Contributors
+;;
+;; Author: Rakan Al-Hneiti
+;; URL: https://github.com/rakanalh/emacs-dashboard
+;;
+;; This file is not part of GNU Emacs.
+;;
+;;; License: GPLv3
+;;
+;; Created: October 05, 2016
+;; Modified: October 06, 2016
+;; Version: 1.0.0
+;; Keywords: startup screen
+;; Package-Requires: ((emacs "24.4") (page-break-lines "0.11.0") (projectile "0.14.0"))
 ;;; Commentary:
-;; Dashboard startup screen shamlessly extracted from Spacemacs
+;;; A shameless extraction of Spacemacs’ startup screen.
 
 ;;; Code:
 
-(require 'bookmark)
-(require 'projectile)
-(require 'page-break-lines)
+(eval-when-compile (require 'bookmark))
+(eval-when-compile (require 'projectile))
+(eval-when-compile (require 'page-break-lines))
 
 ;; Custom splash screen
 (defvar dashboard-mode-map
@@ -34,6 +49,7 @@
 	  "Width of a banner.")
 
 (defun insert-ascii-banner-centered (file)
+  "Insert banner from FILE."
   (insert-string
    (with-temp-buffer
      (insert-file-contents file)
@@ -51,9 +67,14 @@
      (buffer-string))))
 
 (defun insert-banner ()
-  (insert-ascii-banner-centered (concat (file-name-directory (locate-library "dashboard")) "banner.txt")))
+  "Insert Banner at the top of the dashboard."
+  (insert-ascii-banner-centered
+   (concat (file-name-directory
+	    (locate-library "dashboard"))
+	   "banner.txt")))
 
 (defun dashboard/insert-startupify-lists ()
+  "Insert the list of widgets into the buffer."
   (interactive)
   (with-current-buffer (get-buffer-create "*dashboard*")
     (let ((buffer-read-only nil)
@@ -78,6 +99,7 @@
     (dashboard-mode)))
 
 (defun dashboard//insert-file-list (list-display-name list)
+  "Render LIST-DISPLAY-NAME title and items of LIST."
   (when (car list)
     (insert list-display-name)
     (mapc (lambda (el)
@@ -93,6 +115,7 @@
           list)))
 
 (defun dashboard//insert-project-list (list-display-name list)
+  "Render LIST-DISPLAY-NAME title and project items of LIST."
   (when (car list)
     (insert list-display-name)
     (mapc (lambda (el)
@@ -108,6 +131,7 @@
           list)))
 
 (defun dashboard//insert-bookmark-list (list-display-name list)
+  "Render LIST-DISPLAY-NAME title and bookmarks items of LIST."
   (when (car list)
     (insert list-display-name)
     (mapc (lambda (el)
@@ -128,7 +152,8 @@
   (dashboard/append "\n\f\n"))
 
 (defun dashboard/append (msg &optional messagebuf)
-  "Append MSG to dashboard buffer. If MESSAGEBUF is not nil then MSG is also written in message buffer."
+  "Append MSG to dashboard buffer.
+If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (with-current-buffer (get-buffer-create "*dashboard*")
     (goto-char (point-max))
     (let ((buffer-read-only nil))
@@ -167,3 +192,4 @@
 
 (provide 'dashboard)
 ;;; dashboard-startup ends here
+;;; dashboard.el ends here
