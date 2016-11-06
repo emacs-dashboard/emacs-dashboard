@@ -13,9 +13,11 @@
 ;; Modified: October 06, 2016
 ;; Version: 1.0.0
 ;; Keywords: startup screen tools
-;; Package-Requires: ((emacs "24.4") (page-break-lines "0.11.0") (projectile "0.14.0"))
+;; Package-Requires: ((emacs "24.4") (page-break-lines "0.11") (projectile "0.14.0"))
 ;;; Commentary:
-;;; A shameless extraction of Spacemacs’ startup screen.
+
+;; A shameless extraction of Spacemacs’ startup screen, with sections for
+;; bookmarks, projectile projects and more.
 
 ;;; Code:
 
@@ -178,6 +180,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (beginning-of-line)
     (widget-forward 1)))
 
+;;;###autoload
 (defun dashboard-setup-startup-hook ()
   "Add post init processing."
   (add-hook
@@ -191,5 +194,4 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (add-hook 'after-init-hook '(lambda () (switch-to-buffer "*dashboard*"))))
 
 (provide 'dashboard)
-;;; dashboard-startup ends here
 ;;; dashboard.el ends here
