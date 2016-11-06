@@ -183,6 +183,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 ;;;###autoload
 (defun dashboard-setup-startup-hook ()
   "Add post init processing."
+  (setq inhibit-startup-screen t)
   (add-hook
    'emacs-startup-hook
    (lambda ()
