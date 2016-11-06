@@ -151,7 +151,7 @@
 
 (defun dashboard-insert-page-break ()
   "Insert a page break line in dashboard buffer."
-  (dashboard-append "\n\f\n"))
+  (dashboard-append dashboard-page-separator))
 
 (defun dashboard-append (msg &optional messagebuf)
   "Append MSG to dashboard buffer.
@@ -192,6 +192,16 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
      (goto-char (point-min)))
    (redisplay))
   (add-hook 'after-init-hook '(lambda () (switch-to-buffer "*dashboard*"))))
+
+(defgroup dashboard nil
+  "Settings that are used in the Dashboard"
+  :group 'dashboard)
+
+(defcustom dashboard-page-separator "\n\f\n"
+  "Separator to use between the different pages"
+  :type 'string
+  :group 'dashboard)
+
 
 (provide 'dashboard)
 ;;; dashboard.el ends here
