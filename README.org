@@ -37,6 +37,19 @@ git clone https://github.com/rakanalh/emacs-dashboard ~/.emacs.d/dashboard
   (dashboard-setup-startup-hook))
  #+END_SRC
 
+* Shortcuts
+
+You can use any of the following shortcuts inside Dashboard
+
+| Shortcut                   | Function      |
+|----------------------------+---------------|
+| Tab Or C-i                 | Next Item     |
+| Shift-Tab                  | Previous Item |
+| Return / Mouse Click / C-m | Open          |
+| r                          | Recent files  |
+| m                          | Bookmarks     |
+| p                          | Projects      |
+
 * Wish List
   1. Center content
   2. Integrate Org-mode's agenda
