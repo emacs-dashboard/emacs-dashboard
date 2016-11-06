@@ -60,7 +60,7 @@
                (setq banner-width line-length)))
          (forward-line 1))
        (goto-char 0)
-       (let ((margin (max 0 (floor (/ (- banner-length banner-width) 2)))))
+       (let ((margin (max 0 (floor (/ (- dashboard-banner-length banner-width) 2)))))
          (while (not (eobp))
            (insert (make-string margin ?\ ))
            (forward-line 1))))
@@ -68,7 +68,7 @@
 
 (defun dashboard-insert-banner ()
   "Insert Banner at the top of the dashboard."
-  (insert-ascii-banner-centered
+  (dashboard-insert-ascii-banner-centered
    (concat (file-name-directory
 	    (locate-library "dashboard"))
 	   "banner.txt")))
@@ -80,7 +80,7 @@
     (let ((buffer-read-only nil)
           (list-separator "\n\n"))
       (goto-char (point-max))
-      (insert-banner)
+      (dashboard-insert-banner)
       (dashboard-insert-page-break)
 
       (recentf-mode)

@@ -30,11 +30,11 @@ git clone https://github.com/rakanalh/emacs-dashboard ~/.emacs.d/dashboard
 
 ;; And either one of:
 (require 'dashboard)
-(dashboard/setup-startup-hook)
+(dashboard-setup-startup-hook)
 ;; - OR -
-(use-package dashboard-startup
+(use-package dashboard
   :config
-  (dashboard/setup-startup-hook))
+  (dashboard-setup-startup-hook))
  #+END_SRC
 
 * Wish List
