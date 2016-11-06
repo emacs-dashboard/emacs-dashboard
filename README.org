@@ -1,5 +1,5 @@
 * Emacs Dashboard
-A shameless extraction of Spacemac's startup screen.
+A shameless extraction of Spacemacs' startup screen.
 
 * Features
   1. Displays an awesome Emacs banner!
