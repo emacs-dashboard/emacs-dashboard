@@ -21,9 +21,9 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'bookmark))
-(eval-when-compile (require 'projectile))
-(eval-when-compile (require 'page-break-lines))
+(require 'bookmark)
+(require 'projectile)
+(require 'page-break-lines)
 
 ;; Custom splash screen
 (defvar dashboard-mode-map
