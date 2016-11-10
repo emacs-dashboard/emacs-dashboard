@@ -211,7 +211,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (require 'projectile)
   (projectile-mode)
   (projectile-load-known-projects)
-  (when (dashboard-insert-file-list
+  (when (dashboard-insert-project-list
 	 "Projects:"
 	 (dashboard-subseq (projectile-relevant-known-projects)
 			   0 list-size))
