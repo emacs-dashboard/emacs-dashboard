@@ -54,8 +54,34 @@ list. Return entire list if `END' is omitted."
   (setq buffer-read-only t
         truncate-lines t))
 
+(defgroup dashboard nil
+  "Settings that are used in the Dashboard"
+  :group 'dashboard)
+
+(defcustom dashboard-page-separator "\n\f\n"
+  "Separator to use between the different pages"
+  :type 'string
+  :group 'dashboard)
+
 (defconst dashboard-banner-length 75
 	  "Width of a banner.")
+
+(defvar dashboard-item-generators  '((recents   . dashboard-insert-recents)
+                                     (bookmarks . dashboard-insert-bookmarks)
+                                     (projects  . dashboard-insert-projects)))
+
+(defvar dashboard-items '((recents   . 5)
+			  (bookmarks . 5)
+			  (projects  . 7))
+  "Association list of items to show in the startup buffer of the form
+`(list-type . list-size)`. If nil it is disabled.
+Possible values for list-type are:
+`recents' `bookmarks' `projects'
+")
+
+(defvar dashboard-items-default-length 20
+  "Length used for startup lists with otherwise unspecified bounds.
+Set to nil for unbounded.")
 
 (defun dashboard-insert-ascii-banner-centered (file)
   "Insert banner from FILE."
@@ -163,14 +189,16 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (beginning-of-line)
     (widget-forward 1)))
 
-(defun dashboard-insert-recents ()
+(defun dashboard-insert-recents (list-size)
+  "Add the list of LIST-SIZE items from recently edited files."
   (recentf-mode)
   (when (dashboard-insert-file-list
 	 "Recent Files:"
 	 (dashboard-subseq recentf-list 0 list-size))
     (dashboard-insert--shortcut "r" "Recent Files:")))
 
-(defun dashboard-insert-bookmarks ()
+(defun dashboard-insert-bookmarks (list-size)
+  "Add the list of LIST-SIZE items of bookmarks."
   (require 'bookmark)
   (when (dashboard-insert-bookmark-list
 	 "Bookmarks:"
@@ -178,29 +206,16 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 			   0 list-size))
     (dashboard-insert--shortcut "m" "Bookmarks:")))
 
-(defun dashboard-insert-projects ()
+(defun dashboard-insert-projects (list-size)
+  "Add the list of LIST-SIZE items of projects."
   (require 'projectile)
   (projectile-mode)
+  (projectile-load-known-projects)
   (when (dashboard-insert-file-list
 	 "Projects:"
 	 (dashboard-subseq (projectile-relevant-known-projects)
 			   0 list-size))
     (dashboard-insert--shortcut "p" "Projects:")))
-
-(defvar dashboard-item-generators  '((recents   . dashboard-insert-recents)
-                                     (bookmarks . dashboard-insert-bookmarks)
-                                     (projects  . dashboard-insert-projects)))
-(defvar dashboard-items '((recents   . 5)
-			  (bookmarks . 5)
-			  (projects  . 7))
-  "Association list of items to show in the startup buffer of the form
-`(list-type . list-size)`. If nil it is disabled.
-Possible values for list-type are:
-`recents' `bookmarks' `projects'
-")
-(defvar dashboard-items-default-length 20
-  "Length used for startup lists with otherwise unspecified bounds.
-Set to nil for unbounded.")
 
 (defun dashboard-insert-startupify-lists ()
   "Insert the list of widgets into the buffer."
@@ -218,7 +233,7 @@ Set to nil for unbounded.")
 		     (item-generator
 		      (cdr-safe (assoc el dashboard-item-generators))
 		      ))
-		(funcall item-generator)
+		(funcall item-generator list-size)
 		(dashboard-insert-page-break)
 		))
 	    dashboard-items))
@@ -237,16 +252,6 @@ Set to nil for unbounded.")
      (goto-char (point-min)))
    (redisplay))
   (add-hook 'after-init-hook '(lambda () (switch-to-buffer "*dashboard*"))))
-
-(defgroup dashboard nil
-  "Settings that are used in the Dashboard"
-  :group 'dashboard)
-
-(defcustom dashboard-page-separator "\n\f\n"
-  "Separator to use between the different pages"
-  :type 'string
-  :group 'dashboard)
-
 
 (provide 'dashboard)
 ;;; dashboard.el ends here
