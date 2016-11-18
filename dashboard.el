@@ -13,7 +13,7 @@
 ;; Modified: October 06, 2016
 ;; Version: 1.0.0
 ;; Keywords: startup screen tools
-;; Package-Requires: ((emacs "24.4") (page-break-lines "0.11") (projectile "0.14.0"))
+;; Package-Requires: ((emacs "24.4") (page-break-lines "0.11"))
 ;;; Commentary:
 
 ;; A shameless extraction of Spacemacs’ startup screen, with sections for
@@ -71,8 +71,7 @@ list. Return entire list if `END' is omitted."
                                      (projects  . dashboard-insert-projects)))
 
 (defvar dashboard-items '((recents   . 5)
-			  (bookmarks . 5)
-			  (projects  . 7))
+			  (bookmarks . 5))
   "Association list of items to show in the startup buffer of the form
 `(list-type . list-size)`. If nil it is disabled.
 Possible values for list-type are:
@@ -208,14 +207,17 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 
 (defun dashboard-insert-projects (list-size)
   "Add the list of LIST-SIZE items of projects."
-  (require 'projectile)
-  (projectile-mode)
-  (projectile-load-known-projects)
-  (when (dashboard-insert-project-list
-	 "Projects:"
-	 (dashboard-subseq (projectile-relevant-known-projects)
-			   0 list-size))
-    (dashboard-insert--shortcut "p" "Projects:")))
+  (if (require 'projectile nil 'noerror)
+      (progn
+	(projectile-mode)
+	(projectile-load-known-projects)
+	(when (dashboard-insert-project-list
+	       "Projects:"
+	       (dashboard-subseq (projectile-relevant-known-projects)
+				 0 list-size))
+	  (dashboard-insert--shortcut "p" "Projects:")))
+    (error "Projects list depends on 'projectile` package to be installed")))
+
 
 (defun dashboard-insert-startupify-lists ()
   "Insert the list of widgets into the buffer."

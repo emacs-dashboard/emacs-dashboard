@@ -5,7 +5,7 @@ A shameless extraction of Spacemacs' startup screen.
   1. Displays an awesome Emacs banner!
   2. Recent files
   3. Bookmarks list
-  4. Recent projectile projects list
+  4. Recent projectile projects list (Depends on `projectile` package)
 
 * Screenshot
 
@@ -15,7 +15,7 @@ A shameless extraction of Spacemacs' startup screen.
 You will need the following packages which are all available on Melpa:
 
 1. page-break-lines - [[https://github.com/purcell/page-break-lines]]
-2. projectile - [[https://github.com/bbatsov/projectile]]
+2. (optional) projectile - [[https://github.com/bbatsov/projectile]]
 
 * Usage
 
