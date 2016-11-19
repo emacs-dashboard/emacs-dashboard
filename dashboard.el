@@ -17,7 +17,7 @@
 ;;; Commentary:
 
 ;; A shameless extraction of Spacemacs’ startup screen, with sections for
-;; bookmarks, projectile projects and more.
+;; bookmarks, projectil projects and more.
 
 ;;; Code:
 
@@ -207,16 +207,15 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 
 (defun dashboard-insert-projects (list-size)
   "Add the list of LIST-SIZE items of projects."
-  (if (require 'projectile nil 'noerror)
+  (if (bound-and-true-p projectile-mode)
       (progn
-	(projectile-mode)
 	(projectile-load-known-projects)
 	(when (dashboard-insert-project-list
 	       "Projects:"
 	       (dashboard-subseq (projectile-relevant-known-projects)
 				 0 list-size))
 	  (dashboard-insert--shortcut "p" "Projects:")))
-    (error "Projects list depends on 'projectile` package to be installed")))
+    (error "Projects list depends on 'projectile-mode` to be activated")))
 
 
 (defun dashboard-insert-startupify-lists ()
