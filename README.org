@@ -19,19 +19,14 @@ You will need the following packages which are all available on Melpa:
 
 * Usage
 
-This package is not yet available on Melpa, so until then:
-
 #+BEGIN_SRC shell
-git clone https://github.com/rakanalh/emacs-dashboard ~/.emacs.d/dashboard
+M-x package-install RET dashboard
 #+END_SRC
 
  #+BEGIN_SRC elisp
-(add-to-list 'load-path (concat user-emacs-directory "/dashboard/"))
-
-;; And either one of:
 (require 'dashboard)
 (dashboard-setup-startup-hook)
-;; - OR -
+;; Or if you use use-package
 (use-package dashboard
   :config
   (dashboard-setup-startup-hook))
