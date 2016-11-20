@@ -245,14 +245,15 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Add post init processing."
   (setq inhibit-startup-screen t)
   (add-hook
-   'emacs-startup-hook
+   'after-init-hook
    (lambda ()
      ;; Display useful lists of items
-     (dashboard-insert-startupify-lists)
-     (page-break-lines-mode 1)
-     (goto-char (point-min)))
-   (redisplay))
-  (add-hook 'after-init-hook '(lambda () (switch-to-buffer "*dashboard*"))))
+     (dashboard-insert-startupify-lists)))
+  (add-hook 'emacs-startup-hook '(lambda ()
+				   (switch-to-buffer "*dashboard*")
+				   (page-break-lines-mode 1)
+				   (goto-char (point-min))
+				   (redisplay))))
 
 (provide 'dashboard)
 ;;; dashboard.el ends here
