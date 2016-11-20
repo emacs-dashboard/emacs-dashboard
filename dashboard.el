@@ -23,10 +23,13 @@
 
 (require 'bookmark)
 (require 'page-break-lines)
+(require 'recentf)
 
 (defun dashboard-subseq (seq start end)
-  "Use `cl-subseq`, but accounting for end points greater than the size of the
-list. Return entire list if `END' is omitted."
+  "Return the subsequence of SEQ from START to END..
+Uses `cl-subseq`, but accounts for end points greater than the size of the
+list.
+Return entire list if `END' is omitted."
   (let ((len (length seq)))
     (cl-subseq seq start (and (number-or-marker-p end)
                               (min len end)))))
@@ -59,7 +62,7 @@ list. Return entire list if `END' is omitted."
   :group 'dashboard)
 
 (defcustom dashboard-page-separator "\n\f\n"
-  "Separator to use between the different pages"
+  "Separator to use between the different pages."
   :type 'string
   :group 'dashboard)
 
@@ -72,11 +75,10 @@ list. Return entire list if `END' is omitted."
 
 (defvar dashboard-items '((recents   . 5)
 			  (bookmarks . 5))
-  "Association list of items to show in the startup buffer of the form
-`(list-type . list-size)`. If nil it is disabled.
-Possible values for list-type are:
-`recents' `bookmarks' `projects'
-")
+  "Association list of items to show in the startup buffer.
+Will be of the form `(list-type . list-size)`.
+If nil it is disabled.  Possible values for list-type are:
+`recents' `bookmarks' `projects'")
 
 (defvar dashboard-items-default-length 20
   "Length used for startup lists with otherwise unspecified bounds.
@@ -84,7 +86,7 @@ Set to nil for unbounded.")
 
 (defun dashboard-insert-ascii-banner-centered (file)
   "Insert banner from FILE."
-  (insert-string
+  (insert
    (with-temp-buffer
      (insert-file-contents file)
      (let ((banner-width 0))
@@ -131,7 +133,8 @@ Set to nil for unbounded.")
     (mapc (lambda (el)
             (insert "\n    ")
             (widget-create 'push-button
-                           :action `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
+                           :action `(lambda (&rest ignore)
+				      (projectile-switch-project-by-name ,el))
                            :mouse-face 'highlight
                            :follow-link "\C-m"
                            :button-prefix ""
@@ -169,7 +172,11 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (let ((buffer-read-only nil))
       (insert msg))))
 
-(defmacro dashboard-insert--shortcut (shortcut-char search-label &optional no-next-line)
+(defmacro dashboard-insert--shortcut (shortcut-char
+				      search-label
+				      &optional no-next-line)
+  "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
+Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
   `(define-key dashboard-mode-map ,shortcut-char (lambda ()
 			       (interactive)
 			       (unless (search-forward ,search-label (point-max) t)
@@ -254,6 +261,10 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 				   (page-break-lines-mode 1)
 				   (goto-char (point-min))
 				   (redisplay))))
+
+;; Forward declartions for optional dependency to keep check-declare happy.
+(declare-function projectile-load-known-projects "ext:projectile.el")
+(declare-function projectile-relevant-known-projects "ext:projectile.el")
 
 (provide 'dashboard)
 ;;; dashboard.el ends here
