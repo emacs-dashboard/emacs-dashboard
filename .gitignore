@@ -3,3 +3,5 @@
 
 # Packaging
 .cask
+/dist
+
