@@ -73,4 +73,23 @@ You can use any of the following shortcuts inside Dashboard
   5. [X] Customizing the list of widgets to display
 
 * Contributions
+When working on this package, it's typical to uninstall dashboard,
+develop your changes and then install this as "development version".
+
+This is accomplished with the following steps:
+
+#+BEGIN_SRC shell
+# In emacs:
+M-x package-delete dashboard-<version> RET
+
+make build
+
+# Back in emacs:
+M-x package-install-file ./build/dashboard-<verison>.tar RET
+#+END_SRC
+
+** Prerequisites
+
+  * [[https://github.com/cask/cask][Cask]]
+
 Contributions are very welcome :)

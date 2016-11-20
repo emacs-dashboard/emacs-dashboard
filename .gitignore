@@ -3,5 +3,5 @@
 
 # Packaging
 .cask
-/dist
+/build
 
