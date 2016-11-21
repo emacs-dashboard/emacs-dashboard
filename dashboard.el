@@ -11,7 +11,7 @@
 ;;
 ;; Created: October 05, 2016
 ;; Modified: October 06, 2016
-;; Version: 1.0.0
+;; Version: 1.0.1
 ;; Keywords: startup screen tools
 ;; Package-Requires: ((emacs "24.4") (page-break-lines "0.11"))
 ;;; Commentary:

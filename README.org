@@ -73,4 +73,15 @@ You can use any of the following shortcuts inside Dashboard
   5. [X] Customizing the list of widgets to display
 
 * Contributions
+
+To contribute your changes to this package, please do the following:
+
+1. Fork the repo
+2. Clone a local copy
+3. Make your changes
+4. Push and create your PR
+
+If you'd like to test the package before pushing, my current way of testing is by executing `package-install-file`.
+Emacs will bundle and install the package into your ~/.emacs.d/elpa and then you are able to start Emacs and check that your implementation works.
+
 Contributions are very welcome :)
