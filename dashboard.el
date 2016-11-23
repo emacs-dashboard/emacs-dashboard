@@ -43,6 +43,7 @@ Return entire list if `END' is omitted."
     (define-key map [backtab] 'widget-backward)
     (define-key map (kbd "RET") 'widget-button-press)
     (define-key map [down-mouse-1] 'widget-button-click)
+    (define-key map (kbd "g") #'dashboard-insert-startupify-lists)
     map)
   "Keymap for dashboard mode.")
 
@@ -54,6 +55,7 @@ Return entire list if `END' is omitted."
   :syntax-table nil
   :abbrev-table nil
   (linum-mode -1)
+  (page-break-lines-mode 1)
   (setq buffer-read-only t
         truncate-lines t))
 
@@ -231,6 +233,7 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
   (with-current-buffer (get-buffer-create "*dashboard*")
     (let ((buffer-read-only nil)
           (list-separator "\n\n"))
+      (erase-buffer)
       (dashboard-insert-banner)
       (dashboard-insert-page-break)
       (mapc (lambda (els)
@@ -245,7 +248,8 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
 		(dashboard-insert-page-break)
 		))
 	    dashboard-items))
-    (dashboard-mode)))
+    (dashboard-mode)
+    (goto-char 0)))
 
 ;;;###autoload
 (defun dashboard-setup-startup-hook ()
