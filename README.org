@@ -56,14 +56,17 @@ To add your own custom widget is pretty easy, define your widget's callback func
 
 You can use any of the following shortcuts inside Dashboard
 
-| Shortcut                   | Function      |
-|----------------------------+---------------|
-| Tab Or C-i                 | Next Item     |
-| Shift-Tab                  | Previous Item |
-| Return / Mouse Click / C-m | Open          |
-| r                          | Recent files  |
-| m                          | Bookmarks     |
-| p                          | Projects      |
+|----------------------------+------------------|
+| Shortcut                   | Function         |
+|----------------------------+------------------|
+| Tab Or C-i                 | Next Item        |
+| Shift-Tab                  | Previous Item    |
+| Return / Mouse Click / C-m | Open             |
+| r                          | Recent files     |
+| m                          | Bookmarks        |
+| p                          | Projects         |
+| g                          | Refresh contents |
+|----------------------------+------------------|
 
 * Wish List
   1. [ ] Center content

@@ -11,7 +11,7 @@
 ;;
 ;; Created: October 05, 2016
 ;; Modified: October 06, 2016
-;; Version: 1.0.1
+;; Version: 1.0.2
 ;; Keywords: startup screen tools
 ;; Package-Requires: ((emacs "24.4") (page-break-lines "0.11"))
 ;;; Commentary:
@@ -249,20 +249,18 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
 		))
 	    dashboard-items))
     (dashboard-mode)
-    (goto-char 0)))
+    (goto-char (point-min))))
 
 ;;;###autoload
 (defun dashboard-setup-startup-hook ()
   "Add post init processing."
   (setq inhibit-startup-screen t)
-  (add-hook
-   'after-init-hook
-   (lambda ()
+  (add-hook 'after-init-hook (lambda ()
      ;; Display useful lists of items
-     (dashboard-insert-startupify-lists)))
+			       (dashboard-insert-startupify-lists)))
+
   (add-hook 'emacs-startup-hook '(lambda ()
 				   (switch-to-buffer "*dashboard*")
-				   (page-break-lines-mode 1)
 				   (goto-char (point-min))
 				   (redisplay))))
 
