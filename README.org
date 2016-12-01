@@ -6,6 +6,7 @@ A shameless extraction of Spacemacs' startup screen.
   2. Recent files
   3. Bookmarks list
   4. Recent projectile projects list (Depends on `projectile` package)
+  5. Org mode agenda
 
 * Screenshot
 
@@ -56,7 +57,7 @@ To customize which widgets are displayed, you can use the following snippet
 #+BEGIN_SRC elisp
 (setq dashboard-items '((recents  . 5)
                         (bookmarks . 5)
-			(projects . 5)))
+                        (projects . 5)))
  #+END_SRC
 This will add the recent files, bookmarks and the projects widgets to your dashboard each displaying 5 items.
 
@@ -67,6 +68,16 @@ To add your own custom widget is pretty easy, define your widget's callback func
 (add-to-list 'dashboard-item-generators  '(custom . dashboard-insert-custom))
 (add-to-list 'dashboard-items '(custom) t)
  #+END_SRC
+
+** Org mode’s agenda
+
+   To display today’s agenda items on the dashboard, add ~agenda~ to ~dashboard-items~:
+
+#+BEGIN_SRC elisp
+(add-to-list 'dashboard-items '(agenda) t)
+#+END_SRC
+
+Note that setting list-size for the agenda list is intentionally ignored; all agenda items for the current day will be displayed.
 
 * Shortcuts
 
@@ -81,6 +92,7 @@ You can use any of the following shortcuts inside Dashboard
 | r                          | Recent files     |
 | m                          | Bookmarks        |
 | p                          | Projects         |
+| a                          | Org-Mode Agenda  |
 | g                          | Refresh contents |
 |----------------------------+------------------|
 
@@ -88,7 +100,7 @@ You can use any of the following shortcuts inside Dashboard
   1. [X] Center content
   2. [X] More banner options
   3. [X] Customizing the list of widgets to display
-  4. [ ] Integrate Org-mode's agenda
+  4. [X] Integrate Org-mode's agenda
   5. [ ] Listing Perspectives
 
 * Contributions
