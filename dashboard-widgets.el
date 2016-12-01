@@ -53,10 +53,12 @@ If the value is nil then no banner is displayed.")
 
 (defvar dashboard-item-generators  '((recents   . dashboard-insert-recents)
                                      (bookmarks . dashboard-insert-bookmarks)
-                                     (projects  . dashboard-insert-projects)))
+                                     (projects  . dashboard-insert-projects)
+                                     (agenda    . dashboard-insert-agenda)))
 
 (defvar dashboard-items '((recents   . 5)
-			  (bookmarks . 5))
+                          (bookmarks . 5)
+                          (agenda    . 5))
   "Association list of items to show in the startup buffer.
 Will be of the form `(list-type . list-size)`.
 If nil it is disabled.  Possible values for list-type are:
@@ -268,6 +270,88 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 				 0 list-size))
 	  (dashboard-insert--shortcut "p" "Projects:")))
     (error "Projects list depends on 'projectile-mode` to be activated")))
+
+;;
+;; Org Agenda
+;;
+(defun dashboard-insert-agenda-list (list-display-name list)
+  "Render LIST-DISPLAY-NAME title and agenda items from LIST."
+  (when (car list)
+    (insert list-display-name)
+    (mapc (lambda (el)
+            (insert "\n    ")
+            (let ((filename (nth 4 el))
+                  (lineno (nth 3 el))
+                  (title (nth 0 el)))
+              (widget-create 'push-button
+                             :action `(lambda (&rest ignore)
+                                        (let ((buffer (find-file-other-window ,filename)))
+                                          (with-current-buffer buffer
+                                            (goto-char ,lineno)
+                                            )
+                                          (switch-to-buffer buffer)))
+                             :mouse-face 'highlight
+                             :follow-link "\C-m"
+                             :button-prefix ""
+                             :button-suffix ""
+                             :format "%[%t%]"
+                             (format "%s" title)))
+            )
+          list)))
+
+(defun dashboard--timestamp-to-gregorian-date (timestamp)
+  "Convert TIMESTAMP to a gregorian date.
+
+The result can be used with functions like
+`calendar-date-compare'."
+  (let ((decoded-timestamp (decode-time timestamp)))
+    (list (nth 4 decoded-timestamp)
+          (nth 3 decoded-timestamp)
+          (nth 5 decoded-timestamp))))
+
+(defun dashboard--date-due-p (timestamp &optional due-date)
+  "Check if TIMESTAMP is today or in the past.
+
+If DUE-DATE is nil, compare TIMESTAMP to today; otherwise,
+compare to the date in DUE-DATE.
+
+The time part of both TIMESTAMP and DUE-DATE is ignored, only the
+date part is considered."
+  (unless due-date
+    (setq due-date (current-time)))
+  (let* ((gregorian-date (dashboard--timestamp-to-gregorian-date timestamp))
+         (gregorian-due-date (dashboard--timestamp-to-gregorian-date due-date)))
+    (calendar-date-compare (list gregorian-date)
+                           (list gregorian-due-date))))
+
+(defun dashboard--get-agenda ()
+  "Get agenda items for today."
+  (require 'org-agenda)
+  (require 'calendar)
+  (let* ((filtered-entries nil))
+    (org-map-entries
+     (lambda ()
+       (let ((schedule-time (org-get-scheduled-time (point)))
+             (deadline-time (org-get-deadline-time (point)))
+             (title (org-get-heading t t))
+             (loc (point))
+             (file (buffer-file-name)))
+         (when (and (not (org-entry-is-done-p))
+                    (or schedule-time deadline-time)
+                    (or (dashboard--date-due-p schedule-time)
+                        (dashboard--date-due-p deadline-time)))
+           (setq filtered-entries
+                 (append filtered-entries
+                         (list (list title schedule-time deadline-time loc file)))))))
+     nil
+     'agenda)
+    filtered-entries))
+
+(defun dashboard-insert-agenda (list-size)
+  "Add the list of LIST-LIZE items of agenda."
+  (when (dashboard-insert-agenda-list "Agenda for today:"
+                                      (dashboard--get-agenda))
+    (dashboard-insert--shortcut "a" "Agenda for today:")))
 
 ;; Forward declartions for optional dependency to keep check-declare happy.
 (declare-function bookmark-get-filename "ext:bookmark.el")
