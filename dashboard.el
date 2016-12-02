@@ -54,6 +54,7 @@ Return entire list if `END' is omitted."
   :group 'dashboard
   :syntax-table nil
   :abbrev-table nil
+  (whitespace-turn-off)
   (linum-mode -1)
   (page-break-lines-mode 1)
   (setq buffer-read-only t
@@ -100,7 +101,8 @@ Set to nil for unbounded.")
        (goto-char 0)
        (let ((margin (max 0 (floor (/ (- dashboard-banner-length banner-width) 2)))))
          (while (not (eobp))
-           (insert (make-string margin ?\ ))
+           (when (not (looking-at-p "$"))
+             (insert (make-string margin ?\ )))
            (forward-line 1))))
      (buffer-string))))
 
