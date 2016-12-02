@@ -54,7 +54,7 @@ Return entire list if `END' is omitted."
   :group 'dashboard
   :syntax-table nil
   :abbrev-table nil
-  (whitespace-turn-off)
+  (whitespace-mode -1)
   (linum-mode -1)
   (page-break-lines-mode 1)
   (setq buffer-read-only t
