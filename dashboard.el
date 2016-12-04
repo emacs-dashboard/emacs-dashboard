@@ -96,6 +96,7 @@ Set to nil for unbounded.")
        (while (not (eobp))
          (let ((line-length (- (line-end-position) (line-beginning-position))))
            (if (< banner-width line-length)
+
                (setq banner-width line-length)))
          (forward-line 1))
        (goto-char 0)
@@ -256,15 +257,18 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
 ;;;###autoload
 (defun dashboard-setup-startup-hook ()
   "Add post init processing."
-  (setq inhibit-startup-screen t)
-  (add-hook 'after-init-hook (lambda ()
-     ;; Display useful lists of items
-			       (dashboard-insert-startupify-lists)))
 
-  (add-hook 'emacs-startup-hook '(lambda ()
-				   (switch-to-buffer "*dashboard*")
-				   (goto-char (point-min))
-				   (redisplay))))
+  ;; If we have command line arguments, we just assume filenames and dont display the Dashboard
+  (if (< (length command-line-args) 2 )
+      (progn
+	(setq inhibit-startup-screen t)
+	(add-hook 'after-init-hook (lambda ()
+				     ;; Display useful lists of items
+				     (dashboard-insert-startupify-lists)))
+	(add-hook 'emacs-startup-hook '(lambda ()
+					 (switch-to-buffer "*dashboard*")
+					 (goto-char (point-min))
+					 (redisplay))))))
 
 ;; Forward declartions for optional dependency to keep check-declare happy.
 (declare-function projectile-load-known-projects "ext:projectile.el")
