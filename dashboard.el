@@ -57,7 +57,7 @@ Return entire list if `END' is omitted."
   (whitespace-mode -1)
   (linum-mode -1)
   (page-break-lines-mode 1)
-  (setq inhibit-startup-screen t)  
+  (setq inhibit-startup-screen t)
   (setq buffer-read-only t
         truncate-lines t))
 
@@ -256,7 +256,8 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
 
 ;;;###autoload
 (defun dashboard-setup-startup-hook ()
-  ;; If we have command line arguments, we just assume filenames and dont display the Dashboard
+  "Setup post initialization hooks.
+If a command line argument is provided, assume a filename and skip displaying Dashboard"
   (if (< (length command-line-args) 2 )
       (progn
 	(add-hook 'after-init-hook (lambda ()
