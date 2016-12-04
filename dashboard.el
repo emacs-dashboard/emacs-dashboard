@@ -272,5 +272,9 @@ If a command line argument is provided, assume a filename and skip displaying Da
 (declare-function projectile-load-known-projects "ext:projectile.el")
 (declare-function projectile-relevant-known-projects "ext:projectile.el")
 
+;; Forward declartions for optional dependency to keep check-declare happy.
+(declare-function projectile-load-known-projects "projectile.el:ext")
+(declare-function projectile-relevant-known-projects "projectile.el:ext")
+
 (provide 'dashboard)
 ;;; dashboard.el ends here
