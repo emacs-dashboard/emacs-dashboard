@@ -75,14 +75,15 @@ Return entire list if `END' is omitted."
 
 (defvar dashboard-item-generators  '((recents   . dashboard-insert-recents)
                                      (bookmarks . dashboard-insert-bookmarks)
-                                     (projects  . dashboard-insert-projects)))
+                                     (projects  . dashboard-insert-projects)
+				     (reddits   . dashboard-insert-reddits)))
 
 (defvar dashboard-items '((recents   . 5)
 			  (bookmarks . 5))
   "Association list of items to show in the startup buffer.
 Will be of the form `(list-type . list-size)`.
 If nil it is disabled.  Possible values for list-type are:
-`recents' `bookmarks' `projects'")
+`reddits' `recents' `bookmarks' `projects'")
 
 (defvar dashboard-items-default-length 20
   "Length used for startup lists with otherwise unspecified bounds.
@@ -129,6 +130,26 @@ Set to nil for unbounded.")
                            :button-suffix ""
                            :format "%[%t%]"
                            (abbreviate-file-name el)))
+          list)))
+
+(defun dashboard-insert-reddit-list (reddit-list list)
+  "Render REDDIT-LIST title and items of LIST."
+  (when (car list)
+    (insert reddit-list)
+    (mapc (lambda (el)
+	    (setq url (nth 1 (split-string el "__")) )
+	    (setq title (nth 0 (split-string el "__")) )
+            (insert "\n    ")
+            (widget-create 'push-button
+                           :action `(lambda (&rest ignore)
+				      (browse-url url))
+                           :mouse-face 'highlight
+                           :follow-link "\C-m"
+                           :button-prefix ""
+                           :button-suffix ""
+                           :format "%[%t%]"	    
+			   title
+			   ))
           list)))
 
 (defun dashboard-insert-project-list (list-display-name list)
@@ -228,6 +249,30 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
 				 0 list-size))
 	  (dashboard-insert--shortcut "p" "Projects:")))
     (error "Projects list depends on 'projectile-mode` to be activated")))
+
+
+(defun dashboard-insert-reddits (list-size)
+  "Add the list of LIST-SIZE items from recently edited files."
+  (if (> list-size 0 )
+      (progn
+	(setq file-path "/tmp/dashboard_reddits.json")
+	(condition-case nil
+	    (delete-file file-path)
+	  (error nil))
+
+	(require 'json)
+	(url-copy-file "https://www.reddit.com/r/emacs/.json"  file-path)
+	(setq reddit-list (mapcar (lambda (entry)
+				    (format "%s__%s " (let-alist entry .data.title ) (let-alist entry .data.url )))
+					;(concat (let-alist entry .data.title ) (concat " - " (let-alist entry .data.url ))))
+				  (let-alist (json-read-file  file-path) .data.children)))
+
+
+	(when (dashboard-insert-reddit-list
+	       "Recent Posts to /r/emacs:"
+	       (dashboard-subseq reddit-list 0 list-size)))	 
+	(dashboard-insert--shortcut "p" "Recent Posts:"))
+    ))
 
 
 (defun dashboard-insert-startupify-lists ()
