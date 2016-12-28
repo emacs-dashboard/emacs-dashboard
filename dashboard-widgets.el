@@ -29,8 +29,33 @@
   :type 'string
   :group 'dashboard)
 
+(defconst dashboard-banners-directory
+  (concat (file-name-directory
+	   (locate-library "dashboard"))
+	   "/banners/"))
+
+(defconst dashboard-banner-official-png
+  (expand-file-name (concat dashboard-banners-directory "emacs.png"))
+  "Emacs banner image.")
+
+(defconst dashboard-banner-logo-png
+  (expand-file-name (concat dashboard-banners-directory "logo.png"))
+  "Emacs banner image.")
+
 (defconst dashboard-banner-length 75
-	  "Width of a banner.")
+  "Width of a banner.")
+
+(defvar dashboard-banner-logo-title "Welcome to Emacs!"
+   "Specify the startup banner.")
+
+(defvar dashboard-startup-banner 'official
+   "Specify the startup banner.
+Default value is `official', it displays
+the Emacs logo.  `logo' displays Emacs alternative logo.
+An integer value is the index of text
+banner.  A string value must be a path to a .PNG file.
+If the value is nil then no banner is displayed.")
+
 (defvar dashboard-buffer-last-width nil
   "Previous width of dashboard-buffer.")
 
@@ -107,13 +132,61 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
            (forward-line 1))))
      (buffer-string))))
 
+(defun dashboard-insert-image-banner (banner)
+  "Display an image BANNER."
+  (when (file-exists-p banner)
+    (let* ((title dashboard-banner-logo-title)
+           (spec (create-image banner))
+           (size (image-size spec))
+           (width (car size))
+           (left-margin (max 0 (floor (- dashboard-banner-length width) 2))))
+      (goto-char (point-min))
+      (insert "\n")
+      (insert (make-string left-margin ?\ ))
+      (insert-image spec)
+      (insert "\n\n")
+      (insert (make-string (max 0 (floor (/ (- dashboard-banner-length
+                                        (+ (length title) 1)) 2))) ?\ ))
+      (insert (format "%s\n\n" title)))))
+
+(defun dashboard-get-banner-path (index)
+  "Return the full path to banner with index INDEX."
+  (concat dashboard-banners-directory (format "%d.txt" index)))
+
+(defun dashboard-choose-banner ()
+  "Return the full path of a banner based on the dotfile value."
+  (when dashboard-startup-banner
+    (cond ((eq 'official dashboard-startup-banner)
+           (if (and (display-graphic-p) (image-type-available-p 'png))
+               dashboard-banner-official-png
+             (dashboard-get-banner-path 1)))
+	  ((eq 'logo dashboard-startup-banner)
+           (if (and (display-graphic-p) (image-type-available-p 'png))
+               dashboard-banner-logo-png
+             (dashboard-get-banner-path 1)))
+          ((integerp dashboard-startup-banner)
+           (dashboard-get-banner-path dashboard-startup-banner))
+          ((and dashboard-startup-banner
+                (image-type-available-p (intern (file-name-extension
+                                                 dashboard-startup-banner)))
+                (display-graphic-p))
+           (if (file-exists-p dashboard-startup-banner)
+               dashboard-startup-banner
+             (spacemacs-buffer/warning (format "could not find banner %s"
+                                               dashboard-startup-banner))
+             (dashboard-get-banner-path 1)))
+          (t (dashboard-get-banner-path 1)))))
+
 (defun dashboard-insert-banner ()
   "Insert Banner at the top of the dashboard."
   (goto-char (point-max))
-  (dashboard-insert-ascii-banner-centered
-   (concat (file-name-directory
-	    (locate-library "dashboard"))
-	   "banner.txt")))
+  (let ((banner (dashboard-choose-banner))
+        (buffer-read-only nil))
+    (progn
+      (when banner
+	(if (image-type-available-p (intern (file-name-extension banner)))
+            (dashboard-insert-image-banner banner)
+          (dashboard-insert-ascii-banner-centered banner))))))
 
 ;;
 ;; Recentf

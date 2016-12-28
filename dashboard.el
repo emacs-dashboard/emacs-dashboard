@@ -63,9 +63,10 @@
 (defun dashboard-insert-startupify-lists ()
   "Insert the list of widgets into the buffer."
   (interactive)
-  (when (or (not (eq dashboard-buffer-last-width (window-width)))
-              (not buffer-exists)
-              refresh)
+  (let ((buffer-exists (buffer-live-p (get-buffer dashboard-buffer-name)))
+        (save-line nil))
+    (when (or (not (eq dashboard-buffer-last-width (window-width)))
+              (not buffer-exists))
       (setq dashboard-banner-length (window-width)
             dashboard-buffer-last-width dashboard-banner-length)
       (with-current-buffer (get-buffer-create dashboard-buffer-name)
@@ -87,7 +88,7 @@
 		    ))
 		dashboard-items))
 	(dashboard-mode)
-    (goto-char (point-min)))))
+	(goto-char (point-min))))))
 
 (add-hook 'window-setup-hook
           (lambda ()
