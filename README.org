@@ -100,7 +100,21 @@ To contribute your changes to this package, please do the following:
 3. Make your changes
 4. Push and create your PR
 
-If you'd like to test the package before pushing, my current way of testing is by executing `package-install-file`.
-Emacs will bundle and install the package into your ~/.emacs.d/elpa and then you are able to start Emacs and check that your implementation works.
+When working on this package, it's typical to uninstall dashboard,
+develop your changes and then install this as "development version".
 
-Contributions are very welcome :)
+This is accomplished with the following steps:
+
+#+BEGIN_SRC shell
+# In emacs:
+M-x package-delete dashboard-<version> RET
+#+END_SRC
+
+#+BEGIN_SRC shell
+make build
+make install
+#+END_SRC
+
+** Prerequisites
+
+  * [[https://github.com/cask/cask][Cask]]
