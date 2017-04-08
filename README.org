@@ -36,6 +36,22 @@ By default, this will show two lists, recent files and bookmarks.
 One more widget is implemented by Dashboard but it's made optional because of it's dependency on a third party application, which is
 `projects` which shows you the list of known projectile projects.
 
+* Configuration
+
+To update the banner or banner title
+
+#+BEGIN_SRC elisp
+;; Set the title
+(setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
+;; Set the banner
+(setq dashboard-startup-banner [VALUE])
+;; Value can be
+;; 'official which displays the official emacs logo
+;; 'logo which displays an alternative emacs logo
+;; 1, 2 or 3 which displays one of the text banners
+;; "path/to/your/image.png which displays whatever image you would prefer
+#+END_SRC
+
 To customize which widgets are displayed, you can use the following snippet
 #+BEGIN_SRC elisp
 (setq dashboard-items '((recents  . 5)
@@ -56,23 +72,34 @@ To add your own custom widget is pretty easy, define your widget's callback func
 
 You can use any of the following shortcuts inside Dashboard
 
-| Shortcut                   | Function      |
-|----------------------------+---------------|
-| Tab Or C-i                 | Next Item     |
-| Shift-Tab                  | Previous Item |
-| Return / Mouse Click / C-m | Open          |
-| r                          | Recent files  |
-| m                          | Bookmarks     |
-| p                          | Projects      |
+|----------------------------+------------------|
+| Shortcut                   | Function         |
+|----------------------------+------------------|
+| Tab Or C-i                 | Next Item        |
+| Shift-Tab                  | Previous Item    |
+| Return / Mouse Click / C-m | Open             |
+| r                          | Recent files     |
+| m                          | Bookmarks        |
+| p                          | Projects         |
+| g                          | Refresh contents |
+|----------------------------+------------------|
 
 * Wish List
-  1. [ ] Center content
-  2. [ ] Integrate Org-mode's agenda
-  3. [ ] Listing Perspectives
-  4. [ ] More banner options
-  5. [X] Customizing the list of widgets to display
+  1. [X] Center content
+  2. [X] More banner options
+  3. [X] Customizing the list of widgets to display
+  4. [ ] Integrate Org-mode's agenda
+  5. [ ] Listing Perspectives
 
 * Contributions
+
+To contribute your changes to this package, please do the following:
+
+1. Fork the repo
+2. Clone a local copy
+3. Make your changes
+4. Push and create your PR
+
 When working on this package, it's typical to uninstall dashboard,
 develop your changes and then install this as "development version".
 
@@ -81,15 +108,13 @@ This is accomplished with the following steps:
 #+BEGIN_SRC shell
 # In emacs:
 M-x package-delete dashboard-<version> RET
+#+END_SRC
 
+#+BEGIN_SRC shell
 make build
-
-# Back in emacs:
-M-x package-install-file ./build/dashboard-<verison>.tar RET
+make install
 #+END_SRC
 
 ** Prerequisites
 
   * [[https://github.com/cask/cask][Cask]]
-
-Contributions are very welcome :)
