@@ -33,7 +33,7 @@ M-x package-install RET dashboard
   (dashboard-setup-startup-hook))
  #+END_SRC
 
-By default, this will show two lists, recent files and bookmarks.
+By default, this will show three lists, recent files and bookmarks and org-agenda items.
 One more widget is implemented by Dashboard but it's made optional because of it's dependency on a third party application, which is
 `projects` which shows you the list of known projectile projects.
 
@@ -57,9 +57,10 @@ To customize which widgets are displayed, you can use the following snippet
 #+BEGIN_SRC elisp
 (setq dashboard-items '((recents  . 5)
                         (bookmarks . 5)
-                        (projects . 5)))
+                        (projects . 5)
+                        (agenda . 5)))
  #+END_SRC
-This will add the recent files, bookmarks and the projects widgets to your dashboard each displaying 5 items.
+This will add the recent files, bookmarks, projects and org-agenda widgets to your dashboard each displaying 5 items.
 
 To add your own custom widget is pretty easy, define your widget's callback function and add it to `dashboard-items` as such:
 #+BEGIN_SRC elisp
@@ -94,6 +95,8 @@ You can use any of the following shortcuts inside Dashboard
 | p                          | Projects         |
 | a                          | Org-Mode Agenda  |
 | g                          | Refresh contents |
+| {                          | Previous section |
+| }                          | Next section     |
 |----------------------------+------------------|
 
 * Wish List

@@ -80,7 +80,7 @@ Return entire list if `END' is omitted."
     (cl-subseq seq start (and (number-or-marker-p end)
                               (min len end)))))
 
-(defmacro dashboard-insert--shortcut (shortcut-char
+(defmacro dashboard-insert-shortcut (shortcut-char
 				      search-label
 				      &optional no-next-line)
   "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
@@ -207,7 +207,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (when (dashboard-insert-recentf-list
 	 "Recent Files:"
 	 (dashboard-subseq recentf-list 0 list-size))
-    (dashboard-insert--shortcut "r" "Recent Files:")))
+    (dashboard-insert-shortcut "r" "Recent Files:")))
 
 
 ;;
@@ -237,7 +237,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 	 "Bookmarks:"
 	 (dashboard-subseq (bookmark-all-names)
 			   0 list-size))
-    (dashboard-insert--shortcut "m" "Bookmarks:")))
+    (dashboard-insert-shortcut "m" "Bookmarks:")))
 
 ;;
 ;; Projectile
@@ -268,7 +268,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 	       "Projects:"
 	       (dashboard-subseq (projectile-relevant-known-projects)
 				 0 list-size))
-	  (dashboard-insert--shortcut "p" "Projects:")))
+	  (dashboard-insert-shortcut "p" "Projects:")))
     (error "Projects list depends on 'projectile-mode` to be activated")))
 
 ;;
@@ -299,7 +299,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
             )
           list)))
 
-(defun dashboard--timestamp-to-gregorian-date (timestamp)
+(defun dashboard-timestamp-to-gregorian-date (timestamp)
   "Convert TIMESTAMP to a gregorian date.
 
 The result can be used with functions like
@@ -309,7 +309,7 @@ The result can be used with functions like
           (nth 3 decoded-timestamp)
           (nth 5 decoded-timestamp))))
 
-(defun dashboard--date-due-p (timestamp &optional due-date)
+(defun dashboard-date-due-p (timestamp &optional due-date)
   "Check if TIMESTAMP is today or in the past.
 
 If DUE-DATE is nil, compare TIMESTAMP to today; otherwise,
@@ -319,15 +319,13 @@ The time part of both TIMESTAMP and DUE-DATE is ignored, only the
 date part is considered."
   (unless due-date
     (setq due-date (current-time)))
-  (let* ((gregorian-date (dashboard--timestamp-to-gregorian-date timestamp))
-         (gregorian-due-date (dashboard--timestamp-to-gregorian-date due-date)))
+  (let* ((gregorian-date (dashboard-timestamp-to-gregorian-date timestamp))
+         (gregorian-due-date (dashboard-timestamp-to-gregorian-date due-date)))
     (calendar-date-compare (list gregorian-date)
                            (list gregorian-due-date))))
 
-(defun dashboard--get-agenda ()
+(defun dashboard-get-agenda ()
   "Get agenda items for today."
-  (require 'org-agenda)
-  (require 'calendar)
   (let* ((filtered-entries nil))
     (org-map-entries
      (lambda ()
@@ -338,8 +336,8 @@ date part is considered."
              (file (buffer-file-name)))
          (when (and (not (org-entry-is-done-p))
                     (or schedule-time deadline-time)
-                    (or (dashboard--date-due-p schedule-time)
-                        (dashboard--date-due-p deadline-time)))
+                    (or (dashboard-date-due-p schedule-time)
+                        (dashboard-date-due-p deadline-time)))
            (setq filtered-entries
                  (append filtered-entries
                          (list (list title schedule-time deadline-time loc file)))))))
@@ -348,10 +346,10 @@ date part is considered."
     filtered-entries))
 
 (defun dashboard-insert-agenda (list-size)
-  "Add the list of LIST-LIZE items of agenda."
+  "Add the list of LIST-SIZE items of agenda."
   (when (dashboard-insert-agenda-list "Agenda for today:"
-                                      (dashboard--get-agenda))
-    (dashboard-insert--shortcut "a" "Agenda for today:")))
+                                      (dashboard-get-agenda))
+    (dashboard-insert-shortcut "a" "Agenda for today:")))
 
 ;; Forward declartions for optional dependency to keep check-declare happy.
 (declare-function bookmark-get-filename "ext:bookmark.el")
