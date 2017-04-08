@@ -1,12 +1,16 @@
 BUILD_DIR := ./build
 
+.PHONY: all
+all: clean build install
+
 .PHONY: clean
 clean:
 	@rm -rf ${BUILD_DIR}
 
 .PHONY: build
 build:
-	@if [ ! -d .cask ]; then cask init --dev; fi
 	@cask package ${BUILD_DIR} --dev
 
-
+.PHONY: install
+install:
+	@cask install
