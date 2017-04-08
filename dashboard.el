@@ -11,12 +11,12 @@
 ;;
 ;; Created: October 05, 2016
 ;; Modified: December 30, 2016
-;; Version: 1.2.0
+;; Version: 1.2.1
 ;; Keywords: startup screen tools
 ;; Package-Requires: ((emacs "24.4") (page-break-lines "0.11"))
 ;;; Commentary:
 
-;; A shameless extraction of Spacemacs’ startup screen, with sections for
+;; An extensible Emacs dashboard, with sections for
 ;; bookmarks, projectil projects, org-agenda and more.
 
 ;;; Code:
@@ -37,7 +37,7 @@
     (define-key map [backtab] 'widget-backward)
     (define-key map (kbd "RET") 'widget-button-press)
     (define-key map [down-mouse-1] 'widget-button-click)
-    (define-key map (kbd "g") #'dashboard-insert-startupify-lists)
+    (define-key map (kbd "g") #'dashboard-refresh-buffer)
     (define-key map (kbd "}") #'dashboard-next-section)
     (define-key map (kbd "{") #'dashboard-previous-section)
     map)
@@ -129,6 +129,13 @@
           (lambda ()
             (add-hook 'window-configuration-change-hook 'dashboard-resize-on-hook)
             (dashboard-resize-on-hook)))
+
+(defun dashboard-refresh-buffer ()
+  "Refresh buffer."
+  (interactive)
+  (kill-buffer dashboard-buffer-name)
+  (dashboard-insert-startupify-lists)
+  (switch-to-buffer dashboard-buffer-name))
 
 (defun dashboard-resize-on-hook ()
   (let ((space-win (get-buffer-window dashboard-buffer-name))
