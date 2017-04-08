@@ -1,5 +1,5 @@
 * Emacs Dashboard
-A shameless extraction of Spacemacs' startup screen.
+An extensible emacs startup screen showing you what's most important.
 
 * Features
   1. Displays an awesome Emacs banner!
