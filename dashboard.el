@@ -36,6 +36,8 @@
     (define-key map (kbd "RET") 'widget-button-press)
     (define-key map [down-mouse-1] 'widget-button-click)
     (define-key map (kbd "g") #'dashboard-insert-startupify-lists)
+    (define-key map (kbd "}") #'dashboard-next-section)
+    (define-key map (kbd "{") #'dashboard-previous-section)
     map)
   "Keymap for dashboard mode.")
 
@@ -60,6 +62,37 @@
 (defconst dashboard-buffer-name "*dashboard*"
 	  "Dashboard's buffer name.")
 
+(defvar dashboard--section-starts nil
+  "List of section starting positions")
+
+(defun dashboard-previous-section ()
+  (interactive)
+  (let ((current-section-start nil)
+        (current-position (point))
+        (previous-section-start nil))
+    (dolist (elt dashboard--section-starts)
+      (when (and current-section-start
+                 (not previous-section-start))
+        (setq previous-section-start elt))
+      (when (and (not current-section-start)
+                 (< elt current-position))
+        (setq current-section-start elt)))
+    (goto-char (if (eq current-position current-section-start)
+                   previous-section-start
+                 current-section-start))))
+
+(defun dashboard-next-section ()
+  (interactive
+   (let ((current-position (point))
+         (next-section-start nil)
+         (section-starts (reverse dashboard--section-starts)))
+     (dolist (elt section-starts)
+       (when (and (not next-section-start)
+                  (> elt current-position))
+         (setq next-section-start elt)))
+     (when next-section-start
+       (goto-char next-section-start)))))
+
 (defun dashboard-insert-startupify-lists ()
   "Insert the list of widgets into the buffer."
   (interactive)
@@ -70,25 +103,25 @@
       (setq dashboard-banner-length (window-width)
             dashboard-buffer-last-width dashboard-banner-length)
       (with-current-buffer (get-buffer-create dashboard-buffer-name)
-	(let ((buffer-read-only nil)
-	      (list-separator "\n\n"))
-	  (erase-buffer)
-	  (dashboard-insert-banner)
-	  (dashboard-insert-page-break)
-	  (mapc (lambda (els)
-		  (let* ((el (or (car-safe els) els))
-			 (list-size
-			  (or (cdr-safe els)
-			      dashboard-items-default-length))
-			 (item-generator
-			  (cdr-safe (assoc el dashboard-item-generators))
-			  ))
-		    (funcall item-generator list-size)
-		    (dashboard-insert-page-break)
-		    ))
-		dashboard-items))
-	(dashboard-mode)
-	(goto-char (point-min))))))
+        (let ((buffer-read-only nil)
+              (list-separator "\n\n"))
+          (erase-buffer)
+          (dashboard-insert-banner)
+          (dashboard-insert-page-break)
+          (setq dashboard--section-starts nil)
+          (mapc (lambda (els)
+                  (let* ((el (or (car-safe els) els))
+                         (list-size
+                          (or (cdr-safe els)
+                              dashboard-items-default-length))
+                         (item-generator
+                          (cdr-safe (assoc el dashboard-item-generators))))
+                    (add-to-list 'dashboard--section-starts (point))
+                    (funcall item-generator list-size)
+                    (dashboard-insert-page-break)))
+                dashboard-items))
+        (dashboard-mode)
+        (goto-char (point-min))))))
 
 (add-hook 'window-setup-hook
           (lambda ()
