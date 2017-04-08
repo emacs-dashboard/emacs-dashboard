@@ -261,6 +261,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 
 (defun dashboard-insert-projects (list-size)
   "Add the list of LIST-SIZE items of projects."
+  ;; For some reason, projectile has to be loaded here
+  ;; before trying to load projects list
+  (projectile-mode)
   (if (bound-and-true-p projectile-mode)
       (progn
 	(projectile-load-known-projects)
@@ -269,7 +272,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 	       (dashboard-subseq (projectile-relevant-known-projects)
 				 0 list-size))
 	  (dashboard-insert-shortcut "p" "Projects:")))
-    (error "Projects list depends on 'projectile-mode` to be activated")))
+    (message "Failed to load projects list")))
 
 ;;
 ;; Org Agenda
