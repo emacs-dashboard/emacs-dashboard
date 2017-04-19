@@ -279,28 +279,29 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 ;;
 (defun dashboard-insert-agenda-list (list-display-name list)
   "Render LIST-DISPLAY-NAME title and agenda items from LIST."
-  (when (car list)
-    (insert list-display-name)
-    (mapc (lambda (el)
-            (insert "\n    ")
-            (let ((filename (nth 4 el))
-                  (lineno (nth 3 el))
-                  (title (nth 0 el)))
-              (widget-create 'push-button
-                             :action `(lambda (&rest ignore)
-                                        (let ((buffer (find-file-other-window ,filename)))
-                                          (with-current-buffer buffer
-                                            (goto-char ,lineno)
-                                            )
-                                          (switch-to-buffer buffer)))
-                             :mouse-face 'highlight
-                             :follow-link "\C-m"
-                             :button-prefix ""
-                             :button-suffix ""
-                             :format "%[%t%]"
-                             (format "%s" title)))
-            )
-          list)))
+  (insert list-display-name)
+  (if (car list)
+      (mapc (lambda (el)
+              (insert "\n    ")
+              (let ((filename (nth 4 el))
+                    (lineno (nth 3 el))
+                    (title (nth 0 el)))
+                (widget-create 'push-button
+                               :action `(lambda (&rest ignore)
+                                          (let ((buffer (find-file-other-window ,filename)))
+                                            (with-current-buffer buffer
+                                              (goto-char ,lineno)
+                                              )
+                                            (switch-to-buffer buffer)))
+                               :mouse-face 'highlight
+                               :follow-link "\C-m"
+                               :button-prefix ""
+                               :button-suffix ""
+                               :format "%[%t%]"
+                               (format "%s" title)))
+              )
+            list)
+    (insert (propertize "\n    --- No items ---" 'face 'widget-button))))
 
 (defun dashboard-timestamp-to-gregorian-date (timestamp)
   "Convert TIMESTAMP to a gregorian date.
