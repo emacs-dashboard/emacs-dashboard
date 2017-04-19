@@ -339,9 +339,8 @@ date part is considered."
              (loc (point))
              (file (buffer-file-name)))
          (when (and (not (org-entry-is-done-p))
-                    (or schedule-time deadline-time)
-                    (or (dashboard-date-due-p schedule-time)
-                        (dashboard-date-due-p deadline-time)))
+                    (or (and schedule-time (dashboard-date-due-p schedule-time))
+                        (and deadline-time (dashboard-date-due-p deadline-time))))
            (setq filtered-entries
                  (append filtered-entries
                          (list (list title schedule-time deadline-time loc file)))))))
