@@ -329,12 +329,19 @@ date part is considered."
 
 (defun dashboard-get-agenda ()
   "Get agenda items for today."
+  (org-compile-prefix-format 'agenda)
   (let* ((filtered-entries nil))
     (org-map-entries
      (lambda ()
        (let ((schedule-time (org-get-scheduled-time (point)))
              (deadline-time (org-get-deadline-time (point)))
-             (title (org-get-heading t t))
+             (item (org-agenda-format-item
+                    ""
+                    (org-get-heading t t)
+                    (org-outline-level)
+                    (org-get-category)
+                    (org-get-tags)
+                    t))
              (loc (point))
              (file (buffer-file-name)))
          (when (and (not (org-entry-is-done-p))
@@ -343,7 +350,7 @@ date part is considered."
                         (dashboard-date-due-p deadline-time)))
            (setq filtered-entries
                  (append filtered-entries
-                         (list (list title schedule-time deadline-time loc file)))))))
+                         (list (list item schedule-time deadline-time loc file)))))))
      nil
      'agenda)
     filtered-entries))
