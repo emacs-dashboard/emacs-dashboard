@@ -322,6 +322,7 @@ The time part of both TIMESTAMP and DUE-DATE is ignored, only the
 date part is considered."
   (unless due-date
     (setq due-date (current-time)))
+  (setq due-date (time-add due-date 86400))
   (let* ((gregorian-date (dashboard-timestamp-to-gregorian-date timestamp))
          (gregorian-due-date (dashboard-timestamp-to-gregorian-date due-date)))
     (calendar-date-compare (list gregorian-date)
