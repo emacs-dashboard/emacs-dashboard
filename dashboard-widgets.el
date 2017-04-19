@@ -337,6 +337,7 @@ date part is considered."
      (lambda ()
        (let ((schedule-time (org-get-scheduled-time (point)))
              (deadline-time (org-get-deadline-time (point)))
+             (timestamp (org-entry-get (point) "TIMESTAMP"))
              (item (org-agenda-format-item
                     ""
                     (org-get-heading t t)
@@ -348,7 +349,9 @@ date part is considered."
              (file (buffer-file-name)))
          (when (and (not (org-entry-is-done-p))
                     (or (and schedule-time (dashboard-date-due-p schedule-time))
-                        (and deadline-time (dashboard-date-due-p deadline-time))))
+                        (and deadline-time (dashboard-date-due-p deadline-time))
+                        (and timestamp (org-agenda-today-p
+                                        (org-date-to-gregorian timestamp)))))
            (setq filtered-entries
                  (append filtered-entries
                          (list (list item schedule-time deadline-time loc file)))))))
