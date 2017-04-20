@@ -323,6 +323,7 @@ The time part of both TIMESTAMP and DUE-DATE is ignored, only the
 date part is considered."
   (unless due-date
     (setq due-date (current-time)))
+  (setq due-date (time-add due-date 86400))
   (let* ((gregorian-date (dashboard-timestamp-to-gregorian-date timestamp))
          (gregorian-due-date (dashboard-timestamp-to-gregorian-date due-date)))
     (calendar-date-compare (list gregorian-date)
@@ -346,9 +347,8 @@ date part is considered."
              (loc (point))
              (file (buffer-file-name)))
          (when (and (not (org-entry-is-done-p))
-                    (or schedule-time deadline-time)
-                    (or (dashboard-date-due-p schedule-time)
-                        (dashboard-date-due-p deadline-time)))
+                    (or (and schedule-time (dashboard-date-due-p schedule-time))
+                        (and deadline-time (dashboard-date-due-p deadline-time))))
            (setq filtered-entries
                  (append filtered-entries
                          (list (list item schedule-time deadline-time loc file)))))))
