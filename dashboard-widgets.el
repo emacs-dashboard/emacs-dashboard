@@ -335,10 +335,10 @@ date part is considered."
   (let* ((filtered-entries nil))
     (org-map-entries
      (lambda ()
-       (let ((schedule-time (org-get-scheduled-time (point)))
+       (let* ((schedule-time (org-get-scheduled-time (point)))
              (deadline-time (org-get-deadline-time (point)))
              (item (org-agenda-format-item
-                    ""
+		    (format-time-string "%Y-%m-%d" deadline-time)
                     (org-get-heading t t)
                     (org-outline-level)
                     (org-get-category)
