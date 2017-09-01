@@ -166,9 +166,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                 (display-graphic-p))
            (if (file-exists-p dashboard-startup-banner)
                dashboard-startup-banner
-             (spacemacs-buffer/warning (format "could not find banner %s"
-                                               dashboard-startup-banner))
-             (dashboard-get-banner-path 1)))
+	     (message (format "could not find banner %s"
+			      dashboard-startup-banner))
+	     (dashboard-get-banner-path 1)))
           (t (dashboard-get-banner-path 1)))))
 
 (defun dashboard-insert-banner ()
