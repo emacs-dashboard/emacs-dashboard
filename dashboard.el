@@ -26,6 +26,7 @@
 (require 'org-agenda)
 (require 'page-break-lines)
 (require 'recentf)
+(require 'register)
 
 (require 'dashboard-widgets)
 
