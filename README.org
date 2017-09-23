@@ -7,6 +7,7 @@ An extensible emacs startup screen showing you what's most important.
   3. Bookmarks list
   4. Recent projectile projects list (Depends on `projectile` package)
   5. Org mode agenda
+  6. Register list
 
 * Screenshot
 
@@ -55,12 +56,13 @@ To update the banner or banner title
 
 To customize which widgets are displayed, you can use the following snippet
 #+BEGIN_SRC elisp
-(setq dashboard-items '((recents  . 5)
-                        (bookmarks . 5)
-                        (projects . 5)
-                        (agenda . 5)))
+  (setq dashboard-items '((recents  . 5)
+                          (bookmarks . 5)
+                          (projects . 5)
+                          (agenda . 5)
+                          (registers . 5)))
  #+END_SRC
-This will add the recent files, bookmarks, projects and org-agenda widgets to your dashboard each displaying 5 items.
+This will add the recent files, bookmarks, projects, org-agenda and registers widgets to your dashboard each displaying 5 items.
 
 To add your own custom widget is pretty easy, define your widget's callback function and add it to `dashboard-items` as such:
 #+BEGIN_SRC elisp
@@ -94,6 +96,7 @@ You can use any of the following shortcuts inside Dashboard
 | m                          | Bookmarks        |
 | p                          | Projects         |
 | a                          | Org-Mode Agenda  |
+| e                          | Registers        |
 | g                          | Refresh contents |
 | {                          | Previous section |
 | }                          | Next section     |

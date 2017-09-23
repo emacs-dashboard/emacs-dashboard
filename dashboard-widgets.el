@@ -54,7 +54,8 @@ If the value is nil then no banner is displayed.")
 (defvar dashboard-item-generators  '((recents   . dashboard-insert-recents)
                                      (bookmarks . dashboard-insert-bookmarks)
                                      (projects  . dashboard-insert-projects)
-                                     (agenda    . dashboard-insert-agenda)))
+                                     (agenda    . dashboard-insert-agenda)
+                                     (registers . dashboard-insert-registers)))
 
 (defvar dashboard-items '((recents   . 5)
                           (bookmarks . 5)
@@ -62,7 +63,7 @@ If the value is nil then no banner is displayed.")
   "Association list of items to show in the startup buffer.
 Will be of the form `(list-type . list-size)`.
 If nil it is disabled.  Possible values for list-type are:
-`recents' `bookmarks' `projects'")
+`recents' `bookmarks' `projects' `agenda' `registers'")
 
 (defvar dashboard-items-default-length 20
   "Length used for startup lists with otherwise unspecified bounds.
@@ -361,6 +362,35 @@ date part is considered."
   (when (dashboard-insert-agenda-list "Agenda for today:"
                                       (dashboard-get-agenda))
     (dashboard-insert-shortcut "a" "Agenda for today:")))
+
+;;
+;; Registers
+;;
+(defun dashboard-insert-register-list (list-display-name list)
+  "Render LIST-DISPLAY-NAME title and registers items of LIST."
+  (when (car list)
+    (insert list-display-name)
+    (mapc (lambda (el)
+            (let ((register (car el)))
+              (insert "\n    ")
+              (widget-create 'push-button
+                             :action `(lambda (&rest ignore) (jump-to-register ,register))
+                             :mouse-face 'highlight
+                             :follow-link "\C-m"
+                             :button-prefix ""
+                             :button-suffix ""
+                             :format "%[%t%]"
+                             (format "%c - %s" register (register-describe-oneline register)))))
+          list)))
+
+(defun dashboard-insert-registers (list-size)
+  "Add the list of LIST-SIZE items of registers."
+  (require 'register)
+  (when (dashboard-insert-register-list
+         "Registers:"
+         (dashboard-subseq register-alist 0 list-size))
+    (dashboard-insert-shortcut "e" "Registers:")))
+
 
 ;; Forward declartions for optional dependency to keep check-declare happy.
 (declare-function bookmark-get-filename "ext:bookmark.el")
