@@ -82,6 +82,17 @@ To add your own custom widget is pretty easy, define your widget's callback func
 
 Note that setting list-size for the agenda list is intentionally ignored; all agenda items for the current day will be displayed.
 
+** Faces
+
+It is possible to customize Dashboard's appearance using the following faces:
+
+- ~dashboard-banner-logo-title-face~ ::
+     Highlights the banner title.
+- ~dashboard-heading-face~ ::
+     Highlights widget headings.
+- ~widget-button~ ::
+     Highlights widget items.
+
 * Shortcuts
 
 You can use any of the following shortcuts inside Dashboard

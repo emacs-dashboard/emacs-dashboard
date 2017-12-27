@@ -70,6 +70,17 @@ If nil it is disabled.  Possible values for list-type are:
 Set to nil for unbounded.")
 
 ;;
+;; Faces
+;;
+(defface dashboard-banner-logo-title-face
+  '((t :inherit default))
+  "Face used for the banner title.")
+
+(defface dashboard-heading-face
+  '((t :inherit default))
+  "Face used for widget headings.")
+
+;;
 ;; Generic widget helpers
 ;;
 (defun dashboard-subseq (seq start end)
@@ -106,6 +117,10 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Insert a page break line in dashboard buffer."
   (dashboard-append dashboard-page-separator))
 
+(defun dashboard-insert-heading (heading)
+  "Insert a widget heading in dashboard buffer."
+  (insert (propertize heading 'face 'dashboard-heading-face)))
+
 ;;
 ;; BANNER
 ;;
@@ -141,8 +156,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
       (insert-image spec)
       (insert "\n\n")
       (insert (make-string (max 0 (floor (/ (- dashboard-banner-length
-                                        (+ (length title) 1)) 2))) ?\ ))
-      (insert (format "%s\n\n" title)))))
+					(+ (length title) 1)) 2))) ?\ ))
+      (insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title-face))))))
 
 (defun dashboard-get-banner-path (index)
   "Return the full path to banner with index INDEX."
@@ -189,7 +204,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-insert-recentf-list (list-display-name list)
   "Render LIST-DISPLAY-NAME title and items of LIST."
   (when (car list)
-    (insert list-display-name)
+    (dashboard-insert-heading list-display-name)
     (mapc (lambda (el)
             (insert "\n    ")
             (widget-create 'push-button
@@ -217,7 +232,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-insert-bookmark-list (list-display-name list)
   "Render LIST-DISPLAY-NAME title and bookmarks items of LIST."
   (when (car list)
-    (insert list-display-name)
+    (dashboard-insert-heading list-display-name)
     (mapc (lambda (el)
             (insert "\n    ")
             (widget-create 'push-button
@@ -246,7 +261,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-insert-project-list (list-display-name list)
   "Render LIST-DISPLAY-NAME title and project items of LIST."
   (when (car list)
-    (insert list-display-name)
+    (dashboard-insert-heading list-display-name)
     (mapc (lambda (el)
             (insert "\n    ")
             (widget-create 'push-button
@@ -280,7 +295,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 ;;
 (defun dashboard-insert-agenda-list (list-display-name list)
   "Render LIST-DISPLAY-NAME title and agenda items from LIST."
-  (insert list-display-name)
+  (dashboard-insert-heading list-display-name)
   (if (car list)
       (mapc (lambda (el)
               (insert "\n    ")
@@ -369,7 +384,7 @@ date part is considered."
 (defun dashboard-insert-register-list (list-display-name list)
   "Render LIST-DISPLAY-NAME title and registers items of LIST."
   (when (car list)
-    (insert list-display-name)
+    (dashboard-insert-heading list-display-name)
     (mapc (lambda (el)
             (let ((register (car el)))
               (insert "\n    ")
