@@ -155,9 +155,10 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
       (insert (make-string left-margin ?\ ))
       (insert-image spec)
       (insert "\n\n")
-      (insert (make-string (max 0 (floor (/ (- dashboard-banner-length
-					(+ (length title) 1)) 2))) ?\ ))
-      (insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title-face))))))
+      (when title
+	(insert (make-string (max 0 (floor (/ (- dashboard-banner-length
+						 (+ (length title) 1)) 2))) ?\ ))
+	(insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title-face)))))))
 
 (defun dashboard-get-banner-path (index)
   "Return the full path to banner with index INDEX."
