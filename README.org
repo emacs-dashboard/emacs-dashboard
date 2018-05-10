@@ -38,6 +38,15 @@ By default, this will show three lists, recent files and bookmarks and org-agend
 One more widget is implemented by Dashboard but it's made optional because of it's dependency on a third party application, which is
 `projects` which shows you the list of known projectile projects.
 
+** Emacs Daemon
+
+In addition to the above, configure =initial-buffer-choice= to show
+Dashboard in frames created with =emacsclient -c= as follows:
+
+#+BEGIN_SRC elisp
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+#+END_SRC
+
 * Configuration
 
 To update the banner or banner title
