@@ -155,10 +155,10 @@ If a command line argument is provided, assume a filename and skip displaying Da
 	(add-hook 'after-init-hook (lambda ()
 				     ;; Display useful lists of items
 				     (dashboard-insert-startupify-lists)))
-	(add-hook 'emacs-startup-hook '(lambda ()
-					 (switch-to-buffer "*dashboard*")
-					 (goto-char (point-min))
-					 (redisplay))))))
+	(add-hook 'window-setup-hook '(lambda ()
+                                        (switch-to-buffer "*dashboard*")
+                                        (goto-char (point-min))
+                                        (redisplay))))))
 
 (provide 'dashboard)
 ;;; dashboard.el ends here
