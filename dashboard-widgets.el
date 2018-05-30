@@ -372,15 +372,19 @@ date part is considered."
                            (list gregorian-due-date))))
 
 (defun dashboard-get-agenda ()
-  "Get agenda items for today."
+  "Get agenda items for today or for a week from now."
   (org-compile-prefix-format 'agenda)
+  (if (and (boundp 'show-week-agenda-p) show-week-agenda-p)
+      (setq due-date (time-add (current-time) (* 86400 7)))
+    (setq due-date nil)
+    )
   (let* ((filtered-entries nil))
     (org-map-entries
      (lambda ()
        (let* ((schedule-time (org-get-scheduled-time (point)))
              (deadline-time (org-get-deadline-time (point)))
              (item (org-agenda-format-item
-		    (format-time-string "%Y-%m-%d" deadline-time)
+		    (format-time-string "%Y-%m-%d" schedule-time)
                     (org-get-heading t t)
                     (org-outline-level)
                     (org-get-category)
@@ -389,8 +393,8 @@ date part is considered."
              (loc (point))
              (file (buffer-file-name)))
          (when (and (not (org-entry-is-done-p))
-                    (or (and schedule-time (dashboard-date-due-p schedule-time))
-                        (and deadline-time (dashboard-date-due-p deadline-time))))
+                    (or (and schedule-time (dashboard-date-due-p schedule-time due-date))
+                        (and deadline-time (dashboard-date-due-p deadline-time due-date))))
            (setq filtered-entries
                  (append filtered-entries
                          (list (list item schedule-time deadline-time loc file)))))))
@@ -400,9 +404,13 @@ date part is considered."
 
 (defun dashboard-insert-agenda (list-size)
   "Add the list of LIST-SIZE items of agenda."
-  (when (dashboard-insert-agenda-list "Agenda for today:"
+  (if (and (boundp 'show-week-agenda-p) show-week-agenda-p)
+      (setq agenda-time-string "Agenda for the coming week:")
+    (setq agenda-time-string "Agenda for today:")
+    )
+  (when (dashboard-insert-agenda-list agenda-time-string
                                       (dashboard-get-agenda))
-    (dashboard-insert-shortcut "a" "Agenda for today:")))
+    (dashboard-insert-shortcut "a" agenda-time-string)))
 
 ;;
 ;; Registers
