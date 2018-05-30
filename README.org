@@ -89,6 +89,11 @@ To add your own custom widget is pretty easy, define your widget's callback func
 (add-to-list 'dashboard-items '(agenda) t)
 #+END_SRC
 
+To show agenda for the upcoming seven days set the variable ~show-week-agenda-p~ to ~t~.
+#+BEGIN_SRC elisp
+(setq show-week-agenda-p t)
+#+END_SRC
+
 Note that setting list-size for the agenda list is intentionally ignored; all agenda items for the current day will be displayed.
 
 ** Faces
