@@ -128,7 +128,7 @@
 
 (add-hook 'window-setup-hook
           (lambda ()
-            (add-hook 'window-configuration-change-hook 'dashboard-resize-on-hook)
+            (add-hook 'window-size-change-functions 'dashboard-resize-on-hook)
             (dashboard-resize-on-hook)))
 
 (defun dashboard-refresh-buffer ()
@@ -138,7 +138,7 @@
   (dashboard-insert-startupify-lists)
   (switch-to-buffer dashboard-buffer-name))
 
-(defun dashboard-resize-on-hook ()
+(defun dashboard-resize-on-hook (&optional _)
   (let ((space-win (get-buffer-window dashboard-buffer-name))
         (frame-win (frame-selected-window)))
     (when (and space-win
