@@ -30,6 +30,7 @@ M-x package-install RET dashboard
 (dashboard-setup-startup-hook)
 ;; Or if you use use-package
 (use-package dashboard
+  :ensure t
   :config
   (dashboard-setup-startup-hook))
  #+END_SRC
