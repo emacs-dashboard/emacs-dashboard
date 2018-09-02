@@ -268,8 +268,10 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                            :button-prefix ""
                            :button-suffix ""
                            :format "%[%t%]"
-                           (format "%s - %s" el (abbreviate-file-name
-                                                 (bookmark-get-filename el)))))
+                           (let ((file (bookmark-get-filename el)))
+                             (if file
+                                 (format "%s - %s" el (abbreviate-file-name file))
+                               el))))
           list)))
 
 (defun dashboard-insert-bookmarks (list-size)
