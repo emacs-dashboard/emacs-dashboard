@@ -76,7 +76,7 @@ This will add the recent files, bookmarks, projects, org-agenda and registers wi
 
 To add your own custom widget is pretty easy, define your widget's callback function and add it to `dashboard-items` as such:
 #+BEGIN_SRC elisp
-(defun dashboard-insert-custom ()
+(defun dashboard-insert-custom (list-size)
   (insert "Custom text"))
 (add-to-list 'dashboard-item-generators  '(custom . dashboard-insert-custom))
 (add-to-list 'dashboard-items '(custom) t)
