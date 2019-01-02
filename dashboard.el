@@ -1,3 +1,4 @@
+
 ;;; dashboard.el --- A startup screen extracted from Spacemacs
 
 ;; Copyright (c) 2016 Rakan Al-Hneiti & Contributors
