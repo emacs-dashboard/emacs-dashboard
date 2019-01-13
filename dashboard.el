@@ -100,13 +100,27 @@
   "Insert the list of widgets into the buffer."
   (interactive)
   (let ((buffer-exists (buffer-live-p (get-buffer dashboard-buffer-name)))
-        (save-line nil))
+	(save-line nil)
+	(recentf-is-on (recentf-enabled-p))
+	(origial-recentf-list recentf-list)
+	(dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
+	)
+    ;; disable recentf mode,
+    ;; so we don't flood the recent files list with org mode files
+    ;; do this by making a copy of the part of the list we'll use
+    ;; let dashboard widgets change that
+    ;; then restore the orginal list afterwards
+    ;; (this avoids many saves/loads that would result from
+    ;; disabling/enabling recentf-mode)
+    (if recentf-is-on
+	(setq recentf-list (seq-take recentf-list dashboard-num-recents))
+      )
     (when (or (not (eq dashboard-buffer-last-width (window-width)))
               (not buffer-exists))
       (setq dashboard-banner-length (window-width)
             dashboard-buffer-last-width dashboard-banner-length)
       (with-current-buffer (get-buffer-create dashboard-buffer-name)
-        (let ((buffer-read-only nil)
+	(let ((buffer-read-only nil)
               (list-separator "\n\n"))
           (erase-buffer)
           (dashboard-insert-banner)
@@ -114,17 +128,20 @@
           (setq dashboard--section-starts nil)
           (mapc (lambda (els)
                   (let* ((el (or (car-safe els) els))
-                         (list-size
+			 (list-size
                           (or (cdr-safe els)
                               dashboard-items-default-length))
-                         (item-generator
+			 (item-generator
                           (cdr-safe (assoc el dashboard-item-generators))))
                     (add-to-list 'dashboard--section-starts (point))
                     (funcall item-generator list-size)
                     (dashboard-insert-page-break)))
-                dashboard-items))
-        (dashboard-mode)
-        (goto-char (point-min))))))
+		dashboard-items))
+	(dashboard-mode)
+	(goto-char (point-min))))
+    (if recentf-is-on
+	(setq recentf-list origial-recentf-list)
+      )))
 
 (add-hook 'window-setup-hook
           (lambda ()
