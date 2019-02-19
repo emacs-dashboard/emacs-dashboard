@@ -57,7 +57,7 @@ to the specified width, with aspect ratio preserved."
   "Width of a banner.")
 
 (defvar dashboard-banner-logo-title "Welcome to Emacs!"
-   "Specify the startup banner.")
+   "Specify the startup banner.  If set to a function, that function must take no arguments and return a string.")
 
 (defvar dashboard-startup-banner 'official
    "Specify the startup banner.
@@ -164,7 +164,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-insert-image-banner (banner)
   "Display an image BANNER."
   (when (file-exists-p banner)
-    (let* ((title dashboard-banner-logo-title)
+    (let* ((title (if (functionp dashboard-banner-logo-title)
+                      (funcall dashboard-banner-logo-title)
+                    dashboard-banner-logo-title))
            (spec (if (image-type-available-p 'imagemagick)
                      (apply 'create-image banner 'imagemagick nil
                             (append (when (> dashboard-image-banner-max-width 0)
