@@ -62,6 +62,11 @@
   "Settings that are used in the Dashboard"
   :group 'dashboard)
 
+(defcustom dashboard-center-content t
+	"Whether to center content within the window."
+	:type 'boolean
+	:group 'dashboard)
+
 (defconst dashboard-buffer-name "*dashboard*"
 	  "Dashboard's buffer name.")
 
