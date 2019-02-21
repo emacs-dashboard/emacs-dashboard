@@ -224,8 +224,11 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
             (dashboard-insert-image-banner banner)
           (dashboard-insert-ascii-banner-centered banner))))))
 
-(defmacro dashboard-insert-section (list-display-name list action &rest rest)
-	"Render LIST-DISPLAY-NAME and items of LIST, expanding ACTION and passing REST to widget creation."
+;;
+;; Section insertion
+;;
+(defmacro dashboard-insert-section-list (list-display-name list action &rest rest)
+	"Insert a LIST of items with LIST-DISPLAY-NAME, expanding ACTION and passing REST to widget creation."
 	`(let ((max-line-length 0))
 		(when (car ,list)
 			(dashboard-insert-heading ,list-display-name)
@@ -246,93 +249,71 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 						,list))
 		max-line-length))
 
+(defmacro dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
+  "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
+ACTION is theaction taken when the user activates the widget button.
+SHORTCUT is the keyboard shortcut used to access the section.
+WIDGET-PARAMS are passed to the \"widget-create\" function."
+	`(progn
+		 (when-let ((max-line-length
+								 (dashboard-insert-section-list
+									,section-name
+									(dashboard-subseq ,list 0 list-size)
+									,action
+									,@widget-params)))
+			 (dashboard-insert-shortcut ,shortcut ,section-name)
+			 max-line-length)))
+
 ;;
 ;; Recentf
 ;;
 (defun dashboard-insert-recents (list-size)
   "Add the list of LIST-SIZE items from recently edited files."
   (recentf-mode)
-  (when-let ((max-line-length
-							(dashboard-insert-section
-							 "Recent Files:"
-							 (dashboard-subseq recentf-list 0 list-size)
-							 `(lambda (&rest ignore) (find-file-existing ,el))
-							 (abbreviate-file-name el))))
-    (dashboard-insert-shortcut "r" "Recent Files:")
-		max-line-length))
+	(dashboard-insert-section
+	 "Recent Files:"
+	 recentf-list
+	 list-size
+	 "r"
+	 `(lambda (&rest ignore) (find-file-existing ,el))
+	 (abbreviate-file-name el)))
 
 ;;
 ;; Bookmarks
 ;;
-(defun dashboard-insert-bookmark-list (list-display-name list)
-  "Render LIST-DISPLAY-NAME title and bookmarks items of LIST."
-  (when (car list)
-    (dashboard-insert-heading list-display-name)
-    (mapc (lambda (el)
-            (insert "\n    ")
-            (widget-create 'push-button
-                           :action `(lambda (&rest ignore) (bookmark-jump ,el))
-                           :mouse-face 'highlight
-                           :follow-link "\C-m"
-                           :button-prefix ""
-                           :button-suffix ""
-                           :format "%[%t%]"
-                           (let ((file (bookmark-get-filename el)))
-                             (if file
-                                 (format "%s - %s" el (abbreviate-file-name file))
-                               el))))
-          list)))
-
 (defun dashboard-insert-bookmarks (list-size)
   "Add the list of LIST-SIZE items of bookmarks."
   (require 'bookmark)
-  (when-let ((max-line-length
-							(dashboard-insert-section
-							 "Bookmarks:"
-							 (dashboard-subseq (bookmark-all-names)
+  (dashboard-insert-section
+	 "Bookmarks:"
+	 (dashboard-subseq (bookmark-all-names)
 																 0 list-size)
-							 `(lambda (&rest ignore) (bookmark-jump ,el))
-							 (let ((file (bookmark-get-filename el)))
+	 list-size
+	 "m"
+	 `(lambda (&rest ignore) (bookmark-jump ,el))
+	 (let ((file (bookmark-get-filename el)))
 								 (if file
 										 (format "%s - %s" el (abbreviate-file-name file))
-									 el))))) 
-    (dashboard-insert-shortcut "m" "Bookmarks:")
-		max-line-length))
+									 el))))
 
 ;;
 ;; Projectile
 ;;
-(defun dashboard-insert-project-list (list-display-name list)
-  "Render LIST-DISPLAY-NAME title and project items of LIST."
-  (when (car list)
-    (dashboard-insert-heading list-display-name)
-    (mapc (lambda (el)
-            (insert "\n    ")
-            (widget-create 'push-button
-                           :action `(lambda (&rest ignore)
-																			(projectile-switch-project-by-name ,el))
-                           :mouse-face 'highlight
-                           :follow-link "\C-m"
-                           :button-prefix ""
-                           :button-suffix ""
-                           :format "%[%t%]"
-                           (abbreviate-file-name el)))
-          list)))
-
 (defun dashboard-insert-projects (list-size)
   "Add the list of LIST-SIZE items of projects."
-  ;; For some reason, projectile has to be loaded here
-  ;; before trying to load projects list
-  (projectile-mode)
-  (if (bound-and-true-p projectile-mode)
-      (progn
+	(projectile-mode)
+	(if (bound-and-true-p projectile-mode)
+			(progn
 				(projectile-load-known-projects)
-				(when (dashboard-insert-project-list
-							 "Projects:"
-							 (dashboard-subseq (projectile-relevant-known-projects)
-																 0 list-size))
-					(dashboard-insert-shortcut "p" "Projects:")))
-    (message "Failed to load projects list")))
+				(dashboard-insert-section
+				 "Projects:"
+				 (dashboard-subseq (projectile-relevant-known-projects)
+													 0 list-size)
+				 list-size
+				 "p"
+				 `(lambda (&rest ignore)
+						(projectile-switch-project-by-name ,el))
+				 (abbreviate-file-name el)))))
 
 ;;
 ;; Org Agenda
