@@ -224,41 +224,42 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
             (dashboard-insert-image-banner banner)
           (dashboard-insert-ascii-banner-centered banner))))))
 
-;;
-;; Recentf
-;;
-(defun dashboard-insert-recentf-list (list-display-name list)
-  "Render LIST-DISPLAY-NAME title and items of LIST."
-  (let ((max-line-length 0))
-		(when (car list)
-			(dashboard-insert-heading list-display-name)
+(defmacro dashboard-insert-section (list-display-name list action &rest rest)
+	"Render LIST-DISPLAY-NAME and items of LIST, expanding ACTION and passing REST to widget creation."
+	`(let ((max-line-length 0))
+		(when (car ,list)
+			(dashboard-insert-heading ,list-display-name)
 			(mapc (lambda (el)
 							(let ((widget nil))
 								(insert "\n    ")
 								(setq widget
 											(widget-create 'push-button
-																		 :action `(lambda (&rest ignore) (find-file-existing ,el))
+																		 :action ,action
 																		 :mouse-face 'highlight
 																		 :follow-link "\C-m"
 																		 :button-prefix ""
 																		 :button-suffix ""
 																		 :format "%[%t%]"
-																		 (abbreviate-file-name el)))
+																		 ,@rest))
 								(setq max-line-length
 											(max max-line-length (length (widget-value-value-get widget))))))
-						list))
+						,list))
 		max-line-length))
 
+;;
+;; Recentf
+;;
 (defun dashboard-insert-recents (list-size)
   "Add the list of LIST-SIZE items from recently edited files."
   (recentf-mode)
   (when-let ((max-line-length
-							(dashboard-insert-recentf-list
+							(dashboard-insert-section
 							 "Recent Files:"
-							 (dashboard-subseq recentf-list 0 list-size))))
+							 (dashboard-subseq recentf-list 0 list-size)
+							 `(lambda (&rest ignore) (find-file-existing ,el))
+							 (abbreviate-file-name el))))
     (dashboard-insert-shortcut "r" "Recent Files:")
 		max-line-length))
-
 
 ;;
 ;; Bookmarks
@@ -285,11 +286,18 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-insert-bookmarks (list-size)
   "Add the list of LIST-SIZE items of bookmarks."
   (require 'bookmark)
-  (when (dashboard-insert-bookmark-list
-				 "Bookmarks:"
-				 (dashboard-subseq (bookmark-all-names)
-													 0 list-size))
-    (dashboard-insert-shortcut "m" "Bookmarks:")))
+  (when-let ((max-line-length
+							(dashboard-insert-section
+							 "Bookmarks:"
+							 (dashboard-subseq (bookmark-all-names)
+																 0 list-size)
+							 `(lambda (&rest ignore) (bookmark-jump ,el))
+							 (let ((file (bookmark-get-filename el)))
+								 (if file
+										 (format "%s - %s" el (abbreviate-file-name file))
+									 el))))) 
+    (dashboard-insert-shortcut "m" "Bookmarks:")
+		max-line-length))
 
 ;;
 ;; Projectile

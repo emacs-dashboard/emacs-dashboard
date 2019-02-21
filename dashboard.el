@@ -134,14 +134,14 @@
                           (cdr-safe (assoc el dashboard-item-generators))))
                     (add-to-list 'dashboard--section-starts (point))
                     (setq max-line-length
-													(max (funcall item-generator list-size)))
+													(max max-line-length (funcall item-generator list-size)))
                     (dashboard-insert-page-break)))
 								dashboard-items)
 					(if dashboard-center-content
 							(progn
-								(goto-char (car dashboard--section-starts))
-								(dashboard-next-section)
-								(let ((margin (max 0 (floor (/ (- (window-width) max-line-length)  2)))))
+								(goto-char (car (last dashboard--section-starts)))
+								(let ((margin (floor (/ (- (window-width) max-line-length)  2))))
+									(message "%d %d %d" (window-width) max-line-length margin)
 									(while (not (eobp))
 										(insert (make-string margin ?\ ))
 										(forward-line 1))))))
