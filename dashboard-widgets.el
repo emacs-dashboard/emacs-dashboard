@@ -227,34 +227,35 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 ;;
 ;; Section insertion
 ;;
-(defmacro dashboard-insert-section-list (list-display-name list action &rest rest)
-	"Insert a LIST of items with LIST-DISPLAY-NAME, expanding ACTION and passing REST to widget creation."
+(defmacro dashboard-insert-section-list (section-name list action &rest rest)
+	"Insert a LIST of items with SECTION-NAME, expanding ACTION and passing REST to widget creation."
 	`(let ((max-line-length 0))
-		(when (car ,list)
-			(dashboard-insert-heading ,list-display-name)
-			(mapc (lambda (el)
-							(let ((widget nil))
-								(insert "\n    ")
-								(setq widget
-											(widget-create 'push-button
-																		 :action ,action
-																		 :mouse-face 'highlight
-																		 :follow-link "\C-m"
-																		 :button-prefix ""
-																		 :button-suffix ""
-																		 :format "%[%t%]"
-																		 ,@rest))
-								(setq max-line-length
-											(max max-line-length (length (widget-value-value-get widget))))))
-						,list))
-		max-line-length))
+		 (when (car ,list)
+			 (mapc (lambda (el)
+							 (let ((widget nil))
+								 (insert "\n    ")
+								 (setq widget
+											 (widget-create 'push-button
+																			:action ,action
+																			:mouse-face 'highlight
+																			:follow-link "\C-m"
+																			:button-prefix ""
+																			:button-suffix ""
+																			:format "%[%t%]"
+																			,@rest))
+								 (setq max-line-length
+											 (max max-line-length (length (widget-value-value-get widget))))))
+						 ,list))
+		 max-line-length))
 
 (defmacro dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
 ACTION is theaction taken when the user activates the widget button.
 SHORTCUT is the keyboard shortcut used to access the section.
-WIDGET-PARAMS are passed to the \"widget-create\" function."
+WIDGET-PARAMS are passed to the \"widget-create\" function.
+Show EMPTY-LIST-TEXT if no items in list"
 	`(progn
+		 (dashboard-insert-heading ,section-name)
 		 (when-let ((max-line-length
 								 (dashboard-insert-section-list
 									,section-name
@@ -318,32 +319,6 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Org Agenda
 ;;
-(defun dashboard-insert-agenda-list (list-display-name list)
-  "Render LIST-DISPLAY-NAME title and agenda items from LIST."
-  (dashboard-insert-heading list-display-name)
-  (if (car list)
-      (mapc (lambda (el)
-              (insert "\n    ")
-              (let ((filename (nth 4 el))
-                    (lineno (nth 3 el))
-                    (title (nth 0 el)))
-                (widget-create 'push-button
-                               :action `(lambda (&rest ignore)
-                                          (let ((buffer (find-file-other-window ,filename)))
-                                            (with-current-buffer buffer
-                                              (goto-char ,lineno)
-                                              )
-                                            (switch-to-buffer buffer)))
-                               :mouse-face 'highlight
-                               :follow-link "\C-m"
-                               :button-prefix ""
-                               :button-suffix ""
-                               :format "%[%t%]"
-                               (format "%s" title)))
-              )
-            list)
-    (insert (propertize "\n    --- No items ---" 'face 'widget-button))))
-
 (defun dashboard-timestamp-to-gregorian-date (timestamp)
   "Convert TIMESTAMP to a gregorian date.
 
@@ -402,42 +377,36 @@ date part is considered."
     filtered-entries))
 
 (defun dashboard-insert-agenda (list-size)
-  "Add the list of LIST-SIZE items of agenda."
-  (if (and (boundp 'show-week-agenda-p) show-week-agenda-p)
-      (setq agenda-time-string "Agenda for the coming week:")
-    (setq agenda-time-string "Agenda for today:")
-    )
-  (when (dashboard-insert-agenda-list agenda-time-string
-                                      (dashboard-get-agenda))
-    (dashboard-insert-shortcut "a" agenda-time-string)))
+	"Add the list of LIST-SIZE items of agenda."
+	(let ((agenda (dashboard-get-agenda)))
+		(dashboard-insert-section
+		 (or (and (boundp 'show-week-agenda-p) show-week-agenda-p "Agenda for the coming week:")
+				 "Agenda for today:")
+		 (or agenda '())
+		 list-size
+		 "a"
+		 `(lambda (&rest ignore)
+				(let ((buffer (find-file-other-window (nth 4 el))))
+					(with-current-buffer buffer
+						(goto-char (nth 3 el)))
+					(switch-to-buffer buffer)))
+		 (format "%s" (nth 0 el)))
+		(and (not agenda)
+				 (insert "\n    --- No items ---"))))
 
 ;;
 ;; Registers
 ;;
-(defun dashboard-insert-register-list (list-display-name list)
-  "Render LIST-DISPLAY-NAME title and registers items of LIST."
-  (when (car list)
-    (dashboard-insert-heading list-display-name)
-    (mapc (lambda (el)
-            (let ((register (car el)))
-              (insert "\n    ")
-              (widget-create 'push-button
-                             :action `(lambda (&rest ignore) (jump-to-register ,register))
-                             :mouse-face 'highlight
-                             :follow-link "\C-m"
-                             :button-prefix ""
-                             :button-suffix ""
-                             :format "%[%t%]"
-                             (format "%c - %s" register (register-describe-oneline register)))))
-          list)))
-
 (defun dashboard-insert-registers (list-size)
   "Add the list of LIST-SIZE items of registers."
   (require 'register)
-  (when (dashboard-insert-register-list
-         "Registers:"
-         (dashboard-subseq register-alist 0 list-size))
-    (dashboard-insert-shortcut "e" "Registers:")))
+	(dashboard-insert-section
+	 "Registers:"
+	 register-alist
+	 list-size
+	 "e"
+	 `(lambda (&rest ignore) (jump-to-register ,(car el)))
+	 (format "%c - %s" (car el) (register-describe-oneline (car el)))))
 
 
 ;; Forward declartions for optional dependency to keep check-declare happy.

@@ -139,14 +139,13 @@
                           (cdr-safe (assoc el dashboard-item-generators))))
                     (add-to-list 'dashboard--section-starts (point))
                     (setq max-line-length
-													(max max-line-length (funcall item-generator list-size)))
+													(max max-line-length (or (funcall item-generator list-size) 0)))
                     (dashboard-insert-page-break)))
 								dashboard-items)
 					(if dashboard-center-content
 							(progn
 								(goto-char (car (last dashboard--section-starts)))
 								(let ((margin (floor (/ (- (window-width) max-line-length)  2))))
-									(message "%d %d %d" (window-width) max-line-length margin)
 									(while (not (eobp))
 										(insert (make-string margin ?\ ))
 										(forward-line 1))))))
