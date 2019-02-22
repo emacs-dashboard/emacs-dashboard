@@ -42,8 +42,8 @@ to the specified width, with aspect ratio preserved."
 
 (defconst dashboard-banners-directory
   (concat (file-name-directory
-					 (locate-library "dashboard"))
-					"/banners/"))
+	   (locate-library "dashboard"))
+	   "/banners/"))
 
 (defconst dashboard-banner-official-png
   (expand-file-name (concat dashboard-banners-directory "emacs.png"))
@@ -57,10 +57,10 @@ to the specified width, with aspect ratio preserved."
   "Width of a banner.")
 
 (defvar dashboard-banner-logo-title "Welcome to Emacs!"
-  "Specify the startup banner.")
+   "Specify the startup banner.")
 
 (defvar dashboard-startup-banner 'official
-  "Specify the startup banner.
+   "Specify the startup banner.
 Default value is `official', it displays
 the Emacs logo.  `logo' displays Emacs alternative logo.
 An integer value is the index of text
@@ -112,17 +112,17 @@ Return entire list if `END' is omitted."
                               (min len end)))))
 
 (defmacro dashboard-insert-shortcut (shortcut-char
-																		 search-label
-																		 &optional no-next-line)
+				      search-label
+				      &optional no-next-line)
   "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
 Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
   `(define-key dashboard-mode-map ,shortcut-char (lambda ()
-																									 (interactive)
-																									 (unless (search-forward ,search-label (point-max) t)
-																										 (search-backward ,search-label (point-min) t))
-																									 ,@(unless no-next-line
-																											 '((forward-line 1)))
-																									 (back-to-indentation))))
+			       (interactive)
+			       (unless (search-forward ,search-label (point-max) t)
+				 (search-backward ,search-label (point-min) t))
+			       ,@(unless no-next-line
+				   '((forward-line 1)))
+			       (back-to-indentation))))
 
 (defun dashboard-append (msg &optional messagebuf)
   "Append MSG to dashboard buffer.
@@ -157,7 +157,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
        (goto-char 0)
        (let ((margin (max 0 (floor (/ (- dashboard-banner-length banner-width) 2)))))
          (while (not (eobp))
-					 (insert (make-string margin ?\ ))
+	   (insert (make-string margin ?\ ))
            (forward-line 1))))
      (buffer-string))))
 
@@ -181,9 +181,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
       (insert-image spec)
       (insert "\n\n")
       (when title
-				(insert (make-string (max 0 (floor (/ (- dashboard-banner-length
-																								 (+ (length title) 1)) 2))) ?\ ))
-				(insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title-face)))))))
+	(insert (make-string (max 0 (floor (/ (- dashboard-banner-length
+						 (+ (length title) 1)) 2))) ?\ ))
+	(insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title-face)))))))
 
 (defun dashboard-get-banner-path (index)
   "Return the full path to banner with index INDEX."
@@ -196,7 +196,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
            (if (and (display-graphic-p) (image-type-available-p 'png))
                dashboard-banner-official-png
              (dashboard-get-banner-path 1)))
-					((eq 'logo dashboard-startup-banner)
+	  ((eq 'logo dashboard-startup-banner)
            (if (and (display-graphic-p) (image-type-available-p 'png))
                dashboard-banner-logo-png
              (dashboard-get-banner-path 1)))
@@ -208,9 +208,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                 (display-graphic-p))
            (if (file-exists-p dashboard-startup-banner)
                dashboard-startup-banner
-						 (message (format "could not find banner %s"
-															dashboard-startup-banner))
-						 (dashboard-get-banner-path 1)))
+	     (message (format "could not find banner %s"
+			      dashboard-startup-banner))
+	     (dashboard-get-banner-path 1)))
           (t (dashboard-get-banner-path 1)))))
 
 (defun dashboard-insert-banner ()
@@ -220,7 +220,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
         (buffer-read-only nil))
     (progn
       (when banner
-				(if (image-type-available-p (intern (file-name-extension banner)))
+	(if (image-type-available-p (intern (file-name-extension banner)))
             (dashboard-insert-image-banner banner)
           (dashboard-insert-ascii-banner-centered banner))))))
 
@@ -356,16 +356,16 @@ date part is considered."
     (org-map-entries
      (lambda ()
        (let* ((schedule-time (org-get-scheduled-time (point)))
-							(deadline-time (org-get-deadline-time (point)))
-							(item (org-agenda-format-item
-										 (format-time-string "%Y-%m-%d" schedule-time)
-                     (org-get-heading t t)
-                     (org-outline-level)
-                     (org-get-category)
-                     (org-get-tags)
-                     t))
-							(loc (point))
-							(file (buffer-file-name)))
+             (deadline-time (org-get-deadline-time (point)))
+             (item (org-agenda-format-item
+		    (format-time-string "%Y-%m-%d" schedule-time)
+                    (org-get-heading t t)
+                    (org-outline-level)
+                    (org-get-category)
+                    (org-get-tags)
+                    t))
+             (loc (point))
+             (file (buffer-file-name)))
          (when (and (not (org-entry-is-done-p))
                     (or (and schedule-time (dashboard-date-due-p schedule-time due-date))
                         (and deadline-time (dashboard-date-due-p deadline-time due-date))))
