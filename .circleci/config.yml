@@ -4,6 +4,7 @@ version: 2.0
 default: &default-steps
   steps:
     - checkout
+    - run: apt-get update && apt-get install make
     - run: make version
     - run: make lint
 
