@@ -4,7 +4,7 @@
   ;;:pin melpa-stable
   :ensure t)
 
-(use-package org-agenda
+(use-package org
   ;;:pin melpa-stable
   :ensure t)
 
