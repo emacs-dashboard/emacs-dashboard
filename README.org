@@ -1,4 +1,6 @@
 * Emacs Dashboard
+https://img.shields.io/circleci/project/github/emacs-dashboard/emacs-dashboard.svg
+
 An extensible emacs startup screen showing you what's most important.
 
 *NOTE*: The project is currently unmaintained by me and i am looking for new maintainers for the project. If you feel you have the E-Lisp knowledge and will to take over this project, please don't hesitate to contact me at rakan.alhneiti [at] gmail.com.
