@@ -59,6 +59,8 @@ To update the banner or banner title
 (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
 ;; Set the banner
 (setq dashboard-startup-banner [VALUE])
+;; Content is centered by default. To left-justify, set
+(setq dashboard-center-content nil)
 ;; Value can be
 ;; 'official which displays the official emacs logo
 ;; 'logo which displays an alternative emacs logo
