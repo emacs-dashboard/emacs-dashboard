@@ -2,7 +2,7 @@ export EMACS ?= emacs
 export BATCH = --batch -q -l .emacs/init.el
 
 ELL = .emacs/elpa/elisp-lint-0.2.0/elisp-lint.el
-ELS = $(filter-out $(wildcard *.el))
+ELS = $(filter-out emacs-dashboard-autoloads.el,$(wildcard *.el))
 OBJECTS = $(ELS:.el=.elc)
 BACKUPS = $(ELS:.el=.el~)
 
