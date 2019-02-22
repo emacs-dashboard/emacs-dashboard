@@ -147,7 +147,8 @@
 								(goto-char (car (last dashboard--section-starts)))
 								(let ((margin (floor (/ (- (window-width) max-line-length)  2))))
 									(while (not (eobp))
-										(insert (make-string margin ?\ ))
+										(and (not (eq ? (char-after)))
+												 (insert (make-string margin ?\ )))
 										(forward-line 1))))))
 				(dashboard-mode)
 				(goto-char (point-min))))
