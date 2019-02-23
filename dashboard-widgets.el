@@ -124,14 +124,15 @@ Return entire list if `END' is omitted."
                                      &optional no-next-line)
   "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
 Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
-  `(define-key dashboard-mode-map ,shortcut-char
-     (lambda ()
-       (interactive)
-       (unless (search-forward ,search-label (point-max) t)
-         (search-backward ,search-label (point-min) t))
-       ,@(unless no-next-line
-           '((forward-line 1)))
-       (back-to-indentation))))
+  (eval-after-load 'dashboard
+    `(define-key dashboard-mode-map ,shortcut-char
+       (lambda ()
+         (interactive)
+         (unless (search-forward ,search-label (point-max) t)
+           (search-backward ,search-label (point-min) t))
+         ,@(unless no-next-line
+             '((forward-line 1)))
+         (back-to-indentation)))))
 
 (defun dashboard-append (msg &optional messagebuf)
   "Append MSG to dashboard buffer.
@@ -466,7 +467,4 @@ date part is considered."
 (declare-function org-compile-prefix-format "ext:org-agenda.el")
 
 (provide 'dashboard-widgets)
-;; Local Variables:
-;; byte-compile-warnings: (not free-vars)
-;; End:
 ;;; dashboard-widgets.el ends here
