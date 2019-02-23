@@ -239,7 +239,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 ;; Section insertion
 ;;
 (defmacro dashboard-insert-section-list (section-name list action &rest rest)
-  "Insert a LIST of items with SECTION-NAME, expanding ACTION and passing REST to widget creation."
+  "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
   `(let ((max-line-length 0))
      (when (car ,list)
        (mapc (lambda (el)
@@ -261,10 +261,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 
 (defmacro dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
-ACTION is theaction taken when the user activates the widget button.
 SHORTCUT is the keyboard shortcut used to access the section.
-WIDGET-PARAMS are passed to the \"widget-create\" function.
-Show EMPTY-LIST-TEXT if no items in list"
+ACTION is theaction taken when the user activates the widget button.
+WIDGET-PARAMS are passed to the \"widget-create\" function."
   `(progn
      (dashboard-insert-heading ,section-name)
      (let ((max-line-length (dashboard-insert-section-list
