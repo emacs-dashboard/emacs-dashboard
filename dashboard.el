@@ -3,7 +3,7 @@
 ;; Copyright (c) 2016 Rakan Al-Hneiti & Contributors
 ;;
 ;; Author: Rakan Al-Hneiti
-;; URL: https://github.com/rakanalh/emacs-dashboard
+;; URL: https://github.com/emacs-dashboard/emacs-dashboard
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -68,12 +68,13 @@
 	:group 'dashboard)
 
 (defconst dashboard-buffer-name "*dashboard*"
-	  "Dashboard's buffer name.")
+  "Dashboard's buffer name.")
 
 (defvar dashboard--section-starts nil
-  "List of section starting positions")
+  "List of section starting positions.")
 
 (defun dashboard-previous-section ()
+  "Navigate back to previous section."
   (interactive)
   (let ((current-section-start nil)
         (current-position (point))
@@ -90,6 +91,7 @@
                  current-section-start))))
 
 (defun dashboard-next-section ()
+  "Navigate forward to next section."
   (interactive
    (let ((current-position (point))
          (next-section-start nil)
@@ -118,7 +120,7 @@
     ;; (this avoids many saves/loads that would result from
     ;; disabling/enabling recentf-mode)
     (if recentf-is-on
-	(setq recentf-list (seq-take recentf-list dashboard-num-recents))
+        (setq recentf-list (seq-take recentf-list dashboard-num-recents))
       )
     (when (or (not (eq dashboard-buffer-last-width (window-width)))
               (not buffer-exists))
@@ -168,6 +170,7 @@
   (switch-to-buffer dashboard-buffer-name))
 
 (defun dashboard-resize-on-hook (&optional _)
+  "Re-render dashboard on window size change."
   (let ((space-win (get-buffer-window dashboard-buffer-name))
         (frame-win (frame-selected-window)))
     (when (and space-win
@@ -178,16 +181,17 @@
 ;;;###autoload
 (defun dashboard-setup-startup-hook ()
   "Setup post initialization hooks.
-If a command line argument is provided, assume a filename and skip displaying Dashboard"
+If a command line argument is provided,
+assume a filename and skip displaying Dashboard."
   (if (< (length command-line-args) 2 )
       (progn
-	(add-hook 'after-init-hook (lambda ()
-				     ;; Display useful lists of items
-				     (dashboard-insert-startupify-lists)))
-	(add-hook 'emacs-startup-hook '(lambda ()
-					 (switch-to-buffer "*dashboard*")
-					 (goto-char (point-min))
-					 (redisplay))))))
+        (add-hook 'after-init-hook (lambda ()
+                                     ;; Display useful lists of items
+                                     (dashboard-insert-startupify-lists)))
+        (add-hook 'emacs-startup-hook '(lambda ()
+                                         (switch-to-buffer "*dashboard*")
+                                         (goto-char (point-min))
+                                         (redisplay))))))
 
 (provide 'dashboard)
 ;;; dashboard.el ends here

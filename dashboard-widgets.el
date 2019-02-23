@@ -3,19 +3,23 @@
 ;; Copyright (c) 2016 Rakan Al-Hneiti & Contributors
 ;;
 ;; Author: Rakan Al-Hneiti
-;; URL: https://github.com/rakanalh/emacs-dashboard
+;; URL: https://github.com/emacs-dashboard/emacs-dashboard
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
 ;;; License: GPLv3
 ;;
+;; Created: October 05, 2016
+;; Modified: December 30, 2016
+;; Version: 1.2.5
+;; Keywords: startup screen tools
+;; Package-Requires: ((emacs "24.4") (page-break-lines "0.11"))
 ;;; Commentary:
 
-;;; Code:
+;; An extensible Emacs dashboard, with sections for
+;; bookmarks, projectile projects, org-agenda and more.
 
-;;
-;; Customs
-;;
+;;; Code:
 
 (defcustom dashboard-page-separator "\n\f\n"
   "Separator to use between the different pages."
@@ -42,8 +46,8 @@ to the specified width, with aspect ratio preserved."
 
 (defconst dashboard-banners-directory
   (concat (file-name-directory
-	   (locate-library "dashboard"))
-	   "/banners/"))
+           (locate-library "dashboard"))
+          "/banners/"))
 
 (defconst dashboard-banner-official-png
   (expand-file-name (concat dashboard-banners-directory "emacs.png"))
@@ -57,10 +61,10 @@ to the specified width, with aspect ratio preserved."
   "Width of a banner.")
 
 (defvar dashboard-banner-logo-title "Welcome to Emacs!"
-   "Specify the startup banner.")
+  "Specify the startup banner.")
 
 (defvar dashboard-startup-banner 'official
-   "Specify the startup banner.
+  "Specify the startup banner.
 Default value is `official', it displays
 the Emacs logo.  `logo' displays Emacs alternative logo.
 An integer value is the index of text
@@ -88,16 +92,20 @@ If nil it is disabled.  Possible values for list-type are:
   "Length used for startup lists with otherwise unspecified bounds.
 Set to nil for unbounded.")
 
+(defvar recentf-list nil)
+
 ;;
 ;; Faces
 ;;
 (defface dashboard-banner-logo-title-face
   '((t :inherit default))
-  "Face used for the banner title.")
+  "Face used for the banner title."
+  :group 'dashboard)
 
 (defface dashboard-heading-face
   '((t :inherit default))
-  "Face used for widget headings.")
+  "Face used for widget headings."
+  :group 'dashboard)
 
 ;;
 ;; Generic widget helpers
@@ -112,17 +120,18 @@ Return entire list if `END' is omitted."
                               (min len end)))))
 
 (defmacro dashboard-insert-shortcut (shortcut-char
-				      search-label
-				      &optional no-next-line)
+                                     search-label
+                                     &optional no-next-line)
   "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
 Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
-  `(define-key dashboard-mode-map ,shortcut-char (lambda ()
-			       (interactive)
-			       (unless (search-forward ,search-label (point-max) t)
-				 (search-backward ,search-label (point-min) t))
-			       ,@(unless no-next-line
-				   '((forward-line 1)))
-			       (back-to-indentation))))
+  `(define-key dashboard-mode-map ,shortcut-char
+     (lambda ()
+       (interactive)
+       (unless (search-forward ,search-label (point-max) t)
+         (search-backward ,search-label (point-min) t))
+       ,@(unless no-next-line
+           '((forward-line 1)))
+       (back-to-indentation))))
 
 (defun dashboard-append (msg &optional messagebuf)
   "Append MSG to dashboard buffer.
@@ -137,7 +146,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (dashboard-append dashboard-page-separator))
 
 (defun dashboard-insert-heading (heading)
-  "Insert a widget heading in dashboard buffer."
+  "Insert a widget HEADING in dashboard buffer."
   (insert (propertize heading 'face 'dashboard-heading-face)))
 
 ;;
@@ -155,9 +164,10 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                (setq banner-width line-length)))
          (forward-line 1))
        (goto-char 0)
-       (let ((margin (max 0 (floor (/ (- dashboard-banner-length banner-width) 2)))))
+       (let ((margin
+              (max 0 (floor (/ (- dashboard-banner-length banner-width) 2)))))
          (while (not (eobp))
-	   (insert (make-string margin ?\ ))
+           (insert (make-string margin ?\ ))
            (forward-line 1))))
      (buffer-string))))
 
@@ -165,13 +175,14 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Display an image BANNER."
   (when (file-exists-p banner)
     (let* ((title dashboard-banner-logo-title)
-           (spec (if (image-type-available-p 'imagemagick)
-                     (apply 'create-image banner 'imagemagick nil
-                            (append (when (> dashboard-image-banner-max-width 0)
-                                      (list :max-width dashboard-image-banner-max-width))
-                                    (when (> dashboard-image-banner-max-height 0)
-                                      (list :max-height dashboard-image-banner-max-height))))
-                   (create-image banner)))
+           (spec
+            (if (image-type-available-p 'imagemagick)
+                (apply 'create-image banner 'imagemagick nil
+                       (append (when (> dashboard-image-banner-max-width 0)
+                                 (list :max-width dashboard-image-banner-max-width))
+                               (when (> dashboard-image-banner-max-height 0)
+                                 (list :max-height dashboard-image-banner-max-height))))
+              (create-image banner)))
            (size (image-size spec))
            (width (car size))
            (left-margin (max 0 (floor (- dashboard-banner-length width) 2))))
@@ -181,9 +192,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
       (insert-image spec)
       (insert "\n\n")
       (when title
-	(insert (make-string (max 0 (floor (/ (- dashboard-banner-length
-						 (+ (length title) 1)) 2))) ?\ ))
-	(insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title-face)))))))
+        (insert (make-string (max 0 (floor (/ (- dashboard-banner-length
+                                                 (+ (length title) 1)) 2))) ?\ ))
+        (insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title-face)))))))
 
 (defun dashboard-get-banner-path (index)
   "Return the full path to banner with index INDEX."
@@ -196,7 +207,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
            (if (and (display-graphic-p) (image-type-available-p 'png))
                dashboard-banner-official-png
              (dashboard-get-banner-path 1)))
-	  ((eq 'logo dashboard-startup-banner)
+          ((eq 'logo dashboard-startup-banner)
            (if (and (display-graphic-p) (image-type-available-p 'png))
                dashboard-banner-logo-png
              (dashboard-get-banner-path 1)))
@@ -208,9 +219,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                 (display-graphic-p))
            (if (file-exists-p dashboard-startup-banner)
                dashboard-startup-banner
-	     (message (format "could not find banner %s"
-			      dashboard-startup-banner))
-	     (dashboard-get-banner-path 1)))
+             (message (format "could not find banner %s"
+                              dashboard-startup-banner))
+             (dashboard-get-banner-path 1)))
           (t (dashboard-get-banner-path 1)))))
 
 (defun dashboard-insert-banner ()
@@ -220,7 +231,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
         (buffer-read-only nil))
     (progn
       (when banner
-	(if (image-type-available-p (intern (file-name-extension banner)))
+        (if (image-type-available-p (intern (file-name-extension banner)))
             (dashboard-insert-image-banner banner)
           (dashboard-insert-ascii-banner-centered banner))))))
 
@@ -348,33 +359,34 @@ date part is considered."
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
   (org-compile-prefix-format 'agenda)
-  (if (and (boundp 'show-week-agenda-p) show-week-agenda-p)
-      (setq due-date (time-add (current-time) (* 86400 7)))
-    (setq due-date nil)
-    )
-  (let* ((filtered-entries nil))
-    (org-map-entries
-     (lambda ()
-       (let* ((schedule-time (org-get-scheduled-time (point)))
-             (deadline-time (org-get-deadline-time (point)))
-             (item (org-agenda-format-item
-		    (format-time-string "%Y-%m-%d" schedule-time)
-                    (org-get-heading t t)
-                    (org-outline-level)
-                    (org-get-category)
-                    (org-get-tags)
-                    t))
-             (loc (point))
-             (file (buffer-file-name)))
-         (when (and (not (org-entry-is-done-p))
-                    (or (and schedule-time (dashboard-date-due-p schedule-time due-date))
-                        (and deadline-time (dashboard-date-due-p deadline-time due-date))))
-           (setq filtered-entries
-                 (append filtered-entries
-                         (list (list item schedule-time deadline-time loc file)))))))
-     nil
-     'agenda)
-    filtered-entries))
+  (let ((due-date nil))
+    (if (and (boundp 'show-week-agenda-p) show-week-agenda-p)
+        (setq due-date (time-add (current-time) (* 86400 7)))
+      (setq due-date nil)
+      )
+    (let* ((filtered-entries nil))
+      (org-map-entries
+       (lambda ()
+         (let* ((schedule-time (org-get-scheduled-time (point)))
+                (deadline-time (org-get-deadline-time (point)))
+                (item (org-agenda-format-item
+                       (format-time-string "%Y-%m-%d" schedule-time)
+                       (org-get-heading t t)
+                       (org-outline-level)
+                       (org-get-category)
+                       (org-get-tags)
+                       t))
+                (loc (point))
+                (file (buffer-file-name)))
+           (when (and (not (org-entry-is-done-p))
+                      (or (and schedule-time (dashboard-date-due-p schedule-time due-date))
+                          (and deadline-time (dashboard-date-due-p deadline-time due-date))))
+             (setq filtered-entries
+                   (append filtered-entries
+                           (list (list item schedule-time deadline-time loc file)))))))
+       nil
+       'agenda)
+      filtered-entries)))
 
 (defun dashboard-insert-agenda (list-size)
   "Add the list of LIST-SIZE items of agenda."
@@ -412,9 +424,14 @@ date part is considered."
 ;; Forward declartions for optional dependency to keep check-declare happy.
 (declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
+(declare-function projectile-mode "ext:projectile.el")
 (declare-function projectile-load-known-projects "ext:projectile.el")
 (declare-function projectile-relevant-known-projects "ext:projectile.el")
+(declare-function org-agenda-format-item "ext:org-agenda.el")
+(declare-function org-compile-prefix-format "ext:org-agenda.el")
 
 (provide 'dashboard-widgets)
-
+;; Local Variables:
+;; byte-compile-warnings: (not free-vars)
+;; End:
 ;;; dashboard-widgets.el ends here

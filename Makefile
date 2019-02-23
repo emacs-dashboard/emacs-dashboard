@@ -1,16 +1,25 @@
-BUILD_DIR := ./build
+export EMACS ?= emacs
+export BATCH = --batch -q -l .emacs/init.el
 
-.PHONY: all
-all: clean build install
+ELL = .emacs/elpa/elisp-lint-20180224.2042/elisp-lint.el
+ELS = $(filter-out emacs-dashboard-autoloads.el,$(wildcard *.el))
+OBJECTS = $(ELS:.el=.elc)
+BACKUPS = $(ELS:.el=.el~)
 
-.PHONY: clean
+.PHONY: version lint clean cleanelpa
+
+.elpa:
+	$(EMACS) $(BATCH)
+	touch .elpa
+
+version: .elpa
+	$(EMACS) $(BATCH) --version
+
+lint: .elpa
+	$(EMACS) $(BATCH) -l $(ELL) -f elisp-lint-files-batch $(ELS)
+
 clean:
-	@rm -rf ${BUILD_DIR}
+	rm -f $(OBJECTS) $(BACKUPS) emacs-dashboard-autoloads.el*
 
-.PHONY: build
-build:
-	@cask package ${BUILD_DIR} --dev
-
-.PHONY: install
-install:
-	@cask install
+cleanelpa: clean
+	rm -rf .emacs/elpa .emacs/quelpa .emacs/.emacs-custom.el* .elpa
