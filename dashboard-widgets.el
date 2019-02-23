@@ -228,25 +228,25 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 ;; Section insertion
 ;;
 (defmacro dashboard-insert-section-list (section-name list action &rest rest)
-	"Insert a LIST of items with SECTION-NAME, expanding ACTION and passing REST to widget creation."
-	`(let ((max-line-length 0))
-		 (when (car ,list)
-			 (mapc (lambda (el)
-							 (let ((widget nil))
-								 (insert "\n    ")
-								 (setq widget
-											 (widget-create 'push-button
-																			:action ,action
-																			:mouse-face 'highlight
-																			:follow-link "\C-m"
-																			:button-prefix ""
-																			:button-suffix ""
-																			:format "%[%t%]"
-																			,@rest))
-								 (setq max-line-length
-											 (max max-line-length (length (widget-value-value-get widget))))))
-						 ,list))
-		 max-line-length))
+  "Insert a LIST of items with SECTION-NAME, expanding ACTION and passing REST to widget creation."
+  `(let ((max-line-length 0))
+     (when (car ,list)
+       (mapc (lambda (el)
+               (let ((widget nil))
+                 (insert "\n    ")
+                 (setq widget
+                       (widget-create 'push-button
+                                      :action ,action
+                                      :mouse-face 'highlight
+                                      :follow-link "\C-m"
+                                      :button-prefix ""
+                                      :button-suffix ""
+                                      :format "%[%t%]"
+                                      ,@rest))
+                 (setq max-line-length
+                       (max max-line-length (length (widget-value-value-get widget))))))
+             ,list))
+     max-line-length))
 
 (defmacro dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
@@ -254,16 +254,16 @@ ACTION is theaction taken when the user activates the widget button.
 SHORTCUT is the keyboard shortcut used to access the section.
 WIDGET-PARAMS are passed to the \"widget-create\" function.
 Show EMPTY-LIST-TEXT if no items in list"
-	`(progn
-		 (dashboard-insert-heading ,section-name)
-		 (when-let ((max-line-length
-								 (dashboard-insert-section-list
-									,section-name
-									(dashboard-subseq ,list 0 list-size)
-									,action
-									,@widget-params)))
-			 (dashboard-insert-shortcut ,shortcut ,section-name)
-			 max-line-length)))
+  `(progn
+     (dashboard-insert-heading ,section-name)
+     (when-let ((max-line-length
+                 (dashboard-insert-section-list
+                  ,section-name
+                  (dashboard-subseq ,list 0 list-size)
+                  ,action
+                  ,@widget-params)))
+       (dashboard-insert-shortcut ,shortcut ,section-name)
+       max-line-length)))
 
 ;;
 ;; Recentf
@@ -271,13 +271,13 @@ Show EMPTY-LIST-TEXT if no items in list"
 (defun dashboard-insert-recents (list-size)
   "Add the list of LIST-SIZE items from recently edited files."
   (recentf-mode)
-	(dashboard-insert-section
-	 "Recent Files:"
-	 recentf-list
-	 list-size
-	 "r"
-	 `(lambda (&rest ignore) (find-file-existing ,el))
-	 (abbreviate-file-name el)))
+  (dashboard-insert-section
+   "Recent Files:"
+   recentf-list
+   list-size
+   "r"
+   `(lambda (&rest ignore) (find-file-existing ,el))
+   (abbreviate-file-name el)))
 
 ;;
 ;; Bookmarks
@@ -286,35 +286,35 @@ Show EMPTY-LIST-TEXT if no items in list"
   "Add the list of LIST-SIZE items of bookmarks."
   (require 'bookmark)
   (dashboard-insert-section
-	 "Bookmarks:"
-	 (dashboard-subseq (bookmark-all-names)
-																 0 list-size)
-	 list-size
-	 "m"
-	 `(lambda (&rest ignore) (bookmark-jump ,el))
-	 (let ((file (bookmark-get-filename el)))
-								 (if file
-										 (format "%s - %s" el (abbreviate-file-name file))
-									 el))))
+   "Bookmarks:"
+   (dashboard-subseq (bookmark-all-names)
+                                 0 list-size)
+   list-size
+   "m"
+   `(lambda (&rest ignore) (bookmark-jump ,el))
+   (let ((file (bookmark-get-filename el)))
+                 (if file
+                     (format "%s - %s" el (abbreviate-file-name file))
+                   el))))
 
 ;;
 ;; Projectile
 ;;
 (defun dashboard-insert-projects (list-size)
   "Add the list of LIST-SIZE items of projects."
-	(projectile-mode)
-	(if (bound-and-true-p projectile-mode)
-			(progn
-				(projectile-load-known-projects)
-				(dashboard-insert-section
-				 "Projects:"
-				 (dashboard-subseq (projectile-relevant-known-projects)
-													 0 list-size)
-				 list-size
-				 "p"
-				 `(lambda (&rest ignore)
-						(projectile-switch-project-by-name ,el))
-				 (abbreviate-file-name el)))))
+  (projectile-mode)
+  (if (bound-and-true-p projectile-mode)
+      (progn
+        (projectile-load-known-projects)
+        (dashboard-insert-section
+         "Projects:"
+         (dashboard-subseq (projectile-relevant-known-projects)
+                           0 list-size)
+         list-size
+         "p"
+         `(lambda (&rest ignore)
+            (projectile-switch-project-by-name ,el))
+         (abbreviate-file-name el)))))
 
 ;;
 ;; Org Agenda
@@ -377,22 +377,22 @@ date part is considered."
     filtered-entries))
 
 (defun dashboard-insert-agenda (list-size)
-	"Add the list of LIST-SIZE items of agenda."
-	(let ((agenda (dashboard-get-agenda)))
-		(dashboard-insert-section
-		 (or (and (boundp 'show-week-agenda-p) show-week-agenda-p "Agenda for the coming week:")
-				 "Agenda for today:")
-		 (or agenda '())
-		 list-size
-		 "a"
-		 `(lambda (&rest ignore)
-				(let ((buffer (find-file-other-window (nth 4 el))))
-					(with-current-buffer buffer
-						(goto-char (nth 3 el)))
-					(switch-to-buffer buffer)))
-		 (format "%s" (nth 0 el)))
-		(and (not agenda)
-				 (insert "\n    --- No items ---"))))
+  "Add the list of LIST-SIZE items of agenda."
+  (let ((agenda (dashboard-get-agenda)))
+    (dashboard-insert-section
+     (or (and (boundp 'show-week-agenda-p) show-week-agenda-p "Agenda for the coming week:")
+         "Agenda for today:")
+     (or agenda '())
+     list-size
+     "a"
+     `(lambda (&rest ignore)
+        (let ((buffer (find-file-other-window (nth 4 el))))
+          (with-current-buffer buffer
+            (goto-char (nth 3 el)))
+          (switch-to-buffer buffer)))
+     (format "%s" (nth 0 el)))
+    (and (not agenda)
+         (insert "\n    --- No items ---"))))
 
 ;;
 ;; Registers
@@ -400,13 +400,13 @@ date part is considered."
 (defun dashboard-insert-registers (list-size)
   "Add the list of LIST-SIZE items of registers."
   (require 'register)
-	(dashboard-insert-section
-	 "Registers:"
-	 register-alist
-	 list-size
-	 "e"
-	 `(lambda (&rest ignore) (jump-to-register ,(car el)))
-	 (format "%c - %s" (car el) (register-describe-oneline (car el)))))
+  (dashboard-insert-section
+   "Registers:"
+   register-alist
+   list-size
+   "e"
+   `(lambda (&rest ignore) (jump-to-register ,(car el)))
+   (format "%c - %s" (car el) (register-describe-oneline (car el)))))
 
 
 ;; Forward declartions for optional dependency to keep check-declare happy.

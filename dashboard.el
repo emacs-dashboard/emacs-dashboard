@@ -125,7 +125,7 @@
       (setq dashboard-banner-length (window-width)
             dashboard-buffer-last-width dashboard-banner-length)
       (with-current-buffer (get-buffer-create dashboard-buffer-name)
-	(let ((buffer-read-only nil)
+        (let ((buffer-read-only nil)
               (list-separator "\n\n"))
           (erase-buffer)
           (dashboard-insert-banner)
@@ -133,28 +133,27 @@
           (setq dashboard--section-starts nil)
           (mapc (lambda (els)
                   (let* ((el (or (car-safe els) els))
-												 (list-size
+                         (list-size
                           (or (cdr-safe els)
                               dashboard-items-default-length))
-												 (item-generator
+                         (item-generator
                           (cdr-safe (assoc el dashboard-item-generators))))
                     (add-to-list 'dashboard--section-starts (point))
                     (setq max-line-length
-													(max max-line-length (or (funcall item-generator list-size) 0)))
+                          (max max-line-length (or (funcall item-generator list-size) 0)))
                     (dashboard-insert-page-break)))
-								dashboard-items)
-					(if dashboard-center-content
-							(progn
-								(goto-char (car (last dashboard--section-starts)))
-								(let ((margin (floor (/ (- (window-width) max-line-length)  2))))
-									(while (not (eobp))
-										(and (not (eq ? (char-after)))
-												 (insert (make-string margin ?\ )))
-										(forward-line 1))))))
-				(dashboard-mode)
-				(goto-char (point-min))))
+                dashboard-items)
+          (when dashboard-center-content
+            (goto-char (car (last dashboard--section-starts)))
+            (let ((margin (floor (/ (- (window-width) max-line-length)  2))))
+              (while (not (eobp))
+                (and (not (eq ? (char-after)))
+                     (insert (make-string margin ?\ )))
+                (forward-line 1)))))
+        (dashboard-mode)
+        (goto-char (point-min))))
     (if recentf-is-on
-				(setq recentf-list origial-recentf-list))))
+        (setq recentf-list origial-recentf-list))))
 
 (add-hook 'window-setup-hook
           (lambda ()
