@@ -255,7 +255,6 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
             (widget-create 'push-button
                            :action `(lambda (&rest ignore) (find-file-existing ,el))
                            :mouse-face 'highlight
-                           :follow-link "\C-m"
                            :button-prefix ""
                            :button-suffix ""
                            :format "%[%t%]"
@@ -283,7 +282,6 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
             (widget-create 'push-button
                            :action `(lambda (&rest ignore) (bookmark-jump ,el))
                            :mouse-face 'highlight
-                           :follow-link "\C-m"
                            :button-prefix ""
                            :button-suffix ""
                            :format "%[%t%]"
@@ -315,7 +313,6 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                            :action `(lambda (&rest ignore)
                                       (projectile-switch-project-by-name ,el))
                            :mouse-face 'highlight
-                           :follow-link "\C-m"
                            :button-prefix ""
                            :button-suffix ""
                            :format "%[%t%]"
@@ -357,7 +354,6 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                                               )
                                             (switch-to-buffer buffer)))
                                :mouse-face 'highlight
-                               :follow-link "\C-m"
                                :button-prefix ""
                                :button-suffix ""
                                :format "%[%t%]"
@@ -448,7 +444,6 @@ date part is considered."
               (widget-create 'push-button
                              :action `(lambda (&rest ignore) (jump-to-register ,register))
                              :mouse-face 'highlight
-                             :follow-link "\C-m"
                              :button-prefix ""
                              :button-suffix ""
                              :format "%[%t%]"
