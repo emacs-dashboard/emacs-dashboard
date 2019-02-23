@@ -466,5 +466,7 @@ date part is considered."
 (declare-function org-compile-prefix-format "ext:org-agenda.el")
 
 (provide 'dashboard-widgets)
-
+;; Local Variables:
+;; byte-compile-warnings: (not free-vars)
+;; End:
 ;;; dashboard-widgets.el ends here
