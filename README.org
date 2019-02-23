@@ -106,6 +106,8 @@ It is possible to customize Dashboard's appearance using the following faces:
 
 - ~dashboard-banner-logo-title-face~ ::
      Highlights the banner title.
+- ~dashboard-text-banner-face~ ::
+     Highlights text banners.
 - ~dashboard-heading-face~ ::
      Highlights widget headings.
 - ~widget-button~ ::
