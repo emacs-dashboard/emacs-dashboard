@@ -17,11 +17,6 @@ version: .elpa
 
 lint: .elpa
 	$(EMACS) $(BATCH) -l $(ELL) -f elisp-lint-files-batch $(ELS)
-	$(EMACS) $(BATCH) -l $(ELL) -f elisp-lint-files-batch \
-	                  --no-byte-compile \
-	                  --no-package-format \
-	                  --no-checkdoc \
-	                  --no-check-declare $(TESTS)
 
 clean:
 	rm -f $(OBJECTS) $(BACKUPS) emacs-dashboard-autoloads.el*

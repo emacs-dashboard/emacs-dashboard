@@ -43,24 +43,11 @@
 ;; if necessary
 
 (setq package-pinned-packages
-      '((bind-key           . "melpa")
-        (diminish           . "melpa")
-        (use-package        . "melpa")))
+      '((use-package        . "melpa")))
 
 (dolist (p (mapcar 'car package-pinned-packages))
   (unless (package-installed-p p)
     (package-install p)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Install `quelpa' and `quelpa-use-package'
-
-(use-package quelpa
-  ;; :pin melpa-stable
-  :ensure t)
-
-(use-package quelpa-use-package
-  ;; :pin melpa-stable
-  :ensure t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Load project dependencies from elsewhere

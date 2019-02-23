@@ -3,7 +3,7 @@
 ;; Copyright (c) 2016 Rakan Al-Hneiti & Contributors
 ;;
 ;; Author: Rakan Al-Hneiti
-;; URL: https://github.com/rakanalh/emacs-dashboard
+;; URL: https://github.com/emacs-dashboard/emacs-dashboard
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -63,12 +63,13 @@
   :group 'dashboard)
 
 (defconst dashboard-buffer-name "*dashboard*"
-	  "Dashboard's buffer name.")
+  "Dashboard's buffer name.")
 
 (defvar dashboard--section-starts nil
-  "List of section starting positions")
+  "List of section starting positions.")
 
 (defun dashboard-previous-section ()
+  "Navigate back to previous section."
   (interactive)
   (let ((current-section-start nil)
         (current-position (point))
@@ -85,6 +86,7 @@
                  current-section-start))))
 
 (defun dashboard-next-section ()
+  "Navigate forward to next section."
   (interactive
    (let ((current-position (point))
          (next-section-start nil)
@@ -100,11 +102,11 @@
   "Insert the list of widgets into the buffer."
   (interactive)
   (let ((buffer-exists (buffer-live-p (get-buffer dashboard-buffer-name)))
-	(save-line nil)
-	(recentf-is-on (recentf-enabled-p))
-	(origial-recentf-list recentf-list)
-	(dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
-	)
+        (save-line nil)
+        (recentf-is-on (recentf-enabled-p))
+        (origial-recentf-list recentf-list)
+        (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
+        )
     ;; disable recentf mode,
     ;; so we don't flood the recent files list with org mode files
     ;; do this by making a copy of the part of the list we'll use
@@ -113,14 +115,14 @@
     ;; (this avoids many saves/loads that would result from
     ;; disabling/enabling recentf-mode)
     (if recentf-is-on
-	(setq recentf-list (seq-take recentf-list dashboard-num-recents))
+        (setq recentf-list (seq-take recentf-list dashboard-num-recents))
       )
     (when (or (not (eq dashboard-buffer-last-width (window-width)))
               (not buffer-exists))
       (setq dashboard-banner-length (window-width)
             dashboard-buffer-last-width dashboard-banner-length)
       (with-current-buffer (get-buffer-create dashboard-buffer-name)
-	(let ((buffer-read-only nil)
+        (let ((buffer-read-only nil)
               (list-separator "\n\n"))
           (erase-buffer)
           (dashboard-insert-banner)
@@ -128,19 +130,19 @@
           (setq dashboard--section-starts nil)
           (mapc (lambda (els)
                   (let* ((el (or (car-safe els) els))
-			 (list-size
+                         (list-size
                           (or (cdr-safe els)
                               dashboard-items-default-length))
-			 (item-generator
+                         (item-generator
                           (cdr-safe (assoc el dashboard-item-generators))))
                     (add-to-list 'dashboard--section-starts (point))
                     (funcall item-generator list-size)
                     (dashboard-insert-page-break)))
-		dashboard-items))
-	(dashboard-mode)
-	(goto-char (point-min))))
+                dashboard-items))
+        (dashboard-mode)
+        (goto-char (point-min))))
     (if recentf-is-on
-	(setq recentf-list origial-recentf-list)
+        (setq recentf-list origial-recentf-list)
       )))
 
 (add-hook 'window-setup-hook
@@ -156,6 +158,7 @@
   (switch-to-buffer dashboard-buffer-name))
 
 (defun dashboard-resize-on-hook (&optional _)
+  "Re-render dashboard on window size change."
   (let ((space-win (get-buffer-window dashboard-buffer-name))
         (frame-win (frame-selected-window)))
     (when (and space-win
@@ -166,16 +169,17 @@
 ;;;###autoload
 (defun dashboard-setup-startup-hook ()
   "Setup post initialization hooks.
-If a command line argument is provided, assume a filename and skip displaying Dashboard"
+If a command line argument is provided,
+assume a filename and skip displaying Dashboard."
   (if (< (length command-line-args) 2 )
       (progn
-	(add-hook 'after-init-hook (lambda ()
-				     ;; Display useful lists of items
-				     (dashboard-insert-startupify-lists)))
-	(add-hook 'emacs-startup-hook '(lambda ()
-					 (switch-to-buffer "*dashboard*")
-					 (goto-char (point-min))
-					 (redisplay))))))
+        (add-hook 'after-init-hook (lambda ()
+                                     ;; Display useful lists of items
+                                     (dashboard-insert-startupify-lists)))
+        (add-hook 'emacs-startup-hook '(lambda ()
+                                         (switch-to-buffer "*dashboard*")
+                                         (goto-char (point-min))
+                                         (redisplay))))))
 
 (provide 'dashboard)
 ;;; dashboard.el ends here

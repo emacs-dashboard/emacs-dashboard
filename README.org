@@ -1,5 +1,6 @@
 * Emacs Dashboard
-https://img.shields.io/circleci/project/github/emacs-dashboard/emacs-dashboard.svg
+
+[[https://circleci.com/gh/emacs-dashboard/emacs-dashboard/tree/master.svg?style=svg]]
 
 An extensible emacs startup screen showing you what's most important.
 
