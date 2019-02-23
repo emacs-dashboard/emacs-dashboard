@@ -255,7 +255,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                                       :format "%[%t%]"
                                       ,@rest))
                  (setq max-line-length
-                       (max max-line-length (length (widget-value-value-get widget))))))
+                       (max max-line-length (length (widget-get widget :value))))))
              ,list))
      max-line-length))
 
@@ -267,14 +267,15 @@ WIDGET-PARAMS are passed to the \"widget-create\" function.
 Show EMPTY-LIST-TEXT if no items in list"
   `(progn
      (dashboard-insert-heading ,section-name)
-     (when-let ((max-line-length
-                 (dashboard-insert-section-list
-                  ,section-name
-                  (dashboard-subseq ,list 0 list-size)
-                  ,action
-                  ,@widget-params)))
-               (dashboard-insert-shortcut ,shortcut ,section-name)
-               max-line-length)))
+     (let ((max-line-length (dashboard-insert-section-list
+                             ,section-name
+                             (dashboard-subseq ,list 0 list-size)
+                             ,action
+                             ,@widget-params)))
+       (if max-line-length
+           (progn
+             (dashboard-insert-shortcut ,shortcut ,section-name)
+             max-line-length)))))
 
 ;;
 ;; Recentf
@@ -287,7 +288,7 @@ Show EMPTY-LIST-TEXT if no items in list"
    recentf-list
    list-size
    "r"
-   `(lambda (&rest ignore) (find-file-existing ,el))
+   (lambda (&rest ignore) (find-file-existing el))
    (abbreviate-file-name el)))
 
 ;;
@@ -302,7 +303,7 @@ Show EMPTY-LIST-TEXT if no items in list"
                      0 list-size)
    list-size
    "m"
-   `(lambda (&rest ignore) (bookmark-jump ,el))
+   (lambda (&rest ignore) (bookmark-jump el))
    (let ((file (bookmark-get-filename el)))
      (if file
          (format "%s - %s" el (abbreviate-file-name file))
@@ -323,8 +324,7 @@ Show EMPTY-LIST-TEXT if no items in list"
                            0 list-size)
          list-size
          "p"
-         `(lambda (&rest ignore)
-            (projectile-switch-project-by-name ,el))
+         (lambda (&rest ignore) (projectile-switch-project-by-name el))
          (abbreviate-file-name el)))))
 
 ;;
@@ -397,11 +397,11 @@ date part is considered."
      (or agenda '())
      list-size
      "a"
-     `(lambda (&rest ignore)
-        (let ((buffer (find-file-other-window (nth 4 el))))
-          (with-current-buffer buffer
-            (goto-char (nth 3 el)))
-          (switch-to-buffer buffer)))
+     (lambda (&rest ignore)
+       (let ((buffer (find-file-other-window (nth 4 el))))
+         (with-current-buffer buffer
+           (goto-char (nth 3 el)))
+         (switch-to-buffer buffer)))
      (format "%s" (nth 0 el)))
     (and (not agenda)
          (insert "\n    --- No items ---"))))
@@ -417,7 +417,7 @@ date part is considered."
    register-alist
    list-size
    "e"
-   `(lambda (&rest ignore) (jump-to-register ,(car el)))
+   (lambda (&rest ignore) (jump-to-register (car el)))
    (format "%c - %s" (car el) (register-describe-oneline (car el)))))
 
 
