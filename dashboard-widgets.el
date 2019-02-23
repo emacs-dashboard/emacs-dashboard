@@ -97,6 +97,11 @@ Set to nil for unbounded.")
 ;;
 ;; Faces
 ;;
+(defface dashboard-text-banner-face
+  '((t :inherit default))
+  "Face used for text banners."
+  :group 'dashboard)
+
 (defface dashboard-banner-logo-title-face
   '((t :inherit default))
   "Face used for the banner title."
@@ -154,22 +159,24 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 ;;
 (defun dashboard-insert-ascii-banner-centered (file)
   "Insert banner from FILE."
-  (insert
-   (with-temp-buffer
-     (insert-file-contents file)
-     (let ((banner-width 0))
-       (while (not (eobp))
-         (let ((line-length (- (line-end-position) (line-beginning-position))))
-           (if (< banner-width line-length)
-               (setq banner-width line-length)))
-         (forward-line 1))
-       (goto-char 0)
-       (let ((margin
-              (max 0 (floor (/ (- dashboard-banner-length banner-width) 2)))))
-         (while (not (eobp))
-           (insert (make-string margin ?\ ))
-           (forward-line 1))))
-     (buffer-string))))
+  (let ((ascii-banner
+         (with-temp-buffer
+           (insert-file-contents file)
+           (let ((banner-width 0))
+             (while (not (eobp))
+               (let ((line-length (- (line-end-position) (line-beginning-position))))
+                 (if (< banner-width line-length)
+                     (setq banner-width line-length)))
+               (forward-line 1))
+             (goto-char 0)
+             (let ((margin
+                    (max 0 (floor (/ (- dashboard-banner-length banner-width) 2)))))
+               (while (not (eobp))
+                 (insert (make-string margin ?\ ))
+                 (forward-line 1))))
+           (buffer-string))))
+    (put-text-property 0 (length ascii-banner) 'face 'dashboard-text-banner-face ascii-banner)
+    (insert ascii-banner)))
 
 (defun dashboard-insert-image-banner (banner)
   "Display an image BANNER."
