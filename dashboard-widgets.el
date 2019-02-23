@@ -63,12 +63,6 @@ to the specified width, with aspect ratio preserved."
 (defvar dashboard-banner-logo-title "Welcome to Emacs!"
   "Specify the startup banner.")
 
-(defvar dashboard-mode-map
-  (let ((map (make-sparse-keymap)))
-    map)
-  "Keymap for `dashboard-mode'."
-  )
-
 (defvar dashboard-startup-banner 'official
   "Specify the startup banner.
 Default value is `official', it displays

@@ -10,12 +10,6 @@ default: &default-steps
 
 # Enumerated list of Emacs versions
 jobs:
-  test-emacs-24:
-    docker:
-      - image: silex/emacs:24
-        entrypoint: bash
-    <<: *default-steps
-
   test-emacs-25:
     docker:
       - image: silex/emacs:25
@@ -39,7 +33,6 @@ workflows:
   version: 2
   ci-test-matrix:
     jobs:
-      - test-emacs-24
       - test-emacs-25
       - test-emacs-26
       - test-emacs-master
