@@ -273,8 +273,8 @@ Show EMPTY-LIST-TEXT if no items in list"
                   (dashboard-subseq ,list 0 list-size)
                   ,action
                   ,@widget-params)))
-       (dashboard-insert-shortcut ,shortcut ,section-name)
-       max-line-length)))
+               (dashboard-insert-shortcut ,shortcut ,section-name)
+               max-line-length)))
 
 ;;
 ;; Recentf
@@ -299,14 +299,14 @@ Show EMPTY-LIST-TEXT if no items in list"
   (dashboard-insert-section
    "Bookmarks:"
    (dashboard-subseq (bookmark-all-names)
-                                 0 list-size)
+                     0 list-size)
    list-size
    "m"
    `(lambda (&rest ignore) (bookmark-jump ,el))
    (let ((file (bookmark-get-filename el)))
-                 (if file
-                     (format "%s - %s" el (abbreviate-file-name file))
-                   el))))
+     (if file
+         (format "%s - %s" el (abbreviate-file-name file))
+       el))))
 
 ;;
 ;; Projectile

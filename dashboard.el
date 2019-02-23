@@ -63,9 +63,9 @@
   :group 'dashboard)
 
 (defcustom dashboard-center-content t
-	"Whether to center content within the window."
-	:type 'boolean
-	:group 'dashboard)
+  "Whether to center content within the window."
+  :type 'boolean
+  :group 'dashboard)
 
 (defconst dashboard-buffer-name "*dashboard*"
   "Dashboard's buffer name.")
@@ -107,11 +107,11 @@
   "Insert the list of widgets into the buffer."
   (interactive)
   (let ((buffer-exists (buffer-live-p (get-buffer dashboard-buffer-name)))
-				(save-line nil)
-				(recentf-is-on (recentf-enabled-p))
-				(origial-recentf-list recentf-list)
-				(dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
-				(max-line-length 0))
+        (save-line nil)
+        (recentf-is-on (recentf-enabled-p))
+        (origial-recentf-list recentf-list)
+        (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
+        (max-line-length 0))
     ;; disable recentf mode,
     ;; so we don't flood the recent files list with org mode files
     ;; do this by making a copy of the part of the list we'll use
