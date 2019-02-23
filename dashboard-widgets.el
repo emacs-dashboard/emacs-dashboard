@@ -287,7 +287,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    recentf-list
    list-size
    "r"
-   (lambda (&rest ignore) (find-file-existing el))
+   `(lambda (&rest ignore) (find-file-existing ,el))
    (abbreviate-file-name el)))
 
 ;;
@@ -302,7 +302,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                      0 list-size)
    list-size
    "m"
-   (lambda (&rest ignore) (bookmark-jump el))
+   `(lambda (&rest ignore) (bookmark-jump ,el))
    (let ((file (bookmark-get-filename el)))
      (if file
          (format "%s - %s" el (abbreviate-file-name file))
@@ -323,7 +323,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                            0 list-size)
          list-size
          "p"
-         (lambda (&rest ignore) (projectile-switch-project-by-name el))
+         `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
          (abbreviate-file-name el)))))
 
 ;;
@@ -396,11 +396,11 @@ date part is considered."
      (or agenda '())
      list-size
      "a"
-     (lambda (&rest ignore)
-       (let ((buffer (find-file-other-window (nth 4 el))))
-         (with-current-buffer buffer
-           (goto-char (nth 3 el)))
-         (switch-to-buffer buffer)))
+     `(lambda (&rest ignore)
+        (let ((buffer (find-file-other-window (nth 4 ,el))))
+          (with-current-buffer buffer
+            (goto-char (nth 3 ,el)))
+          (switch-to-buffer buffer)))
      (format "%s" (nth 0 el)))
     (and (not agenda)
          (insert "\n    --- No items ---"))))
