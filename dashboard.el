@@ -62,7 +62,7 @@
   "Settings that are used in the Dashboard"
   :group 'dashboard)
 
-(defcustom dashboard-center-content t
+(defcustom dashboard-center-content nil
   "Whether to center content within the window."
   :type 'boolean
   :group 'dashboard)
