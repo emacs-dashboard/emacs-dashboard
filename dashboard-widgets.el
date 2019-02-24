@@ -240,24 +240,20 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 ;;
 (defmacro dashboard-insert-section-list (section-name list action &rest rest)
   "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
-  `(let ((max-line-length 0))
-     (when (car ,list)
-       (mapc (lambda (el)
-               (let ((widget nil))
-                 (insert "\n    ")
-                 (setq widget
-                       (widget-create 'push-button
-                                      :action ,action
-                                      :mouse-face 'highlight
-                                      :follow-link "\C-m"
-                                      :button-prefix ""
-                                      :button-suffix ""
-                                      :format "%[%t%]"
-                                      ,@rest))
-                 (setq max-line-length
-                       (max max-line-length (length (widget-get widget :value))))))
-             ,list))
-     max-line-length))
+  `(when (car ,list)
+     (mapc (lambda (el)
+             (let ((widget nil))
+               (insert "\n    ")
+               (setq widget
+                     (widget-create 'push-button
+                                    :action ,action
+                                    :mouse-face 'highlight
+                                    :follow-link "\C-m"
+                                    :button-prefix ""
+                                    :button-suffix ""
+                                    :format "%[%t%]"
+                                    ,@rest))))
+           ,list)))
 
 (defmacro dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
@@ -266,15 +262,12 @@ ACTION is theaction taken when the user activates the widget button.
 WIDGET-PARAMS are passed to the \"widget-create\" function."
   `(progn
      (dashboard-insert-heading ,section-name)
-     (let ((max-line-length (dashboard-insert-section-list
-                             ,section-name
-                             (dashboard-subseq ,list 0 list-size)
-                             ,action
-                             ,@widget-params)))
-       (if max-line-length
-           (progn
-             (dashboard-insert-shortcut ,shortcut ,section-name)
-             max-line-length)))))
+     (when (dashboard-insert-section-list
+            ,section-name
+            (dashboard-subseq ,list 0 list-size)
+            ,action
+            ,@widget-params)
+       (dashboard-insert-shortcut ,shortcut ,section-name))))
 
 ;;
 ;; Recentf

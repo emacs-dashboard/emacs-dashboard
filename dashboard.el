@@ -103,6 +103,18 @@
      (when next-section-start
        (goto-char next-section-start)))))
 
+(defun dashboard-maximum-section-length ()
+  "For the just-inserted section, calculate the length of the longest line."
+  (let ((max-line-length 0))
+    (save-excursion
+      (dashboard-previous-section)
+      (while (not (eobp))
+        (setq max-line-length
+              (max max-line-length
+                   (- (line-end-position) (line-beginning-position))))
+        (forward-line)))
+    max-line-length))
+
 (defun dashboard-insert-startupify-lists ()
   "Insert the list of widgets into the buffer."
   (interactive)
@@ -141,8 +153,9 @@
                          (item-generator
                           (cdr-safe (assoc el dashboard-item-generators))))
                     (add-to-list 'dashboard--section-starts (point))
+                    (funcall item-generator list-size)
                     (setq max-line-length
-                          (max max-line-length (or (funcall item-generator list-size) 0)))
+                          (max max-line-length (dashboard-maximum-section-length)))
                     (dashboard-insert-page-break)))
                 dashboard-items)
           (when dashboard-center-content
