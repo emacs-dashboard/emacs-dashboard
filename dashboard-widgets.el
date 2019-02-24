@@ -97,6 +97,11 @@ Set to nil for unbounded.")
 ;;
 ;; Faces
 ;;
+(defface dashboard-text-banner-face
+  '((t :inherit default))
+  "Face used for text banners."
+  :group 'dashboard)
+
 (defface dashboard-banner-logo-title-face
   '((t :inherit default))
   "Face used for the banner title."
@@ -124,14 +129,15 @@ Return entire list if `END' is omitted."
                                      &optional no-next-line)
   "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
 Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
-  `(define-key dashboard-mode-map ,shortcut-char
-     (lambda ()
-       (interactive)
-       (unless (search-forward ,search-label (point-max) t)
-         (search-backward ,search-label (point-min) t))
-       ,@(unless no-next-line
-           '((forward-line 1)))
-       (back-to-indentation))))
+  (eval-after-load 'dashboard
+    `(define-key dashboard-mode-map ,shortcut-char
+       (lambda ()
+         (interactive)
+         (unless (search-forward ,search-label (point-max) t)
+           (search-backward ,search-label (point-min) t))
+         ,@(unless no-next-line
+             '((forward-line 1)))
+         (back-to-indentation)))))
 
 (defun dashboard-append (msg &optional messagebuf)
   "Append MSG to dashboard buffer.
@@ -154,22 +160,24 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 ;;
 (defun dashboard-insert-ascii-banner-centered (file)
   "Insert banner from FILE."
-  (insert
-   (with-temp-buffer
-     (insert-file-contents file)
-     (let ((banner-width 0))
-       (while (not (eobp))
-         (let ((line-length (- (line-end-position) (line-beginning-position))))
-           (if (< banner-width line-length)
-               (setq banner-width line-length)))
-         (forward-line 1))
-       (goto-char 0)
-       (let ((margin
-              (max 0 (floor (/ (- dashboard-banner-length banner-width) 2)))))
-         (while (not (eobp))
-           (insert (make-string margin ?\ ))
-           (forward-line 1))))
-     (buffer-string))))
+  (let ((ascii-banner
+         (with-temp-buffer
+           (insert-file-contents file)
+           (let ((banner-width 0))
+             (while (not (eobp))
+               (let ((line-length (- (line-end-position) (line-beginning-position))))
+                 (if (< banner-width line-length)
+                     (setq banner-width line-length)))
+               (forward-line 1))
+             (goto-char 0)
+             (let ((margin
+                    (max 0 (floor (/ (- dashboard-banner-length banner-width) 2)))))
+               (while (not (eobp))
+                 (insert (make-string margin ?\ ))
+                 (forward-line 1))))
+           (buffer-string))))
+    (put-text-property 0 (length ascii-banner) 'face 'dashboard-text-banner-face ascii-banner)
+    (insert ascii-banner)))
 
 (defun dashboard-insert-image-banner (banner)
   "Display an image BANNER."
@@ -248,7 +256,6 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                      (widget-create 'push-button
                                     :action ,action
                                     :mouse-face 'highlight
-                                    :follow-link "\C-m"
                                     :button-prefix ""
                                     :button-suffix ""
                                     :format "%[%t%]"
@@ -423,7 +430,4 @@ date part is considered."
 (declare-function org-compile-prefix-format "ext:org-agenda.el")
 
 (provide 'dashboard-widgets)
-;; Local Variables:
-;; byte-compile-warnings: (not free-vars)
-;; End:
 ;;; dashboard-widgets.el ends here

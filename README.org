@@ -1,6 +1,4 @@
-* Emacs Dashboard
-
-[[https://circleci.com/gh/emacs-dashboard/emacs-dashboard/tree/master.svg?style=svg]]
+* Emacs Dashboard [[https://melpa.org/#/dashboard][https://melpa.org/packages/dashboard-badge.svg]] [[https://stable.melpa.org/#/dashboard][https://stable.melpa.org/packages/dashboard-badge.svg]] [[https://circleci.com/gh/emacs-dashboard][https://img.shields.io/circleci/project/emacs-dashboard/emacs-dashboard.svg]]
 
 An extensible emacs startup screen showing you what's most important.
 
@@ -109,6 +107,8 @@ It is possible to customize Dashboard's appearance using the following faces:
 
 - ~dashboard-banner-logo-title-face~ ::
      Highlights the banner title.
+- ~dashboard-text-banner-face~ ::
+     Highlights text banners.
 - ~dashboard-heading-face~ ::
      Highlights widget headings.
 - ~widget-button~ ::
