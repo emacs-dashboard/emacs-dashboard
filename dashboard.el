@@ -62,6 +62,11 @@
   "Settings that are used in the Dashboard"
   :group 'dashboard)
 
+(defcustom dashboard-center-content nil
+  "Whether to center content within the window."
+  :type 'boolean
+  :group 'dashboard)
+
 (defconst dashboard-buffer-name "*dashboard*"
   "Dashboard's buffer name.")
 
@@ -98,6 +103,18 @@
      (when next-section-start
        (goto-char next-section-start)))))
 
+(defun dashboard-maximum-section-length ()
+  "For the just-inserted section, calculate the length of the longest line."
+  (let ((max-line-length 0))
+    (save-excursion
+      (dashboard-previous-section)
+      (while (not (eobp))
+        (setq max-line-length
+              (max max-line-length
+                   (- (line-end-position) (line-beginning-position))))
+        (forward-line)))
+    max-line-length))
+
 (defun dashboard-insert-startupify-lists ()
   "Insert the list of widgets into the buffer."
   (interactive)
@@ -106,7 +123,7 @@
         (recentf-is-on (recentf-enabled-p))
         (origial-recentf-list recentf-list)
         (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
-        )
+        (max-line-length 0))
     ;; disable recentf mode,
     ;; so we don't flood the recent files list with org mode files
     ;; do this by making a copy of the part of the list we'll use
@@ -137,13 +154,21 @@
                           (cdr-safe (assoc el dashboard-item-generators))))
                     (add-to-list 'dashboard--section-starts (point))
                     (funcall item-generator list-size)
+                    (setq max-line-length
+                          (max max-line-length (dashboard-maximum-section-length)))
                     (dashboard-insert-page-break)))
-                dashboard-items))
+                dashboard-items)
+          (when dashboard-center-content
+            (goto-char (car (last dashboard--section-starts)))
+            (let ((margin (floor (/ (- (window-width) max-line-length)  2))))
+              (while (not (eobp))
+                (and (not (eq ? (char-after)))
+                     (insert (make-string margin ?\ )))
+                (forward-line 1)))))
         (dashboard-mode)
         (goto-char (point-min))))
     (if recentf-is-on
-        (setq recentf-list origial-recentf-list)
-      )))
+        (setq recentf-list origial-recentf-list))))
 
 (add-hook 'window-setup-hook
           (lambda ()

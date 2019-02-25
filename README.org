@@ -63,6 +63,9 @@ To update the banner or banner title
 ;; 'logo which displays an alternative emacs logo
 ;; 1, 2 or 3 which displays one of the text banners
 ;; "path/to/your/image.png" which displays whatever image you would prefer
+
+;; Content is not centered by default. To center, set
+(setq dashboard-center-content nil)
 #+END_SRC
 
 To customize which widgets are displayed, you can use the following snippet

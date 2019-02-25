@@ -244,124 +244,91 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
           (dashboard-insert-ascii-banner-centered banner))))))
 
 ;;
+;; Section insertion
+;;
+(defmacro dashboard-insert-section-list (section-name list action &rest rest)
+  "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
+  `(when (car ,list)
+     (mapc (lambda (el)
+             (let ((widget nil))
+               (insert "\n    ")
+               (setq widget
+                     (widget-create 'push-button
+                                    :action ,action
+                                    :mouse-face 'highlight
+                                    :button-prefix ""
+                                    :button-suffix ""
+                                    :format "%[%t%]"
+                                    ,@rest))))
+           ,list)))
+
+(defmacro dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
+  "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
+SHORTCUT is the keyboard shortcut used to access the section.
+ACTION is theaction taken when the user activates the widget button.
+WIDGET-PARAMS are passed to the \"widget-create\" function."
+  `(progn
+     (dashboard-insert-heading ,section-name)
+     (when (dashboard-insert-section-list
+            ,section-name
+            (dashboard-subseq ,list 0 list-size)
+            ,action
+            ,@widget-params)
+       (dashboard-insert-shortcut ,shortcut ,section-name))))
+
+;;
 ;; Recentf
 ;;
-(defun dashboard-insert-recentf-list (list-display-name list)
-  "Render LIST-DISPLAY-NAME title and items of LIST."
-  (when (car list)
-    (dashboard-insert-heading list-display-name)
-    (mapc (lambda (el)
-            (insert "\n    ")
-            (widget-create 'push-button
-                           :action `(lambda (&rest ignore) (find-file-existing ,el))
-                           :mouse-face 'highlight
-                           :button-prefix ""
-                           :button-suffix ""
-                           :format "%[%t%]"
-                           (abbreviate-file-name el)))
-          list)))
-
 (defun dashboard-insert-recents (list-size)
   "Add the list of LIST-SIZE items from recently edited files."
   (recentf-mode)
-  (when (dashboard-insert-recentf-list
-         "Recent Files:"
-         (dashboard-subseq recentf-list 0 list-size))
-    (dashboard-insert-shortcut "r" "Recent Files:")))
-
+  (dashboard-insert-section
+   "Recent Files:"
+   recentf-list
+   list-size
+   "r"
+   `(lambda (&rest ignore) (find-file-existing ,el))
+   (abbreviate-file-name el)))
 
 ;;
 ;; Bookmarks
 ;;
-(defun dashboard-insert-bookmark-list (list-display-name list)
-  "Render LIST-DISPLAY-NAME title and bookmarks items of LIST."
-  (when (car list)
-    (dashboard-insert-heading list-display-name)
-    (mapc (lambda (el)
-            (insert "\n    ")
-            (widget-create 'push-button
-                           :action `(lambda (&rest ignore) (bookmark-jump ,el))
-                           :mouse-face 'highlight
-                           :button-prefix ""
-                           :button-suffix ""
-                           :format "%[%t%]"
-                           (let ((file (bookmark-get-filename el)))
-                             (if file
-                                 (format "%s - %s" el (abbreviate-file-name file))
-                               el))))
-          list)))
-
 (defun dashboard-insert-bookmarks (list-size)
   "Add the list of LIST-SIZE items of bookmarks."
   (require 'bookmark)
-  (when (dashboard-insert-bookmark-list
-         "Bookmarks:"
-         (dashboard-subseq (bookmark-all-names)
-                           0 list-size))
-    (dashboard-insert-shortcut "m" "Bookmarks:")))
+  (dashboard-insert-section
+   "Bookmarks:"
+   (dashboard-subseq (bookmark-all-names)
+                     0 list-size)
+   list-size
+   "m"
+   `(lambda (&rest ignore) (bookmark-jump ,el))
+   (let ((file (bookmark-get-filename el)))
+     (if file
+         (format "%s - %s" el (abbreviate-file-name file))
+       el))))
 
 ;;
 ;; Projectile
 ;;
-(defun dashboard-insert-project-list (list-display-name list)
-  "Render LIST-DISPLAY-NAME title and project items of LIST."
-  (when (car list)
-    (dashboard-insert-heading list-display-name)
-    (mapc (lambda (el)
-            (insert "\n    ")
-            (widget-create 'push-button
-                           :action `(lambda (&rest ignore)
-                                      (projectile-switch-project-by-name ,el))
-                           :mouse-face 'highlight
-                           :button-prefix ""
-                           :button-suffix ""
-                           :format "%[%t%]"
-                           (abbreviate-file-name el)))
-          list)))
-
 (defun dashboard-insert-projects (list-size)
   "Add the list of LIST-SIZE items of projects."
-  ;; For some reason, projectile has to be loaded here
-  ;; before trying to load projects list
   (projectile-mode)
   (if (bound-and-true-p projectile-mode)
       (progn
         (projectile-load-known-projects)
-        (when (dashboard-insert-project-list
-               "Projects:"
-               (dashboard-subseq (projectile-relevant-known-projects)
-                                 0 list-size))
-          (dashboard-insert-shortcut "p" "Projects:")))
-    (message "Failed to load projects list")))
+        (dashboard-insert-section
+         "Projects:"
+         (dashboard-subseq (projectile-relevant-known-projects)
+                           0 list-size)
+         list-size
+         "p"
+         `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
+         (abbreviate-file-name el)))))
 
 ;;
 ;; Org Agenda
 ;;
-(defun dashboard-insert-agenda-list (list-display-name list)
-  "Render LIST-DISPLAY-NAME title and agenda items from LIST."
-  (dashboard-insert-heading list-display-name)
-  (if (car list)
-      (mapc (lambda (el)
-              (insert "\n    ")
-              (let ((filename (nth 4 el))
-                    (lineno (nth 3 el))
-                    (title (nth 0 el)))
-                (widget-create 'push-button
-                               :action `(lambda (&rest ignore)
-                                          (let ((buffer (find-file-other-window ,filename)))
-                                            (with-current-buffer buffer
-                                              (goto-char ,lineno)
-                                              )
-                                            (switch-to-buffer buffer)))
-                               :mouse-face 'highlight
-                               :button-prefix ""
-                               :button-suffix ""
-                               :format "%[%t%]"
-                               (format "%s" title)))
-              )
-            list)
-    (insert (propertize "\n    --- No items ---" 'face 'widget-button))))
-
 (defun dashboard-timestamp-to-gregorian-date (timestamp)
   "Convert TIMESTAMP to a gregorian date.
 
@@ -422,41 +389,35 @@ date part is considered."
 
 (defun dashboard-insert-agenda (list-size)
   "Add the list of LIST-SIZE items of agenda."
-  (let ((agenda-time-string nil))
-    (if (and (boundp 'show-week-agenda-p) show-week-agenda-p)
-        (setq agenda-time-string "Agenda for the coming week:")
-      (setq agenda-time-string "Agenda for today:")
-      )
-    (when (dashboard-insert-agenda-list agenda-time-string
-                                        (dashboard-get-agenda))
-      (dashboard-insert-shortcut "a" agenda-time-string))))
+  (let ((agenda (dashboard-get-agenda)))
+    (dashboard-insert-section
+     (or (and (boundp 'show-week-agenda-p) show-week-agenda-p "Agenda for the coming week:")
+         "Agenda for today:")
+     (or agenda '())
+     list-size
+     "a"
+     `(lambda (&rest ignore)
+        (let ((buffer (find-file-other-window (nth 4 ,el))))
+          (with-current-buffer buffer
+            (goto-char (nth 3 ,el)))
+          (switch-to-buffer buffer)))
+     (format "%s" (nth 0 el)))
+    (and (not agenda)
+         (insert "\n    --- No items ---"))))
 
 ;;
 ;; Registers
 ;;
-(defun dashboard-insert-register-list (list-display-name list)
-  "Render LIST-DISPLAY-NAME title and registers items of LIST."
-  (when (car list)
-    (dashboard-insert-heading list-display-name)
-    (mapc (lambda (el)
-            (let ((register (car el)))
-              (insert "\n    ")
-              (widget-create 'push-button
-                             :action `(lambda (&rest ignore) (jump-to-register ,register))
-                             :mouse-face 'highlight
-                             :button-prefix ""
-                             :button-suffix ""
-                             :format "%[%t%]"
-                             (format "%c - %s" register (register-describe-oneline register)))))
-          list)))
-
 (defun dashboard-insert-registers (list-size)
   "Add the list of LIST-SIZE items of registers."
   (require 'register)
-  (when (dashboard-insert-register-list
-         "Registers:"
-         (dashboard-subseq register-alist 0 list-size))
-    (dashboard-insert-shortcut "e" "Registers:")))
+  (dashboard-insert-section
+   "Registers:"
+   register-alist
+   list-size
+   "e"
+   (lambda (&rest ignore) (jump-to-register (car el)))
+   (format "%c - %s" (car el) (register-describe-oneline (car el)))))
 
 
 ;; Forward declartions for optional dependency to keep check-declare happy.
