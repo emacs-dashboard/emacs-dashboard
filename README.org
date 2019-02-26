@@ -65,7 +65,7 @@ To update the banner or banner title
 ;; "path/to/your/image.png" which displays whatever image you would prefer
 
 ;; Content is not centered by default. To center, set
-(setq dashboard-center-content nil)
+(setq dashboard-center-content t)
 #+END_SRC
 
 To customize which widgets are displayed, you can use the following snippet
