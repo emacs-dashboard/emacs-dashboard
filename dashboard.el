@@ -160,7 +160,7 @@
                 dashboard-items)
           (when dashboard-center-content
             (goto-char (car (last dashboard--section-starts)))
-            (let ((margin (floor (/ (- (window-width) max-line-length)  2))))
+            (let ((margin (floor (/ (max (- (window-width) max-line-length) 0)  2))))
               (while (not (eobp))
                 (and (not (eq ? (char-after)))
                      (insert (make-string margin ?\ )))
