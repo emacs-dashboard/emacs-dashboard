@@ -67,11 +67,6 @@
   :type 'boolean
   :group 'dashboard)
 
-(defcustom dashboard-show-shortcuts nil
-  "Whether to show shortcut keys for each section."
-  :type 'boolean
-  :group 'dashboard)
-
 (defconst dashboard-buffer-name "*dashboard*"
   "Dashboard's buffer name.")
 

@@ -44,6 +44,11 @@ to the specified width, with aspect ratio preserved."
   :type 'integer
   :group 'dashboard)
 
+(defcustom dashboard-show-shortcuts nil
+  "Whether to show shortcut keys for each section."
+  :type 'boolean
+  :group 'dashboard)
+
 (defconst dashboard-banners-directory
   (concat (file-name-directory
            (locate-library "dashboard"))
@@ -273,7 +278,6 @@ SHORTCUT is the keyboard shortcut used to access the section.
 ACTION is theaction taken when the user activates the widget button.
 WIDGET-PARAMS are passed to the \"widget-create\" function."
   `(progn
-     (eval-when-compile (defvar dashboard-show-shortcuts))
      (dashboard-insert-heading ,section-name (if dashboard-show-shortcuts ,shortcut))
      (when (dashboard-insert-section-list
             ,section-name
