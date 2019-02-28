@@ -129,15 +129,19 @@ Return entire list if `END' is omitted."
                                      &optional no-next-line)
   "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
 Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
-  (eval-after-load 'dashboard
-    `(define-key dashboard-mode-map ,shortcut-char
-       (lambda ()
-         (interactive)
-         (unless (search-forward ,search-label (point-max) t)
-           (search-backward ,search-label (point-min) t))
-         ,@(unless no-next-line
-             '((forward-line 1)))
-         (back-to-indentation)))))
+  `(progn
+     (eval-when-compile (defvar dashboard-mode-map))
+     (let ((sym nil))
+       (set 'sym (make-symbol (format "Jump to \"%s\"" ,search-label)))
+       (fset sym (lambda ()
+                   (interactive)
+                   (unless (search-forward ,search-label (point-max) t)
+                     (search-backward ,search-label (point-min) t))
+                   ,@(unless no-next-line
+                       '((forward-line 1)))
+                   (back-to-indentation)))
+       (eval-after-load 'dashboard
+         (define-key dashboard-mode-map ,shortcut-char sym)))))
 
 (defun dashboard-append (msg &optional messagebuf)
   "Append MSG to dashboard buffer.
