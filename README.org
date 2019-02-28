@@ -1,4 +1,4 @@
-* Emacs Dashboard [[https://melpa.org/#/dashboard][https://melpa.org/packages/dashboard-badge.svg]] [[https://stable.melpa.org/#/dashboard][https://stable.melpa.org/packages/dashboard-badge.svg]] [[https://circleci.com/gh/emacs-dashboard][https://img.shields.io/circleci/project/emacs-dashboard/emacs-dashboard.svg]]
+* Emacs Dashboard [[https://melpa.org/#/dashboard][https://melpa.org/packages/dashboard-badge.svg]] [[https://stable.melpa.org/#/dashboard][https://stable.melpa.org/packages/dashboard-badge.svg]] [[https://circleci.com/gh/emacs-dashboard][https://img.shields.io/circleci/project/emacs-dashboard/emacs-dashboard/master.svg]]
 
 An extensible emacs startup screen showing you what's most important.
 
