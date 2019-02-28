@@ -66,6 +66,9 @@ To update the banner or banner title
 
 ;; Content is not centered by default. To center, set
 (setq dashboard-center-content t)
+
+;; To show shortcut "jump" indicators for each section, set
+(setq dashboard-show-shortcuts t)
 #+END_SRC
 
 To customize which widgets are displayed, you can use the following snippet
