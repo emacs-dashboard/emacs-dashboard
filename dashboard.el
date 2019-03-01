@@ -23,7 +23,6 @@
 
 (require 'bookmark)
 (require 'calendar)
-(require 'org-agenda)
 (require 'page-break-lines)
 (require 'recentf)
 (require 'register)
