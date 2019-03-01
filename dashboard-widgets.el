@@ -44,7 +44,7 @@ to the specified width, with aspect ratio preserved."
   :type 'integer
   :group 'dashboard)
 
-(defcustom dashboard-show-shortcuts nil
+(defcustom dashboard-show-shortcuts t
   "Whether to show shortcut keys for each section."
   :type 'boolean
   :group 'dashboard)
