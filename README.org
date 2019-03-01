@@ -105,11 +105,11 @@ Note that setting list-size for the agenda list is intentionally ignored; all ag
 
 It is possible to customize Dashboard's appearance using the following faces:
 
-- ~dashboard-banner-logo-title-face~ ::
+- ~dashboard-banner-logo-title~ ::
      Highlights the banner title.
-- ~dashboard-text-banner-face~ ::
+- ~dashboard-text-banner~ ::
      Highlights text banners.
-- ~dashboard-heading-face~ ::
+- ~dashboard-heading~ ::
      Highlights widget headings.
 - ~widget-button~ ::
      Highlights widget items.
