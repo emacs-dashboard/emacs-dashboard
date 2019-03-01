@@ -280,13 +280,14 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   `(progn
      (dashboard-insert-heading ,section-name
                                (if (and ,list dashboard-show-shortcuts) ,shortcut))
-     (when (dashboard-insert-section-list
-            ,section-name
-            (dashboard-subseq ,list 0 list-size)
-            ,action
-            ,@widget-params)
-       (dashboard-insert-shortcut ,shortcut ,section-name))))
-
+     (if ,list
+         (when (dashboard-insert-section-list
+                ,section-name
+                (dashboard-subseq ,list 0 list-size)
+                ,action
+                ,@widget-params)
+           (dashboard-insert-shortcut ,shortcut ,section-name))
+       (insert "\n    --- No items ---"))))
 ;;
 ;; Recentf
 ;;
@@ -405,7 +406,7 @@ date part is considered."
     (dashboard-insert-section
      (or (and (boundp 'show-week-agenda-p) show-week-agenda-p "Agenda for the coming week:")
          "Agenda for today:")
-     (or agenda '())
+     agenda
      list-size
      "a"
      `(lambda (&rest ignore)
@@ -413,9 +414,7 @@ date part is considered."
           (with-current-buffer buffer
             (goto-char (nth 3 ',el)))
           (switch-to-buffer buffer)))
-     (format "%s" (nth 0 el)))
-    (and (not agenda)
-         (insert "\n    --- No items ---"))))
+     (format "%s" (nth 0 el)))))
 
 ;;
 ;; Registers
