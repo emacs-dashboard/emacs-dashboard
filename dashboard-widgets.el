@@ -44,6 +44,11 @@ to the specified width, with aspect ratio preserved."
   :type 'integer
   :group 'dashboard)
 
+(defcustom dashboard-show-shortcuts t
+  "Whether to show shortcut keys for each section."
+  :type 'boolean
+  :group 'dashboard)
+
 (defconst dashboard-banners-directory
   (concat (file-name-directory
            (locate-library "dashboard"))
@@ -155,9 +160,10 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Insert a page break line in dashboard buffer."
   (dashboard-append dashboard-page-separator))
 
-(defun dashboard-insert-heading (heading)
-  "Insert a widget HEADING in dashboard buffer."
-  (insert (propertize heading 'face 'dashboard-heading-face)))
+(defun dashboard-insert-heading (heading &optional shortcut)
+  "Insert a widget HEADING in dashboard buffer, adding SHORTCUT if provided."
+  (insert (propertize heading 'face 'dashboard-heading-face))
+  (if shortcut (insert (format " (%s)" shortcut))))
 
 ;;
 ;; BANNER
@@ -272,7 +278,8 @@ SHORTCUT is the keyboard shortcut used to access the section.
 ACTION is theaction taken when the user activates the widget button.
 WIDGET-PARAMS are passed to the \"widget-create\" function."
   `(progn
-     (dashboard-insert-heading ,section-name)
+     (dashboard-insert-heading ,section-name
+                               (if (and ,list dashboard-show-shortcuts) ,shortcut))
      (if ,list
          (when (dashboard-insert-section-list
                 ,section-name
@@ -281,7 +288,6 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                 ,@widget-params)
            (dashboard-insert-shortcut ,shortcut ,section-name))
        (insert "\n    --- No items ---"))))
-
 ;;
 ;; Recentf
 ;;
