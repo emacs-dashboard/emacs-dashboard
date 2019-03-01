@@ -278,7 +278,8 @@ SHORTCUT is the keyboard shortcut used to access the section.
 ACTION is theaction taken when the user activates the widget button.
 WIDGET-PARAMS are passed to the \"widget-create\" function."
   `(progn
-     (dashboard-insert-heading ,section-name (if dashboard-show-shortcuts ,shortcut))
+     (dashboard-insert-heading ,section-name
+                               (if (and ,list dashboard-show-shortcuts) ,shortcut))
      (when (dashboard-insert-section-list
             ,section-name
             (dashboard-subseq ,list 0 list-size)
