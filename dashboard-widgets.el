@@ -401,9 +401,9 @@ date part is considered."
      list-size
      "a"
      `(lambda (&rest ignore)
-        (let ((buffer (find-file-other-window (nth 4 ,el))))
+        (let ((buffer (find-file-other-window (nth 4 ',el))))
           (with-current-buffer buffer
-            (goto-char (nth 3 ,el)))
+            (goto-char (nth 3 ',el)))
           (switch-to-buffer buffer)))
      (format "%s" (nth 0 el)))
     (and (not agenda)
