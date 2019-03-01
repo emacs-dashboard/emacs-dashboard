@@ -117,6 +117,13 @@ Set to nil for unbounded.")
   "Face used for widget headings."
   :group 'dashboard)
 
+(define-obsolete-face-alias
+  'dashboard-text-banner-face 'dashboard-text-banner "1.2.6")
+(define-obsolete-face-alias
+  'dashboard-banner-logo-title-face 'dashboard-banner-logo-title "1.2.6")
+(define-obsolete-face-alias
+  'dashboard-heading-face 'dashboard-heading "1.2.6")
+
 ;;
 ;; Generic widget helpers
 ;;
