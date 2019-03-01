@@ -131,8 +131,7 @@ Return entire list if `END' is omitted."
 Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
   `(progn
      (eval-when-compile (defvar dashboard-mode-map))
-     (let ((tempsym (make-symbol (format "Jump to \"%s\"" ,search-label))))
-       (set 'sym tempsym)
+     (let ((sym (make-symbol (format "Jump to \"%s\"" ,search-label))))
        (fset sym (lambda ()
                    (interactive)
                    (unless (search-forward ,search-label (point-max) t)
