@@ -108,7 +108,7 @@ Set to nil for unbounded.")
   :group 'dashboard)
 
 (defface dashboard-heading
-  '((t :inherit default))
+  '((t (:inherit font-lock-function-name-face)))
   "Face used for widget headings."
   :group 'dashboard)
 
