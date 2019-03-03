@@ -102,20 +102,27 @@ Set to nil for unbounded.")
 ;;
 ;; Faces
 ;;
-(defface dashboard-text-banner-face
+(defface dashboard-text-banner
   '((t :inherit default))
   "Face used for text banners."
   :group 'dashboard)
 
-(defface dashboard-banner-logo-title-face
+(defface dashboard-banner-logo-title
   '((t :inherit default))
   "Face used for the banner title."
   :group 'dashboard)
 
-(defface dashboard-heading-face
-  '((t :inherit default))
+(defface dashboard-heading
+  '((t (:inherit font-lock-function-name-face)))
   "Face used for widget headings."
   :group 'dashboard)
+
+(define-obsolete-face-alias
+  'dashboard-text-banner-face 'dashboard-text-banner "1.2.6")
+(define-obsolete-face-alias
+  'dashboard-banner-logo-title-face 'dashboard-banner-logo-title "1.2.6")
+(define-obsolete-face-alias
+  'dashboard-heading-face 'dashboard-heading "1.2.6")
 
 ;;
 ;; Generic widget helpers
@@ -161,7 +168,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 
 (defun dashboard-insert-heading (heading &optional shortcut)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT if provided."
-  (insert (propertize heading 'face 'dashboard-heading-face))
+  (insert (propertize heading 'face 'dashboard-heading))
   (if shortcut (insert (format " (%s)" shortcut))))
 
 ;;
@@ -185,7 +192,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                  (insert (make-string margin ?\ ))
                  (forward-line 1))))
            (buffer-string))))
-    (put-text-property 0 (length ascii-banner) 'face 'dashboard-text-banner-face ascii-banner)
+    (put-text-property 0 (length ascii-banner) 'face 'dashboard-text-banner ascii-banner)
     (insert ascii-banner)))
 
 (defun dashboard-insert-image-banner (banner)
@@ -211,7 +218,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
       (when title
         (insert (make-string (max 0 (floor (/ (- dashboard-banner-length
                                                  (+ (length title) 1)) 2))) ?\ ))
-        (insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title-face)))))))
+        (insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title)))))))
 
 (defun dashboard-get-banner-path (index)
   "Return the full path to banner with index INDEX."
