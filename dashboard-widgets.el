@@ -331,18 +331,16 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 (defun dashboard-insert-projects (list-size)
   "Add the list of LIST-SIZE items of projects."
-  (projectile-mode)
-  (if (bound-and-true-p projectile-mode)
-      (progn
-        (projectile-load-known-projects)
-        (dashboard-insert-section
-         "Projects:"
-         (dashboard-subseq (projectile-relevant-known-projects)
-                           0 list-size)
-         list-size
-         "p"
-         `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
-         (abbreviate-file-name el)))))
+  (require 'projectile)
+  (projectile-load-known-projects)
+  (dashboard-insert-section
+   "Projects:"
+   (dashboard-subseq (projectile-relevant-known-projects)
+                     0 list-size)
+   list-size
+   "p"
+   `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
+   (abbreviate-file-name el)))
 
 ;;
 ;; Org Agenda
