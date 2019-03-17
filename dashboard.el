@@ -93,14 +93,14 @@
   "Navigate forward to next section."
   (interactive)
   (let ((current-position (point))
-         (next-section-start nil)
-         (section-starts (reverse dashboard--section-starts)))
-     (dolist (elt section-starts)
-       (when (and (not next-section-start)
-                  (> elt current-position))
-         (setq next-section-start elt)))
-     (when next-section-start
-       (goto-char next-section-start))))
+        (next-section-start nil)
+        (section-starts (reverse dashboard--section-starts)))
+    (dolist (elt section-starts)
+      (when (and (not next-section-start)
+                 (> elt current-position))
+        (setq next-section-start elt)))
+    (when next-section-start
+      (goto-char next-section-start))))
 
 (defun dashboard-maximum-section-length ()
   "For the just-inserted section, calculate the length of the longest line."
