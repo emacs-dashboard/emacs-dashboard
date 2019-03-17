@@ -32,6 +32,10 @@
 ;; Custom splash screen
 (defvar dashboard-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-p") 'dashboard-previous-line)
+    (define-key map (kbd "C-n") 'dashboard-next-line)
+    (define-key map (kbd "<up>") 'dashboard-previous-line)
+    (define-key map (kbd "<down>") 'dashboard-next-line)
     (define-key map [tab] 'widget-forward)
     (define-key map (kbd "C-i") 'widget-forward)
     (define-key map [backtab] 'widget-backward)
@@ -101,6 +105,27 @@
          (setq next-section-start elt)))
      (when next-section-start
        (goto-char next-section-start)))))
+
+(defun dashboard-previous-line (arg)
+  "Move point up and position it at that line’s item.
+Optional prefix ARG says how many lines to move; default is one line."
+  (interactive "^p")
+  (dashboard-next-line (- arg)))
+
+(defun dashboard-next-line (arg)
+  "Move point down and position it at that line’s item.
+Optional prefix ARG says how many lines to move; default is one line."
+  ;; code heavily inspired by `dired-next-line'
+  (interactive "^p")
+  (let ((line-move-visual nil)
+        (goal-column nil))
+    (line-move arg t))
+  ;; We never want to move point into an invisible line.  Dashboard doesn’t
+  ;; use invisible text currently but when it does we’re ready!
+  (while (and (invisible-p (point))
+              (not (if (and arg (< arg 0)) (bobp) (eobp))))
+    (forward-char (if (and arg (< arg 0)) -1 1)))
+  (beginning-of-line-text))
 
 (defun dashboard-maximum-section-length ()
   "For the just-inserted section, calculate the length of the longest line."
