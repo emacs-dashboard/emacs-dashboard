@@ -85,13 +85,22 @@ If the value is nil then no banner is displayed.")
                                      (agenda    . dashboard-insert-agenda)
                                      (registers . dashboard-insert-registers)))
 
-(defvar dashboard-items '((recents   . 5)
-                          (bookmarks . 5)
-                          (agenda    . 5))
-  "Association list of items to show in the startup buffer.
-Will be of the form `(list-type . list-size)`.
-If nil it is disabled.  Possible values for list-type are:
-`recents' `bookmarks' `projects' `agenda' `registers'")
+(defcustom dashboard-items '((recents   . 5)
+                             (bookmarks . 5)
+                             (agenda    . 5))
+  "List of sections and items to show in the startup buffer."
+  :type '(repeat
+          (cons
+           (choice
+            (const :tag "Recents" recents)
+            (const :tag "Bookmarks" bookmarks)
+            (const :tag "Agenda" agenda)
+            (const :tag "Projects" projects)
+            (const :tag "Registers" registers)
+            )
+           (integer :tag "Size")
+           ))
+  :group 'dashboard)
 
 (defvar dashboard-items-default-length 20
   "Length used for startup lists with otherwise unspecified bounds.
