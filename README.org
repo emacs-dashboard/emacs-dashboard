@@ -90,7 +90,7 @@ To add your own custom widget is pretty easy, define your widget's callback func
 (add-to-list 'dashboard-items '(custom) t)
  #+END_SRC
  
-To add icons to the widget headings and its items:
+To add icons to the widget headings and their items:
 #+BEGIN_SRC elisp
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
