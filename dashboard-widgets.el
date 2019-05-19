@@ -347,21 +347,30 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                                (cond
                                 ((and (fboundp 'tramp-tramp-file-p)
                                       (tramp-tramp-file-p default-directory))
-                                 (all-the-icons-octicon "file-directory" :height 1.0 :v-adjust 0.01))
+                                 (all-the-icons-octicon "file-directory"
+                                                        :height 1.0 :v-adjust 0.01))
                                 ((file-symlink-p path)
-                                 (all-the-icons-octicon "file-symlink-directory" :height 1.0 :v-adjust 0.01))
+                                 (all-the-icons-octicon "file-symlink-directory"
+                                                        :height 1.0 :v-adjust 0.01))
                                 ((all-the-icons-dir-is-submodule path)
-                                 (all-the-icons-octicon "file-submodule" :height 1.0 :v-adjust 0.01))
+                                 (all-the-icons-octicon "file-submodule"
+                                                        :height 1.0 :v-adjust 0.01))
                                 ((file-exists-p (format "%s/.git" path))
-                                 (all-the-icons-octicon "repo" :height 1.1 :v-adjust 0.01))
-                                (t (let ((matcher (all-the-icons-match-to-alist path all-the-icons-dir-icon-alist)))
-                                     (apply (car matcher) (list (cadr matcher) :v-adjust 0.01)))))
+                                 (all-the-icons-octicon "repo"
+                                                        :height 1.1 :v-adjust 0.01))
+                                (t (let
+                                       ((matcher (all-the-icons-match-to-alist
+                                                  path all-the-icons-dir-icon-alist)))
+                                     (apply (car matcher) (list (cadr matcher)
+                                                                :v-adjust 0.01)))))
                              (cond
                               ((string-equal ,section-name "Agenda for today:")
-                               (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
+                               (all-the-icons-octicon "primitive-dot"
+                                                      :height 1.0 :v-adjust 0.01))
                               ((eq (file-remote-p path) nil)
                                (all-the-icons-icon-for-file (file-name-nondirectory path)))
-                              (t (all-the-icons-octicon "radio-tower" :height 1.1 :v-adjust 0.01))))))
+                              (t (all-the-icons-octicon "radio-tower"
+                                                        :height 1.1 :v-adjust 0.01))))))
                  (insert "\t"))
                (setq widget
                      (widget-create 'push-button
