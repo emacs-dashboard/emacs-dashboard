@@ -46,18 +46,18 @@ to the specified width, with aspect ratio preserved."
 
 
 (defcustom dashboard-set-heading-icons nil
-  "When non nil, heading sections will have icons"
+  "When non nil, heading sections will have icons."
   :type 'boolean
   :group 'dashboard)
 
 (defcustom dashboard-set-file-icons nil
-  "When non nil, file lists will have icons"
+  "When non nil, file lists will have icons."
   :type 'boolean
   :group 'dashboard)
 
 
 (defcustom dashboard-set-init-info nil
-  "When non nil, init info will be displayed under banner"
+  "When non nil, init info will be displayed under banner."
   :type 'boolean
   :group 'dashboard)
 
@@ -88,7 +88,7 @@ to the specified width, with aspect ratio preserved."
 
 (defvar dashboard-init-info (format "%d packages loaded in %s"
                                     (length package-activated-list) (emacs-init-time))
-  "Init info with packages loaded and init time")
+  "Init info with packages loaded and init time.")
 
 (defvar dashboard-startup-banner 'official
   "Specify the startup banner.
@@ -307,6 +307,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 
 ;; Add heading icons
 (defun dashboard-insert-heading-icon (heading &optional _shortcut)
+  "Add icon to the section's HEADING."
   (when (and
          (display-graphic-p)
          (eq dashboard-set-heading-icons t))
