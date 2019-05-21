@@ -44,6 +44,18 @@ to the specified width, with aspect ratio preserved."
   :type 'integer
   :group 'dashboard)
 
+
+(defcustom dashboard-set-heading-icons nil
+  "When non nil, heading sections will have icons."
+  :type 'boolean
+  :group 'dashboard)
+
+(defcustom dashboard-set-file-icons nil
+  "When non nil, file lists will have icons."
+  :type 'boolean
+  :group 'dashboard)
+
+
 (defcustom dashboard-show-shortcuts t
   "Whether to show shortcut keys for each section."
   :type 'boolean
@@ -113,7 +125,7 @@ Set to nil for unbounded.")
   :group 'dashboard)
 
 (defface dashboard-heading
-  '((t (:inherit font-lock-function-name-face)))
+  '((t (:inherit font-lock-keyword-face)))
   "Face used for widget headings."
   :group 'dashboard)
 
@@ -259,24 +271,6 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
             (dashboard-insert-image-banner banner)
           (dashboard-insert-ascii-banner-centered banner))))))
 
-;;
-;; Section insertion
-;;
-(defmacro dashboard-insert-section-list (section-name list action &rest rest)
-  "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
-  `(when (car ,list)
-     (mapc (lambda (el)
-             (let ((widget nil))
-               (insert "\n    ")
-               (setq widget
-                     (widget-create 'push-button
-                                    :action ,action
-                                    :mouse-face 'highlight
-                                    :button-prefix ""
-                                    :button-suffix ""
-                                    :format "%[%t%]"
-                                    ,@rest))))
-           ,list)))
 
 (defmacro dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
@@ -294,6 +288,85 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                 ,@widget-params)
            (dashboard-insert-shortcut ,shortcut ,section-name))
        (insert "\n    --- No items ---"))))
+
+
+;; Add heading icons
+(defun dashboard-insert-heading-icon (heading &optional _shortcut)
+  "Add icon to the section's HEADING."
+  (when (and
+         (display-graphic-p)
+         (eq dashboard-set-heading-icons t))
+    ;; Load `all-the-icons' if it's unavailable
+    (unless (featurep 'all-the-icons)
+      (require 'all-the-icons nil t))
+
+    (insert (cond
+             ((string-equal heading "Recent Files:")
+              (all-the-icons-octicon "history" :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+             ((string-equal heading "Bookmarks:")
+              (all-the-icons-octicon "bookmark" :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+             ((string-equal heading "Agenda for today:")
+              (all-the-icons-octicon "calendar" :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+             ((string-equal heading "Registers:")
+              (all-the-icons-octicon "database" :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+             ((string-equal heading "Projects:")
+              (all-the-icons-octicon "rocket" :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))))
+    (insert " ")))
+(advice-add #'dashboard-insert-heading :before #'dashboard-insert-heading-icon)
+
+;;
+;; Add file icons
+(defmacro dashboard-insert-section-list (section-name list action &rest rest)
+  "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
+  `(when (car ,list)
+     (mapc (lambda (el)
+             (let ((widget nil))
+               (insert "\n    ")
+               (when (and
+                      (display-graphic-p)
+                      (eq dashboard-set-file-icons t))
+                 (insert (let ((path (car (last (split-string ,@rest " - ")))))
+                           (when path
+                             (if (and
+                                  (eq (file-remote-p path) nil)
+                                  (file-directory-p path))
+                                 (cond
+                                  ((and (fboundp 'tramp-tramp-file-p)
+                                        (tramp-tramp-file-p default-directory))
+                                   (all-the-icons-octicon "file-directory"
+                                                          :height 1.0 :v-adjust 0.01))
+                                  ((file-symlink-p path)
+                                   (all-the-icons-octicon "file-symlink-directory"
+                                                          :height 1.0 :v-adjust 0.01))
+                                  ((all-the-icons-dir-is-submodule path)
+                                   (all-the-icons-octicon "file-submodule"
+                                                          :height 1.0 :v-adjust 0.01))
+                                  ((file-exists-p (format "%s/.git" path))
+                                   (all-the-icons-octicon "repo"
+                                                          :height 1.1 :v-adjust 0.01))
+                                  (t (let
+                                         ((matcher (all-the-icons-match-to-alist
+                                                    path all-the-icons-dir-icon-alist)))
+                                       (apply (car matcher) (list (cadr matcher)
+                                                                  :v-adjust 0.01)))))
+                               (cond
+                                ((string-equal ,section-name "Agenda for today:")
+                                 (all-the-icons-octicon "primitive-dot"
+                                                        :height 1.0 :v-adjust 0.01))
+                                ((eq (file-remote-p path) nil)
+                                 (all-the-icons-icon-for-file (file-name-nondirectory path)))
+                                (t (all-the-icons-octicon "radio-tower"
+                                                          :height 1.1 :v-adjust 0.01)))))))
+                 (insert "\t"))
+               (setq widget
+                     (widget-create 'push-button
+                                    :action ,action
+                                    :mouse-face 'highlight
+                                    :button-prefix ""
+                                    :button-suffix ""
+                                    :format "%[%t%]"
+                                    ,@rest))))
+           ,list)))
 ;;
 ;; Recentf
 ;;
@@ -326,7 +399,6 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
          (format "%s - %s" el (abbreviate-file-name file))
        el))))
 
-;;
 ;; Projectile
 ;;
 (defun dashboard-insert-projects (list-size)

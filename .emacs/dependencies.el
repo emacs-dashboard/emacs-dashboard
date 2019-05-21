@@ -12,4 +12,8 @@
   ;;:pin melpa-stable
   :ensure t)
 
+(use-package all-the-icons
+  ;;:pin melpa-stable
+  :ensure t)
+
 ;;; dependencies.el ends here
