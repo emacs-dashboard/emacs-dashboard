@@ -3,6 +3,8 @@
 ;;
 ;; Usage: emacs -q -l $project_root/emacs/init.el
 
+(setq coding-system-for-write 'utf-8)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Set `user-emacs-directory' to avoid overwriting $HOME/.emacs.d
 ;; See also: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=15539#66
