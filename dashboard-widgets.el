@@ -45,18 +45,17 @@ to the specified width, with aspect ratio preserved."
   :group 'dashboard)
 
 
-(defcustom dashboard-set-heading-icons nil
+(defcustom dashboard-set-heading-icons t
   "When non nil, heading sections will have icons."
   :type 'boolean
   :group 'dashboard)
 
-(defcustom dashboard-set-file-icons nil
+(defcustom dashboard-set-file-icons t
   "When non nil, file lists will have icons."
   :type 'boolean
   :group 'dashboard)
 
-
-(defcustom dashboard-set-init-info nil
+(defcustom dashboard-set-init-info t
   "When non nil, init info will be displayed under banner."
   :type 'boolean
   :group 'dashboard)
@@ -84,7 +83,6 @@ to the specified width, with aspect ratio preserved."
 
 (defvar dashboard-banner-logo-title "Welcome to Emacs!"
   "Specify the startup banner.")
-
 
 (defvar dashboard-init-info (format "%d packages loaded in %s"
                                     (length package-activated-list) (emacs-init-time))
