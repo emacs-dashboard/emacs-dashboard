@@ -96,6 +96,11 @@ To add icons to the widget headings and their items:
   (setq dashboard-set-file-icons t)
 #+END_SRC
 
+To show info about the packages loaded and the init time:
+#+BEGIN_SRC elisp
+  (setq dashboard-set-init-info t)
+#+END_SRC
+
 ** Org mode’s agenda
 
    To display today’s agenda items on the dashboard, add ~agenda~ to ~dashboard-items~:

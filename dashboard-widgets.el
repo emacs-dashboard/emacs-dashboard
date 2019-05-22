@@ -55,6 +55,10 @@ to the specified width, with aspect ratio preserved."
   :type 'boolean
   :group 'dashboard)
 
+(defcustom dashboard-set-init-info t
+  "When non nil, init info will be displayed under banner."
+  :type 'boolean
+  :group 'dashboard)
 
 (defcustom dashboard-show-shortcuts t
   "Whether to show shortcut keys for each section."
@@ -79,6 +83,10 @@ to the specified width, with aspect ratio preserved."
 
 (defvar dashboard-banner-logo-title "Welcome to Emacs!"
   "Specify the startup banner.")
+
+(defvar dashboard-init-info (format "%d packages loaded in %s"
+                                    (length package-activated-list) (emacs-init-time))
+  "Init info with packages loaded and init time.")
 
 (defvar dashboard-startup-banner 'official
   "Specify the startup banner.
@@ -230,7 +238,12 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
       (when title
         (insert (make-string (max 0 (floor (/ (- dashboard-banner-length
                                                  (+ (length title) 1)) 2))) ?\ ))
-        (insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title)))))))
+        (insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title))))
+      (when dashboard-set-init-info
+        (insert (make-string (max 0 (floor (/ (- dashboard-banner-length
+                                                 (+ (length dashboard-init-info) 1)) 2))) ?\ ))
+        (insert (concat
+                 (propertize dashboard-init-info 'face 'font-lock-comment-face)))))))
 
 (defun dashboard-get-banner-path (index)
   "Return the full path to banner with index INDEX."
