@@ -1,4 +1,4 @@
-;;; dashboard-widgets.el --- A startup screen extracted from Spacemacs
+;;; dashboard-widgets.el --- A startup screen extracted from Spacemacs  -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2016 Rakan Al-Hneiti & Contributors
 ;;
@@ -174,7 +174,7 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
        (eval-after-load 'dashboard
          (define-key dashboard-mode-map ,shortcut-char sym)))))
 
-(defun dashboard-append (msg &optional messagebuf)
+(defun dashboard-append (msg &optional _messagebuf)
   "Append MSG to dashboard buffer.
 If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (with-current-buffer (get-buffer-create "*dashboard*")
@@ -305,7 +305,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
           (dashboard-insert-ascii-banner-centered banner))))))
 
 
-(defmacro dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
+(defmacro dashboard-insert-section (section-name list _list-size shortcut action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
 SHORTCUT is the keyboard shortcut used to access the section.
 ACTION is theaction taken when the user activates the widget button.
@@ -325,12 +325,11 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Section list
 ;;
-(defmacro dashboard-insert-section-list (section-name list action &rest rest)
+(defmacro dashboard-insert-section-list (_section-name list _action &rest rest)
   "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
   `(when (car ,list)
      (mapc (lambda (el)
-             (let ((widget nil)
-                   (tag ,@rest))
+             (let ((tag ,@rest))
                (insert "\n    ")
                (when (and (display-graphic-p)
                           dashboard-set-file-icons
