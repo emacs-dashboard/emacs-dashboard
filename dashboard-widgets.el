@@ -197,15 +197,15 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (insert
      (cond
       ((string-equal heading "Recent Files:")
-       (all-the-icons-octicon "file-text" :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+       (all-the-icons-octicon "file-text" :height 1.2 :v-adjust 0 :face 'dashboard-heading))
       ((string-equal heading "Bookmarks:")
-       (all-the-icons-octicon "bookmark" :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+       (all-the-icons-octicon "bookmark" :height 1.2 :v-adjust 0 :face 'dashboard-heading))
       ((string-equal heading "Agenda for today:")
-       (all-the-icons-octicon "calendar" :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+       (all-the-icons-octicon "calendar" :height 1.2 :v-adjust 0 :face 'dashboard-heading))
       ((string-equal heading "Registers:")
-       (all-the-icons-octicon "database" :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+       (all-the-icons-octicon "database" :height 1.2 :v-adjust 0 :face 'dashboard-heading))
       ((string-equal heading "Projects:")
-       (all-the-icons-octicon "file-directory" :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))))
+       (all-the-icons-octicon "file-directory" :height 1.2 :v-adjust 0 :face 'dashboard-heading))))
     (insert " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
@@ -305,7 +305,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
           (dashboard-insert-ascii-banner-centered banner))))))
 
 
-(defmacro dashboard-insert-section (section-name list _list-size shortcut action &rest widget-params)
+(defmacro dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
 SHORTCUT is the keyboard shortcut used to access the section.
 ACTION is theaction taken when the user activates the widget button.
@@ -316,7 +316,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
      (if ,list
          (when (dashboard-insert-section-list
                 ,section-name
-                (dashboard-subseq ,list 0 list-size)
+                (dashboard-subseq ,list 0 ,list-size)
                 ,action
                 ,@widget-params)
            (dashboard-insert-shortcut ,shortcut ,section-name))
@@ -325,41 +325,51 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Section list
 ;;
-(defmacro dashboard-insert-section-list (_section-name list _action &rest rest)
+(defmacro dashboard-insert-section-list (section-name list _action &rest rest)
   "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
   `(when (car ,list)
-     (mapc (lambda (el)
-             (let ((tag ,@rest))
-               (insert "\n    ")
-               (when (and (display-graphic-p)
-                          dashboard-set-file-icons
-                          (featurep 'all-the-icons))
-                 (when-let
-                     ((path (car (last (split-string ,@rest " - "))))
-                      (icon (if (file-directory-p path)
-                                (cond
-                                 ((and (fboundp 'tramp-tramp-file-p)
-                                       (tramp-tramp-file-p default-directory))
-                                  (all-the-icons-octicon "file-directory" :height 1.0 :v-adjust 0.01))
-                                 ((file-symlink-p path)
-                                  (all-the-icons-octicon "file-symlink-directory" :height 1.0 :v-adjust 0.01))
-                                 ((all-the-icons-dir-is-submodule path)
-                                  (all-the-icons-octicon "file-submodule" :height 1.0 :v-adjust 0.01))
-                                 ((file-exists-p (format "%s/.git" path))
-                                  (all-the-icons-octicon "repo" :height 1.1 :v-adjust 0.01))
-                                 (t (let ((matcher (all-the-icons-match-to-alist path all-the-icons-dir-icon-alist)))
-                                      (apply (car matcher) (list (cadr matcher) :v-adjust 0.01)))))
-                              (all-the-icons-icon-for-file (file-name-nondirectory path)))))
-                   (setq tag (concat icon " " ,@rest))))
-               (widget-create 'file-link
-                              :tag tag
-                              :mouse-face 'highlight
-                              :help-echo el
-                              :button-prefix ""
-                              :button-suffix ""
-                              :format "%[%t%]"
-                              el)))
-           ,list)))
+     (mapc
+      (lambda (el)
+        (let ((tag ,@rest))
+          (insert "\n    ")
+
+          (when (and (display-graphic-p)
+                     dashboard-set-file-icons
+                     (featurep 'all-the-icons))
+            (let* ((path (car (last (split-string ,@rest " - "))))
+                   (icon (if (and (not (file-remote-p path))
+                                  (file-directory-p path))
+                             (cond
+                              ((and (fboundp 'tramp-tramp-file-p)
+                                    (tramp-tramp-file-p default-directory))
+                               (all-the-icons-octicon "file-directory" :height 1.0 :v-adjust 0.01))
+                              ((file-symlink-p path)
+                               (all-the-icons-octicon "file-symlink-directory"
+                                                      :height 1.0 :v-adjust 0.01))
+                              ((all-the-icons-dir-is-submodule path)
+                               (all-the-icons-octicon "file-submodule" :height 1.0 :v-adjust 0.01))
+                              ((file-exists-p (format "%s/.git" path))
+                               (all-the-icons-octicon "repo" :height 1.1 :v-adjust 0.01))
+                              (t (let ((matcher (all-the-icons-match-to-alist
+                                                 path all-the-icons-dir-icon-alist)))
+                                   (apply (car matcher) (list (cadr matcher) :v-adjust 0.01)))))
+                           (cond
+                            ((string-equal ,section-name "Agenda for today:")
+                             (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
+                            ((file-remote-p path)
+                             (all-the-icons-octicon "radio-tower" :height 1.1 :v-adjust 0.01))
+                            (t (all-the-icons-icon-for-file (file-name-nondirectory path)))))))
+              (setq tag (concat icon " " ,@rest))))
+
+          (widget-create 'file-link
+                         :tag tag
+                         :mouse-face 'highlight
+                         :help-echo el
+                         :button-prefix ""
+                         :button-suffix ""
+                         :format "%[%t%]"
+                         el)))
+      ,list)))
 
 ;;
 ;; Recentf
