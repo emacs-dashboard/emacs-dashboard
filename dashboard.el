@@ -1,4 +1,4 @@
-;;; dashboard.el --- A startup screen extracted from Spacemacs
+;;; dashboard.el --- A startup screen extracted from Spacemacs  -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2016 Rakan Al-Hneiti & Contributors
 ;;
@@ -143,7 +143,6 @@ Optional prefix ARG says how many lines to move; default is one line."
   "Insert the list of widgets into the buffer."
   (interactive)
   (let ((buffer-exists (buffer-live-p (get-buffer dashboard-buffer-name)))
-        (save-line nil)
         (recentf-is-on (recentf-enabled-p))
         (origial-recentf-list recentf-list)
         (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
@@ -163,8 +162,7 @@ Optional prefix ARG says how many lines to move; default is one line."
       (setq dashboard-banner-length (window-width)
             dashboard-buffer-last-width dashboard-banner-length)
       (with-current-buffer (get-buffer-create dashboard-buffer-name)
-        (let ((buffer-read-only nil)
-              (list-separator "\n\n"))
+        (let ((buffer-read-only nil))
           (erase-buffer)
           (dashboard-insert-banner)
           (dashboard-insert-page-break)
