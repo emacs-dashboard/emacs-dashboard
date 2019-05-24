@@ -509,7 +509,7 @@ date part is considered."
    register-alist
    list-size
    "e"
-   (lambda (&rest ignore) (jump-to-register (car el)))
+   `(lambda (&rest ignore) (jump-to-register (car el)))
    (format "%c - %s" (car el) (register-describe-oneline (car el)))))
 
 
