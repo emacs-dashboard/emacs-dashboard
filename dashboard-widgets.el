@@ -325,7 +325,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Section list
 ;;
-(defmacro dashboard-insert-section-list (section-name list _action &rest rest)
+(defmacro dashboard-insert-section-list (section-name list action &rest rest)
   "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
   `(when (car ,list)
      (mapc
@@ -361,14 +361,13 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                             (t (all-the-icons-icon-for-file (file-name-nondirectory path)))))))
               (setq tag (concat icon " " ,@rest))))
 
-          (widget-create 'file-link
+          (widget-create 'item
                          :tag tag
+                         :action ,action
                          :mouse-face 'highlight
-                         :help-echo el
                          :button-prefix ""
                          :button-suffix ""
-                         :format "%[%t%]"
-                         el)))
+                         :format "%[%t%]")))
       ,list)))
 
 ;;
@@ -508,7 +507,7 @@ date part is considered."
    register-alist
    list-size
    "e"
-   (lambda (&rest ignore) (jump-to-register (car el)))
+   (lambda (&rest _ignore) (jump-to-register (car el)))
    (format "%c - %s" (car el) (register-describe-oneline (car el)))))
 
 
