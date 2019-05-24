@@ -325,7 +325,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Section list
 ;;
-(defmacro dashboard-insert-section-list (section-name list _action &rest rest)
+(defmacro dashboard-insert-section-list (section-name list action &rest rest)
   "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
   `(when (car ,list)
      (mapc
@@ -362,6 +362,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
               (setq tag (concat icon " " ,@rest))))
 
           (widget-create 'file-link
+                         :action ,action
                          :tag tag
                          :mouse-face 'highlight
                          :help-echo el
