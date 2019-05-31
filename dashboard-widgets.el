@@ -417,7 +417,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   (when dashboard-set-footer
     (insert "\n")
     (dashboard-center-line dashboard-footer)
-    (insert dashboard-footer-icon)
+    (when (display-graphic-p)
+      (insert dashboard-footer-icon))
     (insert " ")
     (insert (propertize dashboard-footer 'face 'font-lock-doc-face))))
 
