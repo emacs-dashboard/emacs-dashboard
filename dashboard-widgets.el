@@ -44,7 +44,6 @@ to the specified width, with aspect ratio preserved."
   :type 'integer
   :group 'dashboard)
 
-
 (defcustom dashboard-set-heading-icons nil
   "When non nil, heading sections will have icons."
   :type 'boolean
@@ -57,6 +56,11 @@ to the specified width, with aspect ratio preserved."
 
 (defcustom dashboard-set-init-info t
   "When non nil, init info will be displayed under banner."
+  :type 'boolean
+  :group 'dashboard)
+
+(defcustom dashboard-set-footer nil
+  "When non nil, a footer will be displayed at the bottom."
   :type 'boolean
   :group 'dashboard)
 
@@ -87,6 +91,15 @@ to the specified width, with aspect ratio preserved."
 (defvar dashboard-init-info (format "%d packages loaded in %s"
                                     (length package-activated-list) (emacs-init-time))
   "Init info with packages loaded and init time.")
+
+(defvar dashboard-footer "The one,true editor, Emacs!"
+  "A footer with some short message.")
+
+(defvar dashboard-footer-icon (all-the-icons-fileicon "emacs"
+                                                      :height 1.1
+                                                      :v-adjust -0.05
+                                                      :face 'font-lock-keyword-face)
+  "Footer's icon.")
 
 (defvar dashboard-startup-banner 'official
   "Specify the startup banner.
@@ -133,7 +146,7 @@ If nil it is disabled.  Possible values for list-type are:
 ;; Faces
 ;;
 (defface dashboard-text-banner
-  '((t :inherit default))
+  '((t (:inherit font-lock-keyword-face)))
   "Face used for text banners."
   :group 'dashboard)
 
@@ -230,6 +243,11 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (insert (propertize heading 'face 'dashboard-heading))
   (if shortcut (insert (format " (%s)" shortcut))))
 
+(defun dashboard-center-line (string)
+  "Center a STRING accoring to it's size."
+  (insert (make-string (max 0 (floor (/ (- dashboard-banner-length
+                                           (+ (length string) 1)) 2))) ?\ )))
+
 ;;
 ;; BANNER
 ;;
@@ -275,14 +293,18 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
       (insert-image spec)
       (insert "\n\n")
       (when title
-        (insert (make-string (max 0 (floor (/ (- dashboard-banner-length
-                                                 (+ (length title) 1)) 2))) ?\ ))
-        (insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title))))
-      (when dashboard-set-init-info
-        (insert (make-string (max 0 (floor (/ (- dashboard-banner-length
-                                                 (+ (length dashboard-init-info) 1)) 2))) ?\ ))
-        (insert (concat
-                 (propertize dashboard-init-info 'face 'font-lock-comment-face)))))))
+        (dashboard-center-line title)
+        (insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title)))))))
+
+;;
+;; INIT INFO
+;;
+(defun dashboard-insert-init-info ()
+  "Insert init info when dashboard-set-init-info is t."
+  (when dashboard-set-init-info
+    (dashboard-center-line dashboard-init-info)
+    (insert
+     (propertize dashboard-init-info 'face 'font-lock-comment-face))))
 
 (defun dashboard-get-banner-path (index)
   "Return the full path to banner with index INDEX."
@@ -321,8 +343,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
       (when banner
         (if (image-type-available-p (intern (file-name-extension banner)))
             (dashboard-insert-image-banner banner)
-          (dashboard-insert-ascii-banner-centered banner))))))
-
+          (dashboard-insert-ascii-banner-centered banner))
+        (dashboard-insert-init-info)))))
 
 (defmacro dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
@@ -388,6 +410,16 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                          :button-suffix ""
                          :format "%[%t%]")))
       ,list)))
+
+;; Footer
+(defun dashboard-insert-footer ()
+  "Insert footer of dashboard."
+  (when dashboard-set-footer
+    (insert "\n")
+    (dashboard-center-line dashboard-footer)
+    (insert dashboard-footer-icon)
+    (insert " ")
+    (insert (propertize dashboard-footer 'face 'font-lock-doc-face))))
 
 ;;
 ;; Recentf
