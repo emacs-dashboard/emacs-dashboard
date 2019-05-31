@@ -88,7 +88,7 @@ to the specified width, with aspect ratio preserved."
   ;; Check if package.el was loaded and if package loading was enabled
   (if (bound-and-true-p package-enable-at-startup)
       (format "%d packages loaded in %s"
-            (length package-activated-list) (emacs-init-time))
+              (length package-activated-list) (emacs-init-time))
     (format "Emacs started in %s" (emacs-init-time)))
   "Init info with packages loaded and init time.")
 
