@@ -92,7 +92,19 @@ to the specified width, with aspect ratio preserved."
                                     (length package-activated-list) (emacs-init-time))
   "Init info with packages loaded and init time.")
 
-(defvar dashboard-footer "The one true editor, Emacs!"
+(defvar dashboard-footer
+  (let ((list '("The one true editor, Emacs!"
+                "Who the hell uses VIM anyway? Go Evil!"
+                "Free as free speech, free as free Beer"
+                "Richard Stallman is proud of you"
+                "Happy coding!"
+                "Vi Vi Vi, the editor of the beast"
+                "Welcome to the church of Emacs"
+                "While any text editor can save your files,\
+ only Emacs can save your soul"
+                "I showed you my source code,pls respond"
+                )))
+    (nth (random (1- (1+ (length list)))) list))
   "A footer with some short message.")
 
 (defvar dashboard-footer-icon (all-the-icons-fileicon "emacs"
