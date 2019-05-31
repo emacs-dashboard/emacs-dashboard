@@ -117,6 +117,16 @@ If nil it is disabled.  Possible values for list-type are:
   "Length used for startup lists with otherwise unspecified bounds.
 Set to nil for unbounded.")
 
+(defvar dashboard-heading-icons '((recents   . "history")
+                                  (bookmarks . "bookmark")
+                                  (agenda    . "calendar")
+                                  (projects . "rocket")
+                                  (registers . "database"))
+  "Association list for the icons of the heading sections.
+Will be of the form `(list-type . icon-name-string)`.
+If nil it is disabled.  Possible values for list-type are:
+`recents' `bookmarks' `projects' `agenda' `registers'")
+
 (defvar recentf-list nil)
 
 ;;
@@ -182,6 +192,11 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (let ((buffer-read-only nil))
       (insert msg))))
 
+(defun dashboard-modify-heading-icons (alist)
+  "Append ALIST items to dashboard-heading-icons to modify icons."
+  (dolist (icon alist)
+    (add-to-list 'dashboard-heading-icons icon)))
+
 (defun dashboard-insert-page-break ()
   "Insert a page break line in dashboard buffer."
   (dashboard-append dashboard-page-separator))
@@ -194,18 +209,22 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (unless (require 'all-the-icons nil 'noerror)
       (error "Package `all-the-icons' isn't installed"))
 
-    (insert
-     (cond
-      ((string-equal heading "Recent Files:")
-       (all-the-icons-octicon "file-text" :height 1.2 :v-adjust 0 :face 'dashboard-heading))
-      ((string-equal heading "Bookmarks:")
-       (all-the-icons-octicon "bookmark" :height 1.2 :v-adjust 0 :face 'dashboard-heading))
-      ((string-equal heading "Agenda for today:")
-       (all-the-icons-octicon "calendar" :height 1.2 :v-adjust 0 :face 'dashboard-heading))
-      ((string-equal heading "Registers:")
-       (all-the-icons-octicon "database" :height 1.2 :v-adjust 0 :face 'dashboard-heading))
-      ((string-equal heading "Projects:")
-       (all-the-icons-octicon "file-directory" :height 1.2 :v-adjust 0 :face 'dashboard-heading))))
+    (insert (cond
+             ((string-equal heading "Recent Files:")
+              (all-the-icons-octicon (cdr (assoc 'recents dashboard-heading-icons))
+                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+             ((string-equal heading "Bookmarks:")
+              (all-the-icons-octicon (cdr (assoc 'bookmarks dashboard-heading-icons))
+                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+             ((string-equal heading "Agenda for today:")
+              (all-the-icons-octicon (cdr (assoc 'agenda dashboard-heading-icons))
+                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+             ((string-equal heading "Registers:")
+              (all-the-icons-octicon (cdr (assoc 'registers dashboard-heading-icons))
+                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+             ((string-equal heading "Projects:")
+              (all-the-icons-octicon (cdr (assoc 'projects dashboard-heading-icons))
+                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))))
     (insert " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
