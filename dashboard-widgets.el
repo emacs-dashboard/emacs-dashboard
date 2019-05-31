@@ -59,7 +59,7 @@ to the specified width, with aspect ratio preserved."
   :type 'boolean
   :group 'dashboard)
 
-(defcustom dashboard-set-footer nil
+(defcustom dashboard-set-footer t
   "When non nil, a footer will be displayed at the bottom."
   :type 'boolean
   :group 'dashboard)

@@ -112,10 +112,14 @@ Also, the message can be customized like this:
   (setq dashboard-init-info "This is an init message!")
 #+END_SRC
 
-To add a footnote, customize it and customize its icon;
+A randomly selected footnote will be displayed. To disable it:
+#+BEGIN_SRC elisp
+  (setq dashboard-set-footer nil)
+#+END_SRC
+
+To customize it and customize its icon;
 
 #+BEGIN_SRC elisp
-  (setq dashboard-set-footer t)
   (setq dashboard-footer "Dashboard is pretty cool!")
   (setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
 						     :height 1.1
