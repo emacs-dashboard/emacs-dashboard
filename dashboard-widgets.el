@@ -92,7 +92,7 @@ to the specified width, with aspect ratio preserved."
                                     (length package-activated-list) (emacs-init-time))
   "Init info with packages loaded and init time.")
 
-(defvar dashboard-footer "The one,true editor, Emacs!"
+(defvar dashboard-footer "The one true editor, Emacs!"
   "A footer with some short message.")
 
 (defvar dashboard-footer-icon (all-the-icons-fileicon "emacs"
