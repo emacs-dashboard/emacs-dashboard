@@ -186,7 +186,8 @@ Optional prefix ARG says how many lines to move; default is one line."
               (while (not (eobp))
                 (and (not (eq ? (char-after)))
                      (insert (make-string margin ?\ )))
-                (forward-line 1)))))
+                (forward-line 1))))
+          (dashboard-insert-footer))
         (dashboard-mode)
         (goto-char (point-min))))
     (if recentf-is-on

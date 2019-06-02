@@ -107,6 +107,26 @@ To show info about the packages loaded and the init time:
   (setq dashboard-set-init-info t)
 #+END_SRC
 
+Also, the message can be customized like this:
+#+BEGIN_SRC elisp
+  (setq dashboard-init-info "This is an init message!")
+#+END_SRC
+
+A randomly selected footnote will be displayed. To disable it:
+#+BEGIN_SRC elisp
+  (setq dashboard-set-footer nil)
+#+END_SRC
+
+To customize it and customize its icon;
+
+#+BEGIN_SRC elisp
+  (setq dashboard-footer "Dashboard is pretty cool!")
+  (setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
+						     :height 1.1
+						     :v-adjust -0.05
+						     :face 'font-lock-keyword-face))
+#+END_SRC
+
 ** Org mode’s agenda
 
    To display today’s agenda items on the dashboard, add ~agenda~ to ~dashboard-items~:
