@@ -102,6 +102,23 @@ To modify heading icons with another icon from all-the-icons octicons:
                                   (bookmarks . "book")))
 #+END_SRC
 
+To show navigator below the banner:
+#+BEGIN_SRC emacs-lisp
+(setq dashboard-set-navigator t)
+#+END_SRC
+
+To customize the buttons of the navigator like this:
+#+BEGIN_SRC emacs-lisp
+;; Format: "icon title help action face"
+(setq dashboard-navigator-buttons
+      `((,(all-the-icons-octicon "mark-github" :height 1.1 :v-adjust 0.0)
+         "Homepage"
+         "Browse homepage"
+         (lambda (&rest _) (browse-url "homepage")))
+        ("★" "Star" "Show stars" (lambda (&rest _) (show-stars)) 'warning)
+        ("?" "Help" "?/h" #'show-help nil)))
+#+END_SRC
+
 To show info about the packages loaded and the init time:
 #+BEGIN_SRC elisp
 (setq dashboard-set-init-info t)
