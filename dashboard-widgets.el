@@ -119,7 +119,7 @@ to the specified width, with aspect ratio preserved."
                               :height 1.1
                               :v-adjust -0.05
                               :face 'font-lock-keyword-face)
-    ">")
+    (propertize ">" 'face 'dashboard-footer))
   "Footer's icon.")
 
 (defvar dashboard-startup-banner 'official
@@ -178,6 +178,11 @@ If nil it is disabled.  Possible values for list-type are:
 
 (defface dashboard-heading
   '((t (:inherit font-lock-keyword-face)))
+  "Face used for widget headings."
+  :group 'dashboard)
+
+(defface dashboard-footer
+  '((t (:inherit font-lock-doc-face)))
   "Face used for widget headings."
   :group 'dashboard)
 
@@ -440,7 +445,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
     (dashboard-center-line dashboard-footer)
     (insert dashboard-footer-icon)
     (insert " ")
-    (insert (propertize dashboard-footer 'face 'font-lock-doc-face))))
+    (insert (propertize dashboard-footer 'face 'dashboard-footer))))
 
 ;;
 ;; Recentf
