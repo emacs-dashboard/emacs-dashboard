@@ -112,8 +112,9 @@ to the specified width, with aspect ratio preserved."
   "A footer with some short message.")
 
 (defvar dashboard-footer-icon
-  (if (or (fboundp 'all-the-icons-fileicon)
-          (require 'all-the-icons nil 'noerror))
+  (if (and (display-graphic-p)
+           (or (fboundp 'all-the-icons-fileicon)
+               (require 'all-the-icons nil 'noerror)))
       (all-the-icons-fileicon "emacs"
                               :height 1.1
                               :v-adjust -0.05
@@ -437,8 +438,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   (when dashboard-set-footer
     (insert "\n")
     (dashboard-center-line dashboard-footer)
-    (when (display-graphic-p)
-      (insert dashboard-footer-icon))
+    (insert dashboard-footer-icon)
     (insert " ")
     (insert (propertize dashboard-footer 'face 'font-lock-doc-face))))
 
