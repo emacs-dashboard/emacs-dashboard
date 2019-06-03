@@ -111,10 +111,14 @@ to the specified width, with aspect ratio preserved."
     (nth (random (1- (1+ (length list)))) list))
   "A footer with some short message.")
 
-(defvar dashboard-footer-icon (all-the-icons-fileicon "emacs"
-                                                      :height 1.1
-                                                      :v-adjust -0.05
-                                                      :face 'font-lock-keyword-face)
+(defvar dashboard-footer-icon
+  (if (or (fboundp 'all-the-icons-fileicon)
+          (require 'all-the-icons nil 'noerror))
+      (all-the-icons-fileicon "emacs"
+                              :height 1.1
+                              :v-adjust -0.05
+                              :face 'font-lock-keyword-face)
+    ">")
   "Footer's icon.")
 
 (defvar dashboard-startup-banner 'official

@@ -74,11 +74,11 @@ To update the banner or banner title
 
 To customize which widgets are displayed, you can use the following snippet
 #+BEGIN_SRC elisp
-  (setq dashboard-items '((recents  . 5)
-                          (bookmarks . 5)
-                          (projects . 5)
-                          (agenda . 5)
-                          (registers . 5)))
+(setq dashboard-items '((recents  . 5)
+                        (bookmarks . 5)
+                        (projects . 5)
+                        (agenda . 5)
+                        (registers . 5)))
  #+END_SRC
 This will add the recent files, bookmarks, projects, org-agenda and registers widgets to your dashboard each displaying 5 items.
 
@@ -92,39 +92,39 @@ To add your own custom widget is pretty easy, define your widget's callback func
 
 To add icons to the widget headings and their items:
 #+BEGIN_SRC elisp
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
+(setq dashboard-set-heading-icons t)
+(setq dashboard-set-file-icons t)
 #+END_SRC
 
 To modify heading icons with another icon from all-the-icons octicons:
 #+BEGIN_SRC elisp
-  (dashboard-modify-heading-icons '((recents . "file-text")
-				    (bookmarks . "book")))
+(dashboard-modify-heading-icons '((recents . "file-text")
+                                  (bookmarks . "book")))
 #+END_SRC
 
 To show info about the packages loaded and the init time:
 #+BEGIN_SRC elisp
-  (setq dashboard-set-init-info t)
+(setq dashboard-set-init-info t)
 #+END_SRC
 
 Also, the message can be customized like this:
 #+BEGIN_SRC elisp
-  (setq dashboard-init-info "This is an init message!")
+(setq dashboard-init-info "This is an init message!")
 #+END_SRC
 
 A randomly selected footnote will be displayed. To disable it:
 #+BEGIN_SRC elisp
-  (setq dashboard-set-footer nil)
+(setq dashboard-set-footer nil)
 #+END_SRC
 
 To customize it and customize its icon;
 
 #+BEGIN_SRC elisp
-  (setq dashboard-footer "Dashboard is pretty cool!")
-  (setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
-						     :height 1.1
-						     :v-adjust -0.05
-						     :face 'font-lock-keyword-face))
+(setq dashboard-footer "Dashboard is pretty cool!")
+(setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
+                                                   :height 1.1
+                                                   :v-adjust -0.05
+                                                   :face 'font-lock-keyword-face))
 #+END_SRC
 
 ** Org mode’s agenda
