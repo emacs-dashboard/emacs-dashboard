@@ -388,7 +388,6 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-insert-navigator ()
   "Insert Navigator of the dashboard."
   (when (and dashboard-set-navigator dashboard-navigator-buttons)
-    (insert "\n")
     (dolist (btn dashboard-navigator-buttons)
       (let* ((icon (car btn))
              (title (or (cadr btn) ""))
@@ -418,7 +417,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
       (beginning-of-line)
       (dashboard-center-line (make-string width ?\s))
       (end-of-line))
-    (insert "\n\n\n")))
+    (insert "\n\n")))
 
 (defmacro dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
