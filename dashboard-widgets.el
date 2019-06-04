@@ -90,7 +90,7 @@ to the specified width, with aspect ratio preserved."
 
 (defvar dashboard-init-info
   ;; Check if package.el was loaded and if package loading was enabled
-  (if (featurep 'package)
+  (if (bound-and-true-p package-alist)
       (format "%d packages loaded in %s"
               (length package-activated-list) (emacs-init-time))
     (format "Emacs started in %s" (emacs-init-time)))
