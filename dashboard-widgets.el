@@ -95,10 +95,10 @@ to the specified width, with aspect ratio preserved."
 
 (defvar dashboard-navigator-buttons nil
   "Specify the navigator buttons.
-The format is: 'icon title help action face'.
+The format is: 'icon title help action face prefix suffix'.
 
 Example:
-'((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _) (show-stars)) 'warning))")
+'((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _) (show-stars)) 'warning \"[\" \"]\"))")
 
 (defvar dashboard-init-info
   ;; Check if package.el was loaded and if package loading was enabled
@@ -390,11 +390,13 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (when (and dashboard-set-navigator dashboard-navigator-buttons)
     (insert "\n")
     (dolist (btn dashboard-navigator-buttons)
-      (let ((icon (car btn))
-            (title (or (cadr btn) ""))
-            (help (or (cadr (cdr btn)) ""))
-            (action (cadr (cddr btn)))
-            (face (or (cddr (cddr btn)) 'dashboard-navigator)))
+      (let* ((icon (car btn))
+             (title (or (cadr btn) ""))
+             (help (or (cadr (cdr btn)) ""))
+             (action (or (cadr (cddr btn)) #'ignore))
+             (face (or (cadr (cddr (cdr btn))) 'dashboard-navigator))
+             (prefix (or (cadr (cddr (cddr btn))) (propertize "[" 'face face)))
+             (suffix (or (cadr (cddr (cddr (cdr btn)))) (propertize "]" 'face face))))
         (widget-create 'item
                        :tag (concat
                              (when icon
@@ -408,8 +410,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                        :help-echo help
                        :action action
                        :mouse-face 'highlight
-                       :button-prefix (propertize "[" 'face face)
-                       :button-suffix (propertize "]" 'face face)
+                       :button-prefix prefix
+                       :button-suffix suffix
                        :format "%[%t%]")
         (insert " ")))
     (let* ((width (current-column)))
