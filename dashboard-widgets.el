@@ -396,36 +396,40 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-insert-navigator ()
   "Insert Navigator of the dashboard."
   (when (and dashboard-set-navigator dashboard-navigator-buttons)
-    (dolist (btn dashboard-navigator-buttons)
-      (let* ((icon (car btn))
-             (title (or (cadr btn) ""))
-             (help (or (cadr (cdr btn)) ""))
-             (action (or (cadr (cddr btn)) #'ignore))
-             (face (or (cadr (cddr (cdr btn))) 'dashboard-navigator))
-             (prefix (or (cadr (cddr (cddr btn))) (propertize "[" 'face face)))
-             (suffix (or (cadr (cddr (cddr (cdr btn)))) (propertize "]" 'face face))))
-        (widget-create 'item
-                       :tag (concat
-                             (when icon
-                               (concat
-                                (propertize icon 'face `(:inherit
-                                                         ,(get-text-property 0 'face icon)
-                                                         :inherit
-                                                         ,face))
-                                (propertize " " 'face 'variable-pitch)))
-                             (propertize title 'face face))
-                       :help-echo help
-                       :action action
-                       :mouse-face 'highlight
-                       :button-prefix prefix
-                       :button-suffix suffix
-                       :format "%[%t%]")
-        (insert " ")))
-    (let* ((width (current-column)))
-      (beginning-of-line)
-      (dashboard-center-line (make-string width ?\s))
-      (end-of-line))
-    (insert "\n\n")))
+    (dolist (line dashboard-navigator-buttons)
+      (dolist (btn line)
+        (let* ((icon (car btn))
+               (title (cadr btn))
+               (help (or (cadr (cdr btn)) ""))
+               (action (or (cadr (cddr btn)) #'ignore))
+               (face (or (cadr (cddr (cdr btn))) 'dashboard-navigator))
+               (prefix (or (cadr (cddr (cddr btn))) (propertize "[" 'face face)))
+               (suffix (or (cadr (cddr (cddr (cdr btn)))) (propertize "]" 'face face))))
+          (widget-create 'item
+                         :tag (concat
+                               (when icon
+                                 (propertize icon 'face `(:inherit
+                                                          ,(get-text-property 0 'face icon)
+                                                          :inherit
+                                                          ,face)))
+                               (when (and icon title
+                                          (not (string-equal icon ""))
+                                          (not (string-equal title "")))
+                                 (propertize " " 'face 'variable-pitch))
+                               (when title (propertize title 'face face)))
+                         :help-echo help
+                         :action action
+                         :mouse-face 'highlight
+                         :button-prefix prefix
+                         :button-suffix suffix
+                         :format "%[%t%]")
+          (insert " ")))
+      (let* ((width (current-column)))
+        (beginning-of-line)
+        (dashboard-center-line (make-string width ?\s))
+        (end-of-line))
+      (insert "\n"))
+    (insert "\n")))
 
 (defmacro dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
