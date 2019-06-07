@@ -1,6 +1,6 @@
 ;;; dashboard.el --- A startup screen extracted from Spacemacs  -*- lexical-binding: t -*-
 
-;; Copyright (c) 2016 Rakan Al-Hneiti & Contributors
+;; Copyright (c) 2016-2019 Rakan Al-Hneiti & Contributors
 ;;
 ;; Author: Rakan Al-Hneiti
 ;; URL: https://github.com/emacs-dashboard/emacs-dashboard
@@ -10,9 +10,8 @@
 ;;; License: GPLv3
 ;;
 ;; Created: October 05, 2016
-;; Modified: December 30, 2016
-;; Version: 1.2.5
-;; Keywords: startup screen tools
+;; Version: master
+;; Keywords: startup, screen, tools, dashboard
 ;; Package-Requires: ((emacs "24.4") (page-break-lines "0.11"))
 ;;; Commentary:
 
