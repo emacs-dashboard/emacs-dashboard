@@ -504,7 +504,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
     (dashboard-center-line dashboard-footer)
     (insert dashboard-footer-icon)
     (insert " ")
-    (insert (propertize dashboard-footer 'face 'dashboard-footer))))
+    (insert (propertize dashboard-footer 'face 'dashboard-footer))
+    (insert "\n")))
 
 ;;
 ;; Recentf
