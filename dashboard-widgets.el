@@ -141,7 +141,7 @@ Example:
 Default value is `official', it displays
 the Emacs logo.  `logo' displays Emacs alternative logo.
 An integer value is the index of text
-banner.  A string value must be a path to a .PNG file.
+banner.  A string value must be a path to a .PNG or .TXT file.
 If the value is nil then no banner is displayed.")
 
 (defvar dashboard-buffer-last-width nil
