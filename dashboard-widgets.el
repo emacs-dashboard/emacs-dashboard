@@ -86,9 +86,11 @@ to the specified width, with aspect ratio preserved."
   (expand-file-name (concat dashboard-banners-directory "logo.png"))
   "Emacs banner image.")
 
-(defvar dashboard-banner-logo-text
+(defcustom dashboard-banner-logo-text
   (expand-file-name (concat dashboard-banners-directory "1.txt"))
-  "Emacs banner text.")
+  "Emacs banner text."
+  :type 'string
+  :group 'dashboard)
 
 (defconst dashboard-banner-length 75
   "Width of a banner.")
