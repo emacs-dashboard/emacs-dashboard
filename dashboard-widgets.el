@@ -86,12 +86,6 @@ to the specified width, with aspect ratio preserved."
   (expand-file-name (concat dashboard-banners-directory "logo.png"))
   "Emacs banner image.")
 
-(defcustom dashboard-banner-logo-text
-  (expand-file-name (concat dashboard-banners-directory "1.txt"))
-  "Emacs banner text."
-  :type 'string
-  :group 'dashboard)
-
 (defconst dashboard-banner-length 75
   "Width of a banner.")
 
@@ -359,10 +353,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 
 (defun dashboard-get-banner-path (index)
   "Return the full path to banner with index INDEX."
-  (if (and dashboard-banner-logo-text
-           (file-exists-p dashboard-banner-logo-text))
-      dashboard-banner-logo-text
-    (concat dashboard-banners-directory (format "%d.txt" index))))
+  (concat dashboard-banners-directory (format "%d.txt" index)))
 
 (defun dashboard-choose-banner ()
   "Return the full path of a banner based on the dotfile value."
@@ -377,10 +368,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
              (dashboard-get-banner-path 1)))
           ((integerp dashboard-startup-banner)
            (dashboard-get-banner-path dashboard-startup-banner))
-          ((and dashboard-startup-banner
-                (image-type-available-p (intern (file-name-extension
-                                                 dashboard-startup-banner)))
-                (display-graphic-p))
+          ((stringp dashboard-startup-banner)
            (if (file-exists-p dashboard-startup-banner)
                dashboard-startup-banner
              (message (format "could not find banner %s"
