@@ -156,8 +156,11 @@ Optional prefix ARG says how many lines to move; default is one line."
     ;; (this avoids many saves/loads that would result from
     ;; disabling/enabling recentf-mode)
     (if recentf-is-on
-        (setq recentf-list (seq-take recentf-list dashboard-num-recents))
-      )
+        (setq recentf-list (let ((result '()))
+                             (while (and recentf-list (> n 0))
+                               (setq n (1- n))
+                               (push (pop recentf-list) result))
+                             (nreverse result))))
     (when (or (not (eq dashboard-buffer-last-width (window-width)))
               (not buffer-exists))
       (setq dashboard-banner-length (window-width)
