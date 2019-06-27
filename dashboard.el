@@ -20,11 +20,8 @@
 
 ;;; Code:
 
-(require 'bookmark)
-(require 'calendar)
 (require 'page-break-lines)
 (require 'recentf)
-(require 'register)
 
 (require 'dashboard-widgets)
 

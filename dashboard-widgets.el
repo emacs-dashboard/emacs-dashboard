@@ -619,6 +619,7 @@ date part is considered."
 (defun dashboard-insert-agenda (list-size)
   "Add the list of LIST-SIZE items of agenda."
   (require 'org-agenda)
+  (require 'calendar)
   (let ((agenda (dashboard-get-agenda)))
     (dashboard-insert-section
      (or (and (boundp 'show-week-agenda-p) show-week-agenda-p "Agenda for the coming week:")
