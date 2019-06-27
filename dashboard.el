@@ -35,6 +35,8 @@
     (define-key map (kbd "C-n") 'dashboard-next-line)
     (define-key map (kbd "<up>") 'dashboard-previous-line)
     (define-key map (kbd "<down>") 'dashboard-next-line)
+    (define-key map (kbd "k") 'dashboard-previous-line)
+    (define-key map (kbd "j") 'dashboard-next-line)
     (define-key map [tab] 'widget-forward)
     (define-key map (kbd "C-i") 'widget-forward)
     (define-key map [backtab] 'widget-backward)
