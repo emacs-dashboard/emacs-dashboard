@@ -73,6 +73,13 @@ to the specified width, with aspect ratio preserved."
   :type 'boolean
   :group 'dashboard)
 
+(defcustom dashboard-org-agenda-categories nil
+  "Specify the Categories to consider when using agenda in dashboard.
+Example:
+'(\"Tasks\" \"Habits\")"
+  :type 'list
+  :group 'dashboard)
+
 (defconst dashboard-banners-directory
   (concat (file-name-directory
            (locate-library "dashboard"))
@@ -98,11 +105,6 @@ The format is: 'icon title help action face prefix suffix'.
 
 Example:
 '((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _) (show-stars)) 'warning \"[\" \"]\"))")
-
-(defvar dashboard-org-agenda-categories nil
-  "Specify the Categories to consider when using agenda in dashboard.
-Example:
-'(\"Tasks\" \"Habits\")")
 
 
 
