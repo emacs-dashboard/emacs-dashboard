@@ -20,6 +20,7 @@
 
 ;;; Code:
 
+(require 'seq)
 (require 'page-break-lines)
 (require 'recentf)
 
@@ -144,8 +145,7 @@ Optional prefix ARG says how many lines to move; default is one line."
         (recentf-is-on (recentf-enabled-p))
         (origial-recentf-list recentf-list)
         (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
-        (max-line-length 0)
-        (recentf-items '()))
+        (max-line-length 0))
     ;; disable recentf mode,
     ;; so we don't flood the recent files list with org mode files
     ;; do this by making a copy of the part of the list we'll use
@@ -153,12 +153,8 @@ Optional prefix ARG says how many lines to move; default is one line."
     ;; then restore the orginal list afterwards
     ;; (this avoids many saves/loads that would result from
     ;; disabling/enabling recentf-mode)
-    (when recentf-is-on
-      (let ((item-count 0))
-        (while (< item-count dashboard-num-recents)
-          (push (nth item-count recentf-list) recentf-items)
-          (setq item-count (1+ item-count))))
-      (setq recentf-list (reverse recentf-items)))
+    (if recentf-is-on
+        (setq recentf-list (seq-take recentf-list dashboard-num-recents)))
     (when (or (not (eq dashboard-buffer-last-width (window-width)))
               (not buffer-exists))
       (setq dashboard-banner-length (window-width)
