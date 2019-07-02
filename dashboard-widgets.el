@@ -73,6 +73,13 @@ to the specified width, with aspect ratio preserved."
   :type 'boolean
   :group 'dashboard)
 
+(defcustom dashboard-org-agenda-categories nil
+  "Specify the Categories to consider when using agenda in dashboard.
+Example:
+'(\"Tasks\" \"Habits\")"
+  :type 'list
+  :group 'dashboard)
+
 (defconst dashboard-banners-directory
   (concat (file-name-directory
            (locate-library "dashboard"))
@@ -606,12 +613,14 @@ date part is considered."
                        t))
                 (loc (point))
                 (file (buffer-file-name)))
-           (when (and (not (org-entry-is-done-p))
-                      (or (and schedule-time (dashboard-date-due-p schedule-time due-date))
-                          (and deadline-time (dashboard-date-due-p deadline-time due-date))))
-             (setq filtered-entries
-                   (append filtered-entries
-                           (list (list item schedule-time deadline-time loc file)))))))
+           (if (or (equal dashboard-org-agenda-categories nil)
+                   (member (org-get-category) dashboard-org-agenda-categories))
+               (when (and (not (org-entry-is-done-p))
+                          (or (and schedule-time (dashboard-date-due-p schedule-time due-date))
+                              (and deadline-time (dashboard-date-due-p deadline-time due-date))))
+                 (setq filtered-entries
+                       (append filtered-entries
+                               (list (list item schedule-time deadline-time loc file))))))))
        nil
        'agenda)
       filtered-entries)))
