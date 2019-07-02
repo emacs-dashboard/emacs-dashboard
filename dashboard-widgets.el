@@ -282,7 +282,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
               (all-the-icons-octicon (cdr (assoc 'bookmarks dashboard-heading-icons))
                                      :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
              ((or (string-equal heading "Agenda for today:")
-		  (string-equal heading "Agenda for the coming week:"))
+                  (string-equal heading "Agenda for the coming week:"))
               (all-the-icons-octicon (cdr (assoc 'agenda dashboard-heading-icons))
                                      :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
              ((string-equal heading "Registers:")
@@ -291,7 +291,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
              ((string-equal heading "Projects:")
               (all-the-icons-octicon (cdr (assoc 'projects dashboard-heading-icons))
                                      :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-	     (t " ")))
+             (t " ")))
     (insert " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
