@@ -106,8 +106,6 @@ The format is: 'icon title help action face prefix suffix'.
 Example:
 '((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _) (show-stars)) 'warning \"[\" \"]\"))")
 
-
-
 (defvar dashboard-init-info
   ;; Check if package.el was loaded and if package loading was enabled
   (if (bound-and-true-p package-alist)
