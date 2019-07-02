@@ -290,7 +290,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                                      :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
              ((string-equal heading "Projects:")
               (all-the-icons-octicon (cdr (assoc 'projects dashboard-heading-icons))
-                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))))
+                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+	     (t " ")))
     (insert " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
