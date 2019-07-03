@@ -38,7 +38,7 @@
     (define-key map [tab] 'widget-forward)
     (define-key map (kbd "C-i") 'widget-forward)
     (define-key map [backtab] 'widget-backward)
-    (define-key map (kbd "RET") 'widget-button-press)
+    (define-key map (kbd "RET") 'dashboard-return)
     (define-key map [down-mouse-1] 'widget-button-click)
     (define-key map (kbd "g") #'dashboard-refresh-buffer)
     (define-key map (kbd "}") #'dashboard-next-section)
@@ -125,6 +125,30 @@ Optional prefix ARG says how many lines to move; default is one line."
               (not (if (and arg (< arg 0)) (bobp) (eobp))))
     (forward-char (if (and arg (< arg 0)) -1 1)))
   (beginning-of-line-text))
+
+(defun dashboard-return ()
+  "Hit return key in dashboard buffer."
+  (interactive)
+  (let ((start-ln (line-number-at-pos))
+        (fd-cnt 0)
+        (diff-line nil)
+        (entry-pt nil))
+    (save-excursion
+      (while (and (not diff-line)
+                  (not (= (point) (point-min)))
+                  (not (get-char-property (point) 'button))
+                  (not (= (point) (point-max))))
+        (forward-char 1)
+        (setq fd-cnt (1+ fd-cnt))
+        (unless (= start-ln (line-number-at-pos))
+          (setq diff-line t)))
+      (unless (= (point) (point-max))
+        (setq entry-pt (point))))
+    (when (= fd-cnt 1)
+      (setq entry-pt (1- (point))))
+    (if entry-pt
+        (widget-button-press entry-pt)
+      (call-interactively #'widget-button-press))))
 
 (defun dashboard-maximum-section-length ()
   "For the just-inserted section, calculate the length of the longest line."
