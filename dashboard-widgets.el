@@ -20,6 +20,30 @@
 
 ;;; Code:
 
+;; Compiler pacifier
+(declare-function all-the-icons-dir-is-submodule "ext:all-the-icons.el")
+(declare-function all-the-icons-icon-for-file "ext:all-the-icons.el")
+(declare-function all-the-icons-match-to-alist "ext:all-the-icons.el")
+(declare-function bookmark-get-filename "ext:bookmark.el")
+(declare-function bookmark-all-names "ext:bookmark.el")
+(declare-function calendar-date-compare "ext:calendar.el")
+(declare-function projectile-cleanup-known-projects "ext:projectile.el")
+(declare-function projectile-load-known-projects "ext:projectile.el")
+(declare-function projectile-mode "ext:projectile.el")
+(declare-function projectile-relevant-known-projects "ext:projectile.el")
+(declare-function org-agenda-format-item "ext:org-agenda.el")
+(declare-function org-compile-prefix-format "ext:org-agenda.el")
+(declare-function org-entry-is-done-p "ext:org.el")
+(declare-function org-get-category "ext:org.el")
+(declare-function org-get-deadline-time "ext:org.el")
+(declare-function org-get-heading "ext:org.el")
+(declare-function org-get-scheduled-time "ext:org.el")
+(declare-function org-get-tags "ext:org.el")
+(declare-function org-map-entries "ext:org.el")
+(declare-function org-outline-level "ext:org.el")
+(defvar all-the-icons-dir-icon-alist)
+(defvar package-activated-list)
+
 (defcustom dashboard-page-separator "\n\f\n"
   "Separator to use between the different pages."
   :type 'string
@@ -427,6 +451,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                                (when title (propertize title 'face face)))
                          :help-echo help
                          :action action
+                         :button-face `(:underline nil)
                          :mouse-face 'highlight
                          :button-prefix prefix
                          :button-suffix suffix
@@ -498,6 +523,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
           (widget-create 'item
                          :tag tag
                          :action ,action
+                         :button-face `(:underline nil)
                          :mouse-face 'highlight
                          :button-prefix ""
                          :button-suffix ""
@@ -658,17 +684,6 @@ date part is considered."
    "e"
    (lambda (&rest _ignore) (jump-to-register (car el)))
    (format "%c - %s" (car el) (register-describe-oneline (car el)))))
-
-
-;; Forward declartions for optional dependency to keep check-declare happy.
-(declare-function bookmark-get-filename "ext:bookmark.el")
-(declare-function bookmark-all-names "ext:bookmark.el")
-(declare-function projectile-mode "ext:projectile.el")
-(declare-function projectile-load-known-projects "ext:projectile.el")
-(declare-function projectile-cleanup-known-projects "ext:projectile.el")
-(declare-function projectile-relevant-known-projects "ext:projectile.el")
-(declare-function org-agenda-format-item "ext:org-agenda.el")
-(declare-function org-compile-prefix-format "ext:org-agenda.el")
 
 (provide 'dashboard-widgets)
 ;;; dashboard-widgets.el ends here
