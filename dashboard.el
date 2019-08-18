@@ -55,6 +55,7 @@
   :abbrev-table nil
   (whitespace-mode -1)
   (linum-mode -1)
+  (display-line-numbers-mode -1)
   (page-break-lines-mode 1)
   (setq inhibit-startup-screen t)
   (setq buffer-read-only t
