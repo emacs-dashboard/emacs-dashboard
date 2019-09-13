@@ -223,7 +223,7 @@ If nil it is disabled.  Possible values for list-type are:
 
 (defface dashboard-navigator
   '((t (:inherit font-lock-keyword-face)))
-  "Face used for the havigator."
+  "Face used for the navigator."
   :group 'dashboard)
 
 (defface dashboard-heading
