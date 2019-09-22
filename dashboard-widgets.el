@@ -440,10 +440,11 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
           (widget-create 'item
                          :tag (concat
                                (when icon
-                                 (propertize icon 'face `(:inherit
-                                                          ,(get-text-property 0 'face icon)
-                                                          :inherit
-                                                          ,face)))
+                                 (propertize icon 'face
+                                             (let ((prop-face (get-text-property 0 'face icon)))
+                                               (if prop-face
+                                                   `(:inherit ,prop-face :inherit ,face)
+                                                 `(:inherit ,face)))))
                                (when (and icon title
                                           (not (string-equal icon ""))
                                           (not (string-equal title "")))
