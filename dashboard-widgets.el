@@ -151,7 +151,7 @@ Example:
                 "Welcome to the church of Emacs"
                 "While any text editor can save your files,\
  only Emacs can save your soul"
-                "I showed you my source code,pls respond"
+                "I showed you my source code, pls respond"
                 )))
     (nth (random (1- (1+ (length list)))) list))
   "A footer with some short message.")
