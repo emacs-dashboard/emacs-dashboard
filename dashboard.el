@@ -241,15 +241,14 @@ Optional prefix ARG says how many lines to move; default is one line."
   "Setup post initialization hooks.
 If a command line argument is provided,
 assume a filename and skip displaying Dashboard."
-  (if (< (length command-line-args) 2 )
-      (progn
-        (add-hook 'after-init-hook (lambda ()
-                                     ;; Display useful lists of items
-                                     (dashboard-insert-startupify-lists)))
-        (add-hook 'emacs-startup-hook '(lambda ()
-                                         (switch-to-buffer "*dashboard*")
-                                         (goto-char (point-min))
-                                         (redisplay))))))
+  (when (< (length command-line-args) 2 )
+    (add-hook 'after-init-hook (lambda ()
+                                 ;; Display useful lists of items
+                                 (dashboard-insert-startupify-lists)))
+    (add-hook 'emacs-startup-hook '(lambda ()
+                                     (switch-to-buffer "*dashboard*")
+                                     (goto-char (point-min))
+                                     (redisplay)))))
 
 (provide 'dashboard)
 ;;; dashboard.el ends here
