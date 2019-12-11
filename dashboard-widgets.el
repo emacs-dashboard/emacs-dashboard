@@ -230,6 +230,19 @@ If nil it is disabled.  Possible values for list-type are:
   :type  '(repeat (alist :key-type symbol :value-type integer))
   :group 'dashboard)
 
+(defcustom dashboard-item-shortcuts '((recents . "r")
+                                      (bookmarks . "m")
+                                      (projects . "p")
+                                      (agenda . "a")
+                                      (registers . "e"))
+  "Association list of items and their corresponding shortcuts.
+Will be of the form `(list-type . keys)' as understood by
+`(kbd keys)'.  If nil, shortcuts are disabled.  If an entry's
+value is nil, that item's shortcut is disbaled.  See
+`dashboard-items' for possible values of list-type.'"
+  :type '(repeat (alist :key-type symbol :value-type string))
+  :group 'dashboard)
+
 (defcustom dashboard-items-default-length 20
   "Length used for startup lists with otherwise unspecified bounds.
 Set to nil for unbounded."
@@ -297,23 +310,38 @@ Return entire list if `END' is omitted."
     (cl-subseq seq start (and (number-or-marker-p end)
                               (min len end)))))
 
+(defun dashboard-get-shortcut (item)
+  "Get the shortcut to be used for ITEM."
+  (let ((elem (assq item dashboard-item-shortcuts)))
+    (and elem (cdr elem))))
+
 (defmacro dashboard-insert-shortcut (shortcut-char
                                      search-label
                                      &optional no-next-line)
   "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
 Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
-  `(progn
-     (eval-when-compile (defvar dashboard-mode-map))
-     (let ((sym (make-symbol (format "Jump to \"%s\"" ,search-label))))
-       (fset sym (lambda ()
-                   (interactive)
-                   (unless (search-forward ,search-label (point-max) t)
-                     (search-backward ,search-label (point-min) t))
-                   ,@(unless no-next-line
-                       '((forward-line 1)))
-                   (back-to-indentation)))
+  (let* (;; Ensure punctuation and upper case in search string is not
+         ;; used to construct the `defun'
+         (name (downcase (replace-regexp-in-string
+                          "[[:punct:]]+" "" (format "%s" search-label) nil nil nil)))
+         ;; Ensure whitespace in e.g. "recent files" is replaced with dashes.
+         (sym (intern (format "dashboard-jump-to-%s" (replace-regexp-in-string
+                                                      "[[:blank:]]+" "-" name nil nil nil)))))
+    `(progn
+       (eval-when-compile (defvar dashboard-mode-map))
+       (defun ,sym nil
+         ,(concat
+           "Jump to "
+           name
+           ".  This code is dynamically generated in `dashboard-insert-shortcut'.")
+         (interactive)
+         (unless (search-forward ,search-label (point-max) t)
+           (search-backward ,search-label (point-min) t))
+         ,@(unless no-next-line
+             '((forward-line 1)))
+         (back-to-indentation))
        (eval-after-load 'dashboard
-         (define-key dashboard-mode-map ,shortcut-char sym)))))
+         (define-key dashboard-mode-map ,shortcut-char ',sym)))))
 
 (defun dashboard-append (msg &optional _messagebuf)
   "Append MSG to dashboard buffer.
@@ -514,13 +542,14 @@ ACTION is theaction taken when the user activates the widget button.
 WIDGET-PARAMS are passed to the \"widget-create\" function."
   `(progn
      (dashboard-insert-heading ,section-name
-                               (if (and ,list dashboard-show-shortcuts) ,shortcut))
+                               (if (and ,list ,shortcut dashboard-show-shortcuts) ,shortcut))
      (if ,list
-         (when (dashboard-insert-section-list
-                ,section-name
-                (dashboard-subseq ,list 0 ,list-size)
-                ,action
-                ,@widget-params)
+         (when (and (dashboard-insert-section-list
+                     ,section-name
+                     (dashboard-subseq ,list 0 ,list-size)
+                     ,action
+                     ,@widget-params)
+                    ,shortcut)
            (dashboard-insert-shortcut ,shortcut ,section-name))
        (insert "\n    --- No items ---"))))
 
@@ -587,7 +616,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    "Recent Files:"
    recentf-list
    list-size
-   "r"
+   (dashboard-get-shortcut 'recents)
    `(lambda (&rest ignore) (find-file-existing ,el))
    (abbreviate-file-name el)))
 
@@ -602,7 +631,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    (dashboard-subseq (bookmark-all-names)
                      0 list-size)
    list-size
-   "m"
+   (dashboard-get-shortcut 'bookmarks)
    `(lambda (&rest ignore) (bookmark-jump ,el))
    (let ((file (bookmark-get-filename el)))
      (if file
@@ -622,7 +651,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    (dashboard-subseq (projectile-relevant-known-projects)
                      0 list-size)
    list-size
-   "p"
+   (dashboard-get-shortcut 'projects)
    `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
    (abbreviate-file-name el)))
 
@@ -699,7 +728,7 @@ date part is considered."
          "Agenda for today:")
      agenda
      list-size
-     "a"
+     (dashboard-get-shortcut 'agenda)
      `(lambda (&rest ignore)
         (let ((buffer (find-file-other-window (nth 4 ',el))))
           (with-current-buffer buffer
@@ -717,7 +746,7 @@ date part is considered."
    "Registers:"
    register-alist
    list-size
-   "e"
+   (dashboard-get-shortcut 'register)
    (lambda (&rest _ignore) (jump-to-register (car el)))
    (format "%c - %s" (car el) (register-describe-oneline (car el)))))
 
