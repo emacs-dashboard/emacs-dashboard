@@ -21,9 +21,8 @@
 ;;; Code:
 
 ;; Compiler pacifier
-(declare-function all-the-icons-dir-is-submodule "ext:all-the-icons.el")
+(declare-function all-the-icons-icon-for-dir "ext:all-the-icons.el")
 (declare-function all-the-icons-icon-for-file "ext:all-the-icons.el")
-(declare-function all-the-icons-match-to-alist "ext:all-the-icons.el")
 (declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
 (declare-function calendar-date-compare "ext:calendar.el")
@@ -151,7 +150,7 @@ Example:
                 "Welcome to the church of Emacs"
                 "While any text editor can save your files,\
  only Emacs can save your soul"
-                "I showed you my source code,pls respond"
+                "I showed you my source code, pls respond"
                 )))
     (nth (random (1- (1+ (length list)))) list))
   "A footer with some short message.")
@@ -223,7 +222,7 @@ If nil it is disabled.  Possible values for list-type are:
 
 (defface dashboard-navigator
   '((t (:inherit font-lock-keyword-face)))
-  "Face used for the havigator."
+  "Face used for the navigator."
   :group 'dashboard)
 
 (defface dashboard-heading
@@ -499,20 +498,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
             (let* ((path (car (last (split-string ,@rest " - "))))
                    (icon (if (and (not (file-remote-p path))
                                   (file-directory-p path))
-                             (cond
-                              ((and (fboundp 'tramp-tramp-file-p)
-                                    (tramp-tramp-file-p default-directory))
-                               (all-the-icons-octicon "file-directory" :height 1.0 :v-adjust 0.01))
-                              ((file-symlink-p path)
-                               (all-the-icons-octicon "file-symlink-directory"
-                                                      :height 1.0 :v-adjust 0.01))
-                              ((all-the-icons-dir-is-submodule path)
-                               (all-the-icons-octicon "file-submodule" :height 1.0 :v-adjust 0.01))
-                              ((file-exists-p (format "%s/.git" path))
-                               (all-the-icons-octicon "repo" :height 1.1 :v-adjust 0.01))
-                              (t (let ((matcher (all-the-icons-match-to-alist
-                                                 path all-the-icons-dir-icon-alist)))
-                                   (apply (car matcher) (list (cadr matcher) :v-adjust 0.01)))))
+                             (all-the-icons-icon-for-dir path nil "")
                            (cond
                             ((string-equal ,section-name "Agenda for today:")
                              (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
