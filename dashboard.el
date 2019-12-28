@@ -203,7 +203,8 @@ Optional prefix ARG says how many lines to move; default is one line."
                     (dashboard-insert-page-break)))
                 dashboard-items)
           (when dashboard-center-content
-            (goto-char (car (last dashboard--section-starts)))
+            (when dashboard--section-starts
+              (goto-char (car (last dashboard--section-starts))))
             (let ((margin (floor (/ (max (- (window-width) max-line-length) 0)  2))))
               (while (not (eobp))
                 (and (not (eq ? (char-after)))
