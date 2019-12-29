@@ -119,17 +119,21 @@ Example:
 (defconst dashboard-banner-length 75
   "Width of a banner.")
 
-(defvar dashboard-banner-logo-title "Welcome to Emacs!"
-  "Specify the startup banner.")
+(defcustom dashboard-banner-logo-title "Welcome to Emacs!"
+  "Specify the startup banner."
+  :type 'string
+  :group 'dashboard)
 
-(defvar dashboard-navigator-buttons nil
+(defcustom dashboard-navigator-buttons nil
   "Specify the navigator buttons.
 The format is: 'icon title help action face prefix suffix'.
 
 Example:
-'((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _) (show-stars)) 'warning \"[\" \"]\"))")
+'((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _) (show-stars)) 'warning \"[\" \"]\"))"
+  :type '(repeat (repeat (list string string string function symbol string string)))
+  :group 'dashboard)
 
-(defvar dashboard-init-info
+(defcustom dashboard-init-info
   ;; Check if package.el was loaded and if package loading was enabled
   (if (bound-and-true-p package-alist)
       (format "%d packages loaded in %s"
@@ -138,9 +142,11 @@ Example:
         (format "%d packages loaded in %s"
                 (hash-table-size straight--profile-cache) (emacs-init-time))
       (format "Emacs started in %s" (emacs-init-time))))
-  "Init info with packages loaded and init time.")
+  "Init info with packages loaded and init time."
+  :type 'boolean
+  :group 'dashboard)
 
-(defvar dashboard-footer
+(defcustom dashboard-footer
   (let ((list '("The one true editor, Emacs!"
                 "Who the hell uses VIM anyway? Go Evil!"
                 "Free as free speech, free as free Beer"
@@ -153,9 +159,11 @@ Example:
                 "I showed you my source code, pls respond"
                 )))
     (nth (random (1- (1+ (length list)))) list))
-  "A footer with some short message.")
+  "A footer with some short message."
+  :type 'string
+  :group 'dashboard)
 
-(defvar dashboard-footer-icon
+(defcustom dashboard-footer-icon
   (if (and (display-graphic-p)
            (or (fboundp 'all-the-icons-fileicon)
                (require 'all-the-icons nil 'noerror)))
@@ -164,46 +172,66 @@ Example:
                               :v-adjust -0.05
                               :face 'font-lock-keyword-face)
     (propertize ">" 'face 'dashboard-footer))
-  "Footer's icon.")
+  "Footer's icon."
+  :type 'string
+  :group 'dashboard)
 
-(defvar dashboard-startup-banner 'official
+(defcustom dashboard-startup-banner 'official
   "Specify the startup banner.
 Default value is `official', it displays
 the Emacs logo.  `logo' displays Emacs alternative logo.
 An integer value is the index of text
 banner.  A string value must be a path to a .PNG file.
-If the value is nil then no banner is displayed.")
+If the value is nil then no banner is displayed."
+  :type '(choice (const  :tag "offical"   official)
+                 (const  :tag "logo"      logo)
+                 (string :tag "a png path"))
+  :group 'dashboard)
 
-(defvar dashboard-buffer-last-width nil
-  "Previous width of dashboard-buffer.")
+(defcustom dashboard-buffer-last-width nil
+  "Previous width of dashboard-buffer."
+  :type  'integer
+  :group 'dashboard)
 
-(defvar dashboard-item-generators  '((recents   . dashboard-insert-recents)
-                                     (bookmarks . dashboard-insert-bookmarks)
-                                     (projects  . dashboard-insert-projects)
-                                     (agenda    . dashboard-insert-agenda)
-                                     (registers . dashboard-insert-registers)))
+(defcustom dashboard-item-generators  '((recents   . dashboard-insert-recents)
+                                        (bookmarks . dashboard-insert-bookmarks)
+                                        (projects  . dashboard-insert-projects)
+                                        (agenda    . dashboard-insert-agenda)
+                                        (registers . dashboard-insert-registers))
+  "Association list of items to how to generate in the startup buffer.
+Will be of the form `(list-type . list-function)'.
+Possible values for list-type are: `recents', `bookmarks', `projects',
+`agenda' ,`registers'."
+  :type  '(repeat (alist :key-type symbol :value-type function))
+  :group 'dashboard)
 
-(defvar dashboard-items '((recents   . 5)
-                          (bookmarks . 5)
-                          (agenda    . 5))
+(defcustom dashboard-items '((recents   . 5)
+                             (bookmarks . 5)
+                             (agenda    . 5))
   "Association list of items to show in the startup buffer.
-Will be of the form `(list-type . list-size)`.
+Will be of the form `(list-type . list-size)'.
 If nil it is disabled.  Possible values for list-type are:
-`recents' `bookmarks' `projects' `agenda' `registers'")
+`recents' `bookmarks' `projects' `agenda' `registers'."
+  :type  '(repeat (alist :key-type symbol :value-type integer))
+  :group 'dashboard)
 
-(defvar dashboard-items-default-length 20
+(defcustom dashboard-items-default-length 20
   "Length used for startup lists with otherwise unspecified bounds.
-Set to nil for unbounded.")
+Set to nil for unbounded."
+  :type  'integer
+  :group 'dashboard)
 
-(defvar dashboard-heading-icons '((recents   . "history")
-                                  (bookmarks . "bookmark")
-                                  (agenda    . "calendar")
-                                  (projects . "rocket")
-                                  (registers . "database"))
+(defcustom dashboard-heading-icons '((recents   . "history")
+                                     (bookmarks . "bookmark")
+                                     (agenda    . "calendar")
+                                     (projects . "rocket")
+                                     (registers . "database"))
   "Association list for the icons of the heading sections.
 Will be of the form `(list-type . icon-name-string)`.
 If nil it is disabled.  Possible values for list-type are:
-`recents' `bookmarks' `projects' `agenda' `registers'")
+`recents' `bookmarks' `projects' `agenda' `registers'"
+  :type  '(repeat (alist :key-type symbol :value-type string))
+  :group 'dashboard)
 
 (defvar recentf-list nil)
 
