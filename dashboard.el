@@ -20,7 +20,6 @@
 
 ;;; Code:
 
-(require 'simple)
 (require 'seq)
 (require 'page-break-lines)
 (require 'recentf)
@@ -57,7 +56,7 @@
   (whitespace-mode -1)
   (linum-mode -1)
   (page-break-lines-mode 1)
-  (buffer-disable-undo)
+  (setq buffer-undo-list t)
   (setq inhibit-startup-screen t)
   (setq buffer-read-only t
         truncate-lines t))
