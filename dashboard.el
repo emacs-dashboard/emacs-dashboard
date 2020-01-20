@@ -20,6 +20,7 @@
 
 ;;; Code:
 
+(require 'simple)
 (require 'seq)
 (require 'page-break-lines)
 (require 'recentf)
