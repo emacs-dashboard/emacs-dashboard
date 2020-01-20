@@ -53,10 +53,10 @@
   :group 'dashboard
   :syntax-table nil
   :abbrev-table nil
-  (buffer-disable-undo)
   (whitespace-mode -1)
   (linum-mode -1)
   (page-break-lines-mode 1)
+  (buffer-disable-undo)
   (setq inhibit-startup-screen t)
   (setq buffer-read-only t
         truncate-lines t))
