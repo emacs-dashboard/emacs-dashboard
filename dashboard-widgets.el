@@ -294,7 +294,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (when (and (display-graphic-p)
              dashboard-set-heading-icons)
     ;; Try loading `all-the-icons'
-    (unless (require 'all-the-icons nil 'noerror)
+    (unless (or (fboundp 'all-the-icons-octicon)
+                (require 'all-the-icons nil 'noerror))
       (error "Package `all-the-icons' isn't installed"))
 
     (insert (cond
@@ -493,7 +494,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 
           (when (and (display-graphic-p)
                      dashboard-set-file-icons
-                     (featurep 'all-the-icons))
+                     (or (fboundp 'all-the-icons-icon-for-dir)
+                         (require 'all-the-icons nil 'noerror)))
             (let* ((path (car (last (split-string ,@rest " - "))))
                    (icon (if (and (not (file-remote-p path))
                                   (file-directory-p path))
