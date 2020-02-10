@@ -532,7 +532,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                             ((string-equal ,section-name "Agenda for today:")
                              (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
                             ((file-remote-p path)
-                             (all-the-icons-octicon "radio-tower" :height 1.1 :v-adjust 0.01))
+                             (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
                             (t (all-the-icons-icon-for-file (file-name-nondirectory path)))))))
               (setq tag (concat icon " " ,@rest))))
 
