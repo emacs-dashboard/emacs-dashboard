@@ -91,6 +91,21 @@ to the specified width, with aspect ratio preserved."
   :type 'boolean
   :group 'dashboard)
 
+(defcustom dashboard-footer-messages
+  '("The one true editor, Emacs!"
+    "Who the hell uses VIM anyway? Go Evil!"
+    "Free as free speech, free as free Beer"
+    "Richard Stallman is proud of you"
+    "Happy coding!"
+    "Vi Vi Vi, the editor of the beast"
+    "Welcome to the church of Emacs"
+    "While any text editor can save your files,\
+ only Emacs can save your soul"
+    "I showed you my source code,pls respond")
+  "A list of messages, one of which dashboard chooses to display."
+  :type 'list
+  :group 'dashboard)
+
 (defcustom dashboard-show-shortcuts t
   "Whether to show shortcut keys for each section."
   :type 'boolean
@@ -547,15 +562,20 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
       ,list)))
 
 ;; Footer
+(defun dashboard-random-footer ()
+  "Return a random footer from `dashboard-footer-messages'."
+  (nth (random (length dashboard-footer-messages)) dashboard-footer-messages))
+
 (defun dashboard-insert-footer ()
   "Insert footer of dashboard."
-  (when dashboard-set-footer
-    (insert "\n")
-    (dashboard-center-line dashboard-footer)
-    (insert dashboard-footer-icon)
-    (insert " ")
-    (insert (propertize dashboard-footer 'face 'dashboard-footer))
-    (insert "\n")))
+  (let ((footer (and dashboard-set-footer (dashboard-random-footer))))
+    (when footer
+      (insert "\n")
+      (dashboard-center-line footer)
+      (insert dashboard-footer-icon)
+      (insert " ")
+      (insert (propertize footer 'face 'dashboard-footer))
+      (insert "\n"))))
 
 ;;
 ;; Recentf
