@@ -20,6 +20,7 @@
 
 ;;; Code:
 
+(require 'seq)
 (require 'page-break-lines)
 (require 'recentf)
 
@@ -37,7 +38,7 @@
     (define-key map [tab] 'widget-forward)
     (define-key map (kbd "C-i") 'widget-forward)
     (define-key map [backtab] 'widget-backward)
-    (define-key map (kbd "RET") 'widget-button-press)
+    (define-key map (kbd "RET") 'dashboard-return)
     (define-key map [down-mouse-1] 'widget-button-click)
     (define-key map (kbd "g") #'dashboard-refresh-buffer)
     (define-key map (kbd "}") #'dashboard-next-section)
@@ -52,6 +53,7 @@
   :group 'dashboard
   :syntax-table nil
   :abbrev-table nil
+  (buffer-disable-undo)
   (whitespace-mode -1)
   (linum-mode -1)
   (page-break-lines-mode 1)
@@ -125,6 +127,30 @@ Optional prefix ARG says how many lines to move; default is one line."
     (forward-char (if (and arg (< arg 0)) -1 1)))
   (beginning-of-line-text))
 
+(defun dashboard-return ()
+  "Hit return key in dashboard buffer."
+  (interactive)
+  (let ((start-ln (line-number-at-pos))
+        (fd-cnt 0)
+        (diff-line nil)
+        (entry-pt nil))
+    (save-excursion
+      (while (and (not diff-line)
+                  (not (= (point) (point-min)))
+                  (not (get-char-property (point) 'button))
+                  (not (= (point) (point-max))))
+        (forward-char 1)
+        (setq fd-cnt (1+ fd-cnt))
+        (unless (= start-ln (line-number-at-pos))
+          (setq diff-line t)))
+      (unless (= (point) (point-max))
+        (setq entry-pt (point))))
+    (when (= fd-cnt 1)
+      (setq entry-pt (1- (point))))
+    (if entry-pt
+        (widget-button-press entry-pt)
+      (call-interactively #'widget-button-press))))
+
 (defun dashboard-maximum-section-length ()
   "For the just-inserted section, calculate the length of the longest line."
   (let ((max-line-length 0))
@@ -144,8 +170,7 @@ Optional prefix ARG says how many lines to move; default is one line."
         (recentf-is-on (recentf-enabled-p))
         (origial-recentf-list recentf-list)
         (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
-        (max-line-length 0)
-        (recentf-items '()))
+        (max-line-length 0))
     ;; disable recentf mode,
     ;; so we don't flood the recent files list with org mode files
     ;; do this by making a copy of the part of the list we'll use
@@ -154,10 +179,7 @@ Optional prefix ARG says how many lines to move; default is one line."
     ;; (this avoids many saves/loads that would result from
     ;; disabling/enabling recentf-mode)
     (if recentf-is-on
-        (setq recentf-list
-              (nreverse (while (and recentf-list (> dashboard-num-recents 0))
-                          (setq dashboard-num-recents (1- dashboard-num-recents))
-                          (push (pop recentf-list) recentf-items)))))
+        (setq recentf-list (seq-take recentf-list dashboard-num-recents)))
     (when (or (not (eq dashboard-buffer-last-width (window-width)))
               (not buffer-exists))
       (setq dashboard-banner-length (window-width)
@@ -220,15 +242,14 @@ Optional prefix ARG says how many lines to move; default is one line."
   "Setup post initialization hooks.
 If a command line argument is provided,
 assume a filename and skip displaying Dashboard."
-  (if (< (length command-line-args) 2 )
-      (progn
-        (add-hook 'after-init-hook (lambda ()
-                                     ;; Display useful lists of items
-                                     (dashboard-insert-startupify-lists)))
-        (add-hook 'emacs-startup-hook '(lambda ()
-                                         (switch-to-buffer "*dashboard*")
-                                         (goto-char (point-min))
-                                         (redisplay))))))
+  (when (< (length command-line-args) 2 )
+    (add-hook 'after-init-hook (lambda ()
+                                 ;; Display useful lists of items
+                                 (dashboard-insert-startupify-lists)))
+    (add-hook 'emacs-startup-hook '(lambda ()
+                                     (switch-to-buffer "*dashboard*")
+                                     (goto-char (point-min))
+                                     (redisplay)))))
 
 (provide 'dashboard)
 ;;; dashboard.el ends here

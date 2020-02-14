@@ -20,6 +20,29 @@
 
 ;;; Code:
 
+;; Compiler pacifier
+(declare-function all-the-icons-icon-for-dir "ext:all-the-icons.el")
+(declare-function all-the-icons-icon-for-file "ext:all-the-icons.el")
+(declare-function bookmark-get-filename "ext:bookmark.el")
+(declare-function bookmark-all-names "ext:bookmark.el")
+(declare-function calendar-date-compare "ext:calendar.el")
+(declare-function projectile-cleanup-known-projects "ext:projectile.el")
+(declare-function projectile-load-known-projects "ext:projectile.el")
+(declare-function projectile-mode "ext:projectile.el")
+(declare-function projectile-relevant-known-projects "ext:projectile.el")
+(declare-function org-agenda-format-item "ext:org-agenda.el")
+(declare-function org-compile-prefix-format "ext:org-agenda.el")
+(declare-function org-entry-is-done-p "ext:org.el")
+(declare-function org-get-category "ext:org.el")
+(declare-function org-get-deadline-time "ext:org.el")
+(declare-function org-get-heading "ext:org.el")
+(declare-function org-get-scheduled-time "ext:org.el")
+(declare-function org-get-tags "ext:org.el")
+(declare-function org-map-entries "ext:org.el")
+(declare-function org-outline-level "ext:org.el")
+(defvar all-the-icons-dir-icon-alist)
+(defvar package-activated-list)
+
 (defcustom dashboard-page-separator "\n\f\n"
   "Separator to use between the different pages."
   :type 'string
@@ -88,6 +111,13 @@ to the specified width, with aspect ratio preserved."
   :type 'boolean
   :group 'dashboard)
 
+(defcustom dashboard-org-agenda-categories nil
+  "Specify the Categories to consider when using agenda in dashboard.
+Example:
+'(\"Tasks\" \"Habits\")"
+  :type 'list
+  :group 'dashboard)
+
 (defconst dashboard-banners-directory
   (concat (file-name-directory
            (locate-library "dashboard"))
@@ -104,17 +134,21 @@ to the specified width, with aspect ratio preserved."
 (defconst dashboard-banner-length 75
   "Width of a banner.")
 
-(defvar dashboard-banner-logo-title "Welcome to Emacs!"
-  "Specify the startup banner.")
+(defcustom dashboard-banner-logo-title "Welcome to Emacs!"
+  "Specify the startup banner."
+  :type 'string
+  :group 'dashboard)
 
-(defvar dashboard-navigator-buttons nil
+(defcustom dashboard-navigator-buttons nil
   "Specify the navigator buttons.
 The format is: 'icon title help action face prefix suffix'.
 
 Example:
-'((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _) (show-stars)) 'warning \"[\" \"]\"))")
+'((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _) (show-stars)) 'warning \"[\" \"]\"))"
+  :type '(repeat (repeat (list string string string function symbol string string)))
+  :group 'dashboard)
 
-(defvar dashboard-init-info
+(defcustom dashboard-init-info
   ;; Check if package.el was loaded and if package loading was enabled
   (if (bound-and-true-p package-alist)
       (format "%d packages loaded in %s"
@@ -123,9 +157,28 @@ Example:
         (format "%d packages loaded in %s"
                 (hash-table-size straight--profile-cache) (emacs-init-time))
       (format "Emacs started in %s" (emacs-init-time))))
-  "Init info with packages loaded and init time.")
+  "Init info with packages loaded and init time."
+  :type 'boolean
+  :group 'dashboard)
 
-(defvar dashboard-footer-icon
+(defcustom dashboard-footer
+  (let ((list '("The one true editor, Emacs!"
+                "Who the hell uses VIM anyway? Go Evil!"
+                "Free as free speech, free as free Beer"
+                "Richard Stallman is proud of you"
+                "Happy coding!"
+                "Vi Vi Vi, the editor of the beast"
+                "Welcome to the church of Emacs"
+                "While any text editor can save your files,\
+ only Emacs can save your soul"
+                "I showed you my source code, pls respond"
+                )))
+    (nth (random (1- (1+ (length list)))) list))
+  "A footer with some short message."
+  :type 'string
+  :group 'dashboard)
+
+(defcustom dashboard-footer-icon
   (if (and (display-graphic-p)
            (or (fboundp 'all-the-icons-fileicon)
                (require 'all-the-icons nil 'noerror)))
@@ -134,46 +187,66 @@ Example:
                               :v-adjust -0.05
                               :face 'font-lock-keyword-face)
     (propertize ">" 'face 'dashboard-footer))
-  "Footer's icon.")
+  "Footer's icon."
+  :type 'string
+  :group 'dashboard)
 
-(defvar dashboard-startup-banner 'official
+(defcustom dashboard-startup-banner 'official
   "Specify the startup banner.
 Default value is `official', it displays
 the Emacs logo.  `logo' displays Emacs alternative logo.
 An integer value is the index of text
 banner.  A string value must be a path to a .PNG file.
-If the value is nil then no banner is displayed.")
+If the value is nil then no banner is displayed."
+  :type '(choice (const  :tag "offical"   official)
+                 (const  :tag "logo"      logo)
+                 (string :tag "a png path"))
+  :group 'dashboard)
 
-(defvar dashboard-buffer-last-width nil
-  "Previous width of dashboard-buffer.")
+(defcustom dashboard-buffer-last-width nil
+  "Previous width of dashboard-buffer."
+  :type  'integer
+  :group 'dashboard)
 
-(defvar dashboard-item-generators  '((recents   . dashboard-insert-recents)
-                                     (bookmarks . dashboard-insert-bookmarks)
-                                     (projects  . dashboard-insert-projects)
-                                     (agenda    . dashboard-insert-agenda)
-                                     (registers . dashboard-insert-registers)))
+(defcustom dashboard-item-generators  '((recents   . dashboard-insert-recents)
+                                        (bookmarks . dashboard-insert-bookmarks)
+                                        (projects  . dashboard-insert-projects)
+                                        (agenda    . dashboard-insert-agenda)
+                                        (registers . dashboard-insert-registers))
+  "Association list of items to how to generate in the startup buffer.
+Will be of the form `(list-type . list-function)'.
+Possible values for list-type are: `recents', `bookmarks', `projects',
+`agenda' ,`registers'."
+  :type  '(repeat (alist :key-type symbol :value-type function))
+  :group 'dashboard)
 
-(defvar dashboard-items '((recents   . 5)
-                          (bookmarks . 5)
-                          (agenda    . 5))
+(defcustom dashboard-items '((recents   . 5)
+                             (bookmarks . 5)
+                             (agenda    . 5))
   "Association list of items to show in the startup buffer.
-Will be of the form `(list-type . list-size)`.
+Will be of the form `(list-type . list-size)'.
 If nil it is disabled.  Possible values for list-type are:
-`recents' `bookmarks' `projects' `agenda' `registers'")
+`recents' `bookmarks' `projects' `agenda' `registers'."
+  :type  '(repeat (alist :key-type symbol :value-type integer))
+  :group 'dashboard)
 
-(defvar dashboard-items-default-length 20
+(defcustom dashboard-items-default-length 20
   "Length used for startup lists with otherwise unspecified bounds.
-Set to nil for unbounded.")
+Set to nil for unbounded."
+  :type  'integer
+  :group 'dashboard)
 
-(defvar dashboard-heading-icons '((recents   . "history")
-                                  (bookmarks . "bookmark")
-                                  (agenda    . "calendar")
-                                  (projects . "rocket")
-                                  (registers . "database"))
+(defcustom dashboard-heading-icons '((recents   . "history")
+                                     (bookmarks . "bookmark")
+                                     (agenda    . "calendar")
+                                     (projects . "rocket")
+                                     (registers . "database"))
   "Association list for the icons of the heading sections.
 Will be of the form `(list-type . icon-name-string)`.
 If nil it is disabled.  Possible values for list-type are:
-`recents' `bookmarks' `projects' `agenda' `registers'")
+`recents' `bookmarks' `projects' `agenda' `registers'"
+  :type  '(repeat (alist :key-type symbol :value-type string))
+  :group 'dashboard)
 
 (defvar recentf-list nil)
 
@@ -192,7 +265,7 @@ If nil it is disabled.  Possible values for list-type are:
 
 (defface dashboard-navigator
   '((t (:inherit font-lock-keyword-face)))
-  "Face used for the havigator."
+  "Face used for the navigator."
   :group 'dashboard)
 
 (defface dashboard-heading
@@ -264,7 +337,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (when (and (display-graphic-p)
              dashboard-set-heading-icons)
     ;; Try loading `all-the-icons'
-    (unless (require 'all-the-icons nil 'noerror)
+    (unless (or (fboundp 'all-the-icons-octicon)
+                (require 'all-the-icons nil 'noerror))
       (error "Package `all-the-icons' isn't installed"))
 
     (insert (cond
@@ -274,7 +348,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
              ((string-equal heading "Bookmarks:")
               (all-the-icons-octicon (cdr (assoc 'bookmarks dashboard-heading-icons))
                                      :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-             ((string-equal heading "Agenda for today:")
+             ((or (string-equal heading "Agenda for today:")
+                  (string-equal heading "Agenda for the coming week:"))
               (all-the-icons-octicon (cdr (assoc 'agenda dashboard-heading-icons))
                                      :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
              ((string-equal heading "Registers:")
@@ -282,7 +357,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                                      :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
              ((string-equal heading "Projects:")
               (all-the-icons-octicon (cdr (assoc 'projects dashboard-heading-icons))
-                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))))
+                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+             (t " ")))
     (insert " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
@@ -418,6 +494,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                                (when title (propertize title 'face face)))
                          :help-echo help
                          :action action
+                         :button-face `(:underline nil)
                          :mouse-face 'highlight
                          :button-prefix prefix
                          :button-suffix suffix
@@ -460,24 +537,12 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 
           (when (and (display-graphic-p)
                      dashboard-set-file-icons
-                     (featurep 'all-the-icons))
+                     (or (fboundp 'all-the-icons-icon-for-dir)
+                         (require 'all-the-icons nil 'noerror)))
             (let* ((path (car (last (split-string ,@rest " - "))))
                    (icon (if (and (not (file-remote-p path))
                                   (file-directory-p path))
-                             (cond
-                              ((and (fboundp 'tramp-tramp-file-p)
-                                    (tramp-tramp-file-p default-directory))
-                               (all-the-icons-octicon "file-directory" :height 1.0 :v-adjust 0.01))
-                              ((file-symlink-p path)
-                               (all-the-icons-octicon "file-symlink-directory"
-                                                      :height 1.0 :v-adjust 0.01))
-                              ((all-the-icons-dir-is-submodule path)
-                               (all-the-icons-octicon "file-submodule" :height 1.0 :v-adjust 0.01))
-                              ((file-exists-p (format "%s/.git" path))
-                               (all-the-icons-octicon "repo" :height 1.1 :v-adjust 0.01))
-                              (t (let ((matcher (all-the-icons-match-to-alist
-                                                 path all-the-icons-dir-icon-alist)))
-                                   (apply (car matcher) (list (cadr matcher) :v-adjust 0.01)))))
+                             (all-the-icons-icon-for-dir path nil "")
                            (cond
                             ((string-equal ,section-name "Agenda for today:")
                              (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
@@ -489,6 +554,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
           (widget-create 'item
                          :tag tag
                          :action ,action
+                         :button-face `(:underline nil)
                          :mouse-face 'highlight
                          :button-prefix ""
                          :button-suffix ""
@@ -611,12 +677,14 @@ date part is considered."
                        t))
                 (loc (point))
                 (file (buffer-file-name)))
-           (when (and (not (org-entry-is-done-p))
-                      (or (and schedule-time (dashboard-date-due-p schedule-time due-date))
-                          (and deadline-time (dashboard-date-due-p deadline-time due-date))))
-             (setq filtered-entries
-                   (append filtered-entries
-                           (list (list item schedule-time deadline-time loc file)))))))
+           (if (or (equal dashboard-org-agenda-categories nil)
+                   (member (org-get-category) dashboard-org-agenda-categories))
+               (when (and (not (org-entry-is-done-p))
+                          (or (and schedule-time (dashboard-date-due-p schedule-time due-date))
+                              (and deadline-time (dashboard-date-due-p deadline-time due-date))))
+                 (setq filtered-entries
+                       (append filtered-entries
+                               (list (list item schedule-time deadline-time loc file))))))))
        nil
        'agenda)
       filtered-entries)))
@@ -652,17 +720,6 @@ date part is considered."
    "e"
    (lambda (&rest _ignore) (jump-to-register (car el)))
    (format "%c - %s" (car el) (register-describe-oneline (car el)))))
-
-
-;; Forward declartions for optional dependency to keep check-declare happy.
-(declare-function bookmark-get-filename "ext:bookmark.el")
-(declare-function bookmark-all-names "ext:bookmark.el")
-(declare-function projectile-mode "ext:projectile.el")
-(declare-function projectile-load-known-projects "ext:projectile.el")
-(declare-function projectile-cleanup-known-projects "ext:projectile.el")
-(declare-function projectile-relevant-known-projects "ext:projectile.el")
-(declare-function org-agenda-format-item "ext:org-agenda.el")
-(declare-function org-compile-prefix-format "ext:org-agenda.el")
 
 (provide 'dashboard-widgets)
 ;;; dashboard-widgets.el ends here
