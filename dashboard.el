@@ -228,6 +228,13 @@ Optional prefix ARG says how many lines to move; default is one line."
   (dashboard-insert-startupify-lists)
   (switch-to-buffer dashboard-buffer-name))
 
+;;;###autoload
+(defun dashboard-active-buffer ()
+  "Active the dashboard buffer."
+  (interactive)
+  (switch-to-buffer "*dashboard*")
+  (dashboard-insert-startupify-lists))
+
 (defun dashboard-resize-on-hook (&optional _)
   "Re-render dashboard on window size change."
   (let ((space-win (get-buffer-window dashboard-buffer-name))
@@ -243,13 +250,9 @@ Optional prefix ARG says how many lines to move; default is one line."
 If a command line argument is provided,
 assume a filename and skip displaying Dashboard."
   (when (< (length command-line-args) 2 )
-    (add-hook 'after-init-hook (lambda ()
-                                 ;; Display useful lists of items
-                                 (dashboard-insert-startupify-lists)))
-    (add-hook 'emacs-startup-hook '(lambda ()
-                                     (switch-to-buffer "*dashboard*")
-                                     (goto-char (point-min))
-                                     (redisplay)))))
+    ;; Display useful lists of items
+    (add-hook 'after-init-hook 'dashboard-insert-startupify-lists)
+    (add-hook 'emacs-startup-hook 'dashboard-active-buffer)))
 
 (provide 'dashboard)
 ;;; dashboard.el ends here
