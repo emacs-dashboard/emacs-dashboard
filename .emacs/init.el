@@ -28,10 +28,10 @@
 ;; Configure melpa and melpa-stable
 
 (require 'package)
+(when (version< emacs-version "26.1")
+  (setq package-check-signature nil))
 (add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives
-             '("melpa"        . "https://melpa.org/packages/") t)
+             '("melpa" . "https://melpa.org/packages/") t)
 (setq package-enable-at-startup nil)
 (package-initialize)
 (when (not package-archive-contents)
