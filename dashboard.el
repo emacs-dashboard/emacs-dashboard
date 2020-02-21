@@ -1,6 +1,6 @@
 ;;; dashboard.el --- A startup screen extracted from Spacemacs  -*- lexical-binding: t -*-
 
-;; Copyright (c) 2016-2019 Rakan Al-Hneiti & Contributors
+;; Copyright (c) 2016-2020 Rakan Al-Hneiti & Contributors
 ;;
 ;; Author: Rakan Al-Hneiti
 ;; URL: https://github.com/emacs-dashboard/emacs-dashboard
