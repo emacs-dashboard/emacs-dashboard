@@ -324,7 +324,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
       (insert msg))))
 
 (defun dashboard-modify-heading-icons (alist)
-  "Append ALIST items to dashboard-heading-icons to modify icons."
+  "Append ALIST items to `dashboard-heading-icons' to modify icons."
   (dolist (icon alist)
     (add-to-list 'dashboard-heading-icons icon)))
 
@@ -421,7 +421,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 ;; INIT INFO
 ;;
 (defun dashboard-insert-init-info ()
-  "Insert init info when dashboard-set-init-info is t."
+  "Insert init info when `dashboard-set-init-info' is t."
   (when dashboard-set-init-info
     (dashboard-center-line dashboard-init-info)
     (insert
