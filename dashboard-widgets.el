@@ -615,7 +615,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 (defun dashboard-insert-projects (list-size)
   "Add the list of LIST-SIZE items of projects."
   (require 'projectile)
-  (projectile-cleanup-known-projects)
+  (let ((inhibit-message t) (message-log-max nil))
+    (projectile-cleanup-known-projects))
   (projectile-load-known-projects)
   (dashboard-insert-section
    "Projects:"
