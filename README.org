@@ -144,7 +144,7 @@ A randomly selected footnote will be displayed. To disable it:
 To customize it and customize its icon;
 
 #+BEGIN_SRC elisp
-(setq dashboard-footer "Dashboard is pretty cool!")
+(setq dashboard-footer-messages '("Dashboard is pretty cool!"))
 (setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
                                                    :height 1.1
                                                    :v-adjust -0.05
