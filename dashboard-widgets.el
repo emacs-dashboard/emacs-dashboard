@@ -25,8 +25,6 @@
 ;; Compiler pacifier
 (declare-function all-the-icons-icon-for-dir "ext:all-the-icons.el")
 (declare-function all-the-icons-icon-for-file "ext:all-the-icons.el")
-(declare-function all-the-icons-fileicon "ext:all-the-icons.el")
-(declare-function all-the-icons-octicon "ext:all-the-icons.el")
 (declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
 (declare-function calendar-date-compare "ext:calendar.el")
