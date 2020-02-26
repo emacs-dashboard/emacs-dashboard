@@ -227,7 +227,8 @@ Optional prefix ARG says how many lines to move; default is one line."
 (defun dashboard-refresh-buffer ()
   "Refresh buffer."
   (interactive)
-  (kill-buffer dashboard-buffer-name)
+  (when (get-buffer dashboard-buffer-name)
+    (kill-buffer dashboard-buffer-name))
   (dashboard-insert-startupify-lists)
   (switch-to-buffer dashboard-buffer-name))
 
