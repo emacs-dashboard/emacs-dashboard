@@ -101,7 +101,7 @@ to the specified width, with aspect ratio preserved."
     "Welcome to the church of Emacs"
     "While any text editor can save your files,\
  only Emacs can save your soul"
-    "I showed you my source code,pls respond")
+    "I showed you my source code, pls respond")
   "A list of messages, one of which dashboard chooses to display."
   :type 'list
   :group 'dashboard)
