@@ -20,6 +20,8 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 ;; Compiler pacifier
 (declare-function all-the-icons-icon-for-dir "ext:all-the-icons.el")
 (declare-function all-the-icons-icon-for-file "ext:all-the-icons.el")
@@ -548,7 +550,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                              (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
                             ((file-remote-p path)
                              (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
-                            (t (all-the-icons-icon-for-file (file-name-nondirectory path)))))))
+                            (t (all-the-icons-icon-for-file (file-name-nondirectory path)
+                                                            :v-adjust -0.05))))))
               (setq tag (concat icon " " ,@rest))))
 
           (widget-create 'item
