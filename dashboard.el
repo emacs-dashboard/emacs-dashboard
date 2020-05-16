@@ -214,8 +214,8 @@ Optional prefix ARG says how many lines to move; default is one line."
                      (insert (make-string margin ?\ )))
                 (forward-line 1))))
           (dashboard-insert-footer))
-        (dashboard-mode)
-        (goto-char (point-min))))
+        (goto-char (point-min))
+        (dashboard-mode)))
     (if recentf-is-on
         (setq recentf-list origial-recentf-list))))
 
@@ -251,7 +251,6 @@ assume a filename and skip displaying Dashboard."
                                  (dashboard-insert-startupify-lists)))
     (add-hook 'emacs-startup-hook '(lambda ()
                                      (switch-to-buffer "*dashboard*")
-                                     (goto-char (point-min))
                                      (redisplay)))))
 
 (provide 'dashboard)
