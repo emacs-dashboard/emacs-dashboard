@@ -172,6 +172,8 @@ To customize which categories from the agenda items should be visible in the das
 (setq dashboard-org-agenda-categories '("Tasks" "Appointments"))
  #+END_SRC
 
+Reverse agenda items by setting =dashboard-agenda-reverse= to =t=.
+
 ** Faces
 
 It is possible to customize Dashboard's appearance using the following faces:
