@@ -44,6 +44,7 @@
 (declare-function org-outline-level "ext:org.el")
 (defvar all-the-icons-dir-icon-alist)
 (defvar package-activated-list)
+(defvar time-string-formatting)
 
 (defcustom dashboard-page-separator "\n\f\n"
   "Separator to use between the different pages."
@@ -662,8 +663,8 @@ date part is considered."
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
   (if (not (boundp 'time-string-formatting))
-      (defvar time-string-formatting "%Y-%m-%d")
-      )
+      (setq time-string-formatting "%Y-%m-%d")
+    )
   (org-compile-prefix-format 'agenda)
   (let ((due-date nil))
     (if (and (boundp 'show-week-agenda-p) show-week-agenda-p)
