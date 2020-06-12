@@ -122,8 +122,8 @@ Example:
 
 (defconst dashboard-banners-directory
   (concat (file-name-directory
-           (locate-library "dashboard"))
-          "/banners/"))
+	   (locate-library "dashboard"))
+	  "/banners/"))
 
 (defconst dashboard-banner-official-png
   (expand-file-name (concat dashboard-banners-directory "emacs.png"))
@@ -154,10 +154,10 @@ Example:
   ;; Check if package.el was loaded and if package loading was enabled
   (if (bound-and-true-p package-alist)
       (format "%d packages loaded in %s"
-              (length package-activated-list) (emacs-init-time))
+	      (length package-activated-list) (emacs-init-time))
     (if (and (boundp 'straight--profile-cache) (hash-table-p straight--profile-cache))
-        (format "%d packages loaded in %s"
-                (hash-table-size straight--profile-cache) (emacs-init-time))
+	(format "%d packages loaded in %s"
+		(hash-table-size straight--profile-cache) (emacs-init-time))
       (format "Emacs started in %s" (emacs-init-time))))
   "Init info with packages loaded and init time."
   :type 'boolean
@@ -165,16 +165,16 @@ Example:
 
 (defcustom dashboard-footer
   (let ((list '("The one true editor, Emacs!"
-                "Who the hell uses VIM anyway? Go Evil!"
-                "Free as free speech, free as free Beer"
-                "Richard Stallman is proud of you"
-                "Happy coding!"
-                "Vi Vi Vi, the editor of the beast"
-                "Welcome to the church of Emacs"
-                "While any text editor can save your files,\
+		"Who the hell uses VIM anyway? Go Evil!"
+		"Free as free speech, free as free Beer"
+		"Richard Stallman is proud of you"
+		"Happy coding!"
+		"Vi Vi Vi, the editor of the beast"
+		"Welcome to the church of Emacs"
+		"While any text editor can save your files,\
  only Emacs can save your soul"
-                "I showed you my source code, pls respond"
-                )))
+		"I showed you my source code, pls respond"
+		)))
     (nth (random (1- (1+ (length list)))) list))
   "A footer with some short message."
   :type 'string
@@ -182,12 +182,12 @@ Example:
 
 (defcustom dashboard-footer-icon
   (if (and (display-graphic-p)
-           (or (fboundp 'all-the-icons-fileicon)
-               (require 'all-the-icons nil 'noerror)))
+	   (or (fboundp 'all-the-icons-fileicon)
+	       (require 'all-the-icons nil 'noerror)))
       (all-the-icons-fileicon "emacs"
-                              :height 1.1
-                              :v-adjust -0.05
-                              :face 'font-lock-keyword-face)
+			      :height 1.1
+			      :v-adjust -0.05
+			      :face 'font-lock-keyword-face)
     (propertize ">" 'face 'dashboard-footer))
   "Footer's icon."
   :type 'string
@@ -201,8 +201,8 @@ An integer value is the index of text
 banner.  A string value must be a path to a .PNG file.
 If the value is nil then no banner is displayed."
   :type '(choice (const  :tag "offical"   official)
-                 (const  :tag "logo"      logo)
-                 (string :tag "a png path"))
+		 (const  :tag "logo"      logo)
+		 (string :tag "a png path"))
   :group 'dashboard)
 
 (defcustom dashboard-buffer-last-width nil
@@ -211,10 +211,10 @@ If the value is nil then no banner is displayed."
   :group 'dashboard)
 
 (defcustom dashboard-item-generators  '((recents   . dashboard-insert-recents)
-                                        (bookmarks . dashboard-insert-bookmarks)
-                                        (projects  . dashboard-insert-projects)
-                                        (agenda    . dashboard-insert-agenda)
-                                        (registers . dashboard-insert-registers))
+					(bookmarks . dashboard-insert-bookmarks)
+					(projects  . dashboard-insert-projects)
+					(agenda    . dashboard-insert-agenda)
+					(registers . dashboard-insert-registers))
   "Association list of items to how to generate in the startup buffer.
 Will be of the form `(list-type . list-function)'.
 Possible values for list-type are: `recents', `bookmarks', `projects',
@@ -223,8 +223,8 @@ Possible values for list-type are: `recents', `bookmarks', `projects',
   :group 'dashboard)
 
 (defcustom dashboard-items '((recents   . 5)
-                             (bookmarks . 5)
-                             (agenda    . 5))
+			     (bookmarks . 5)
+			     (agenda    . 5))
   "Association list of items to show in the startup buffer.
 Will be of the form `(list-type . list-size)'.
 If nil it is disabled.  Possible values for list-type are:
@@ -239,10 +239,10 @@ Set to nil for unbounded."
   :group 'dashboard)
 
 (defcustom dashboard-heading-icons '((recents   . "history")
-                                     (bookmarks . "bookmark")
-                                     (agenda    . "calendar")
-                                     (projects . "rocket")
-                                     (registers . "database"))
+				     (bookmarks . "bookmark")
+				     (agenda    . "calendar")
+				     (projects . "rocket")
+				     (registers . "database"))
   "Association list for the icons of the heading sections.
 Will be of the form `(list-type . icon-name-string)`.
 If nil it is disabled.  Possible values for list-type are:
@@ -297,25 +297,25 @@ list.
 Return entire list if `END' is omitted."
   (let ((len (length seq)))
     (cl-subseq seq start (and (number-or-marker-p end)
-                              (min len end)))))
+			      (min len end)))))
 
 (defmacro dashboard-insert-shortcut (shortcut-char
-                                     search-label
-                                     &optional no-next-line)
+				     search-label
+				     &optional no-next-line)
   "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
 Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
   `(progn
      (eval-when-compile (defvar dashboard-mode-map))
      (let ((sym (make-symbol (format "Jump to \"%s\"" ,search-label))))
        (fset sym (lambda ()
-                   (interactive)
-                   (unless (search-forward ,search-label (point-max) t)
-                     (search-backward ,search-label (point-min) t))
-                   ,@(unless no-next-line
-                       '((forward-line 1)))
-                   (back-to-indentation)))
+		   (interactive)
+		   (unless (search-forward ,search-label (point-max) t)
+		     (search-backward ,search-label (point-min) t))
+		   ,@(unless no-next-line
+		       '((forward-line 1)))
+		   (back-to-indentation)))
        (eval-after-load 'dashboard
-         (define-key dashboard-mode-map ,shortcut-char sym)))))
+	 (define-key dashboard-mode-map ,shortcut-char sym)))))
 
 (defun dashboard-append (msg &optional _messagebuf)
   "Append MSG to dashboard buffer.
@@ -337,30 +337,30 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-insert-heading (heading &optional shortcut)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT if provided."
   (when (and (display-graphic-p)
-             dashboard-set-heading-icons)
+	     dashboard-set-heading-icons)
     ;; Try loading `all-the-icons'
     (unless (or (fboundp 'all-the-icons-octicon)
-                (require 'all-the-icons nil 'noerror))
+		(require 'all-the-icons nil 'noerror))
       (error "Package `all-the-icons' isn't installed"))
 
     (insert (cond
-             ((string-equal heading "Recent Files:")
-              (all-the-icons-octicon (cdr (assoc 'recents dashboard-heading-icons))
-                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-             ((string-equal heading "Bookmarks:")
-              (all-the-icons-octicon (cdr (assoc 'bookmarks dashboard-heading-icons))
-                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-             ((or (string-equal heading "Agenda for today:")
-                  (string-equal heading "Agenda for the coming week:"))
-              (all-the-icons-octicon (cdr (assoc 'agenda dashboard-heading-icons))
-                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-             ((string-equal heading "Registers:")
-              (all-the-icons-octicon (cdr (assoc 'registers dashboard-heading-icons))
-                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-             ((string-equal heading "Projects:")
-              (all-the-icons-octicon (cdr (assoc 'projects dashboard-heading-icons))
-                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-             (t " ")))
+	     ((string-equal heading "Recent Files:")
+	      (all-the-icons-octicon (cdr (assoc 'recents dashboard-heading-icons))
+				     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+	     ((string-equal heading "Bookmarks:")
+	      (all-the-icons-octicon (cdr (assoc 'bookmarks dashboard-heading-icons))
+				     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+	     ((or (string-equal heading "Agenda for today:")
+		  (string-equal heading "Agenda for the coming week:"))
+	      (all-the-icons-octicon (cdr (assoc 'agenda dashboard-heading-icons))
+				     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+	     ((string-equal heading "Registers:")
+	      (all-the-icons-octicon (cdr (assoc 'registers dashboard-heading-icons))
+				     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+	     ((string-equal heading "Projects:")
+	      (all-the-icons-octicon (cdr (assoc 'projects dashboard-heading-icons))
+				     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+	     (t " ")))
     (insert " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
@@ -369,7 +369,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-center-line (string)
   "Center a STRING accoring to it's size."
   (insert (make-string (max 0 (floor (/ (- dashboard-banner-length
-                                           (+ (length string) 1)) 2))) ?\ )))
+					   (+ (length string) 1)) 2))) ?\ )))
 
 ;;
 ;; BANNER
@@ -377,21 +377,21 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-insert-ascii-banner-centered (file)
   "Insert banner from FILE."
   (let ((ascii-banner
-         (with-temp-buffer
-           (insert-file-contents file)
-           (let ((banner-width 0))
-             (while (not (eobp))
-               (let ((line-length (- (line-end-position) (line-beginning-position))))
-                 (if (< banner-width line-length)
-                     (setq banner-width line-length)))
-               (forward-line 1))
-             (goto-char 0)
-             (let ((margin
-                    (max 0 (floor (/ (- dashboard-banner-length banner-width) 2)))))
-               (while (not (eobp))
-                 (insert (make-string margin ?\ ))
-                 (forward-line 1))))
-           (buffer-string))))
+	 (with-temp-buffer
+	   (insert-file-contents file)
+	   (let ((banner-width 0))
+	     (while (not (eobp))
+	       (let ((line-length (- (line-end-position) (line-beginning-position))))
+		 (if (< banner-width line-length)
+		     (setq banner-width line-length)))
+	       (forward-line 1))
+	     (goto-char 0)
+	     (let ((margin
+		    (max 0 (floor (/ (- dashboard-banner-length banner-width) 2)))))
+	       (while (not (eobp))
+		 (insert (make-string margin ?\ ))
+		 (forward-line 1))))
+	   (buffer-string))))
     (put-text-property 0 (length ascii-banner) 'face 'dashboard-text-banner ascii-banner)
     (insert ascii-banner)))
 
@@ -399,25 +399,25 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Display an image BANNER."
   (when (file-exists-p banner)
     (let* ((title dashboard-banner-logo-title)
-           (spec
-            (if (image-type-available-p 'imagemagick)
-                (apply 'create-image banner 'imagemagick nil
-                       (append (when (> dashboard-image-banner-max-width 0)
-                                 (list :max-width dashboard-image-banner-max-width))
-                               (when (> dashboard-image-banner-max-height 0)
-                                 (list :max-height dashboard-image-banner-max-height))))
-              (create-image banner)))
-           (size (image-size spec))
-           (width (car size))
-           (left-margin (max 0 (floor (- dashboard-banner-length width) 2))))
+	   (spec
+	    (if (image-type-available-p 'imagemagick)
+		(apply 'create-image banner 'imagemagick nil
+		       (append (when (> dashboard-image-banner-max-width 0)
+				 (list :max-width dashboard-image-banner-max-width))
+			       (when (> dashboard-image-banner-max-height 0)
+				 (list :max-height dashboard-image-banner-max-height))))
+	      (create-image banner)))
+	   (size (image-size spec))
+	   (width (car size))
+	   (left-margin (max 0 (floor (- dashboard-banner-length width) 2))))
       (goto-char (point-min))
       (insert "\n")
       (insert (make-string left-margin ?\ ))
       (insert-image spec)
       (insert "\n\n")
       (when title
-        (dashboard-center-line title)
-        (insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title)))))))
+	(dashboard-center-line title)
+	(insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title)))))))
 
 ;;
 ;; INIT INFO
@@ -437,75 +437,75 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Return the full path of a banner based on the dotfile value."
   (when dashboard-startup-banner
     (cond ((eq 'official dashboard-startup-banner)
-           (if (and (display-graphic-p) (image-type-available-p 'png))
-               dashboard-banner-official-png
-             (dashboard-get-banner-path 1)))
-          ((eq 'logo dashboard-startup-banner)
-           (if (and (display-graphic-p) (image-type-available-p 'png))
-               dashboard-banner-logo-png
-             (dashboard-get-banner-path 1)))
-          ((integerp dashboard-startup-banner)
-           (dashboard-get-banner-path dashboard-startup-banner))
-          ((and dashboard-startup-banner
-                (image-type-available-p (intern (file-name-extension
-                                                 dashboard-startup-banner)))
-                (display-graphic-p))
-           (if (file-exists-p dashboard-startup-banner)
-               dashboard-startup-banner
-             (message (format "could not find banner %s"
-                              dashboard-startup-banner))
-             (dashboard-get-banner-path 1)))
-          (t (dashboard-get-banner-path 1)))))
+	   (if (and (display-graphic-p) (image-type-available-p 'png))
+	       dashboard-banner-official-png
+	     (dashboard-get-banner-path 1)))
+	  ((eq 'logo dashboard-startup-banner)
+	   (if (and (display-graphic-p) (image-type-available-p 'png))
+	       dashboard-banner-logo-png
+	     (dashboard-get-banner-path 1)))
+	  ((integerp dashboard-startup-banner)
+	   (dashboard-get-banner-path dashboard-startup-banner))
+	  ((and dashboard-startup-banner
+		(image-type-available-p (intern (file-name-extension
+						 dashboard-startup-banner)))
+		(display-graphic-p))
+	   (if (file-exists-p dashboard-startup-banner)
+	       dashboard-startup-banner
+	     (message (format "could not find banner %s"
+			      dashboard-startup-banner))
+	     (dashboard-get-banner-path 1)))
+	  (t (dashboard-get-banner-path 1)))))
 
 (defun dashboard-insert-banner ()
   "Insert Banner at the top of the dashboard."
   (goto-char (point-max))
   (let ((banner (dashboard-choose-banner))
-        (buffer-read-only nil))
+	(buffer-read-only nil))
     (progn
       (when banner
-        (if (image-type-available-p (intern (file-name-extension banner)))
-            (dashboard-insert-image-banner banner)
-          (dashboard-insert-ascii-banner-centered banner))
-        (dashboard-insert-navigator)
-        (dashboard-insert-init-info)))))
+	(if (image-type-available-p (intern (file-name-extension banner)))
+	    (dashboard-insert-image-banner banner)
+	  (dashboard-insert-ascii-banner-centered banner))
+	(dashboard-insert-navigator)
+	(dashboard-insert-init-info)))))
 
 (defun dashboard-insert-navigator ()
   "Insert Navigator of the dashboard."
   (when (and dashboard-set-navigator dashboard-navigator-buttons)
     (dolist (line dashboard-navigator-buttons)
       (dolist (btn line)
-        (let* ((icon (car btn))
-               (title (cadr btn))
-               (help (or (cadr (cdr btn)) ""))
-               (action (or (cadr (cddr btn)) #'ignore))
-               (face (or (cadr (cddr (cdr btn))) 'dashboard-navigator))
-               (prefix (or (cadr (cddr (cddr btn))) (propertize "[" 'face face)))
-               (suffix (or (cadr (cddr (cddr (cdr btn)))) (propertize "]" 'face face))))
-          (widget-create 'item
-                         :tag (concat
-                               (when icon
-                                 (propertize icon 'face `(:inherit
-                                                          ,(get-text-property 0 'face icon)
-                                                          :inherit
-                                                          ,face)))
-                               (when (and icon title
-                                          (not (string-equal icon ""))
-                                          (not (string-equal title "")))
-                                 (propertize " " 'face 'variable-pitch))
-                               (when title (propertize title 'face face)))
-                         :help-echo help
-                         :action action
-                         :button-face `(:underline nil)
-                         :mouse-face 'highlight
-                         :button-prefix prefix
-                         :button-suffix suffix
-                         :format "%[%t%]")
-          (insert " ")))
+	(let* ((icon (car btn))
+	       (title (cadr btn))
+	       (help (or (cadr (cdr btn)) ""))
+	       (action (or (cadr (cddr btn)) #'ignore))
+	       (face (or (cadr (cddr (cdr btn))) 'dashboard-navigator))
+	       (prefix (or (cadr (cddr (cddr btn))) (propertize "[" 'face face)))
+	       (suffix (or (cadr (cddr (cddr (cdr btn)))) (propertize "]" 'face face))))
+	  (widget-create 'item
+			 :tag (concat
+			       (when icon
+				 (propertize icon 'face `(:inherit
+							  ,(get-text-property 0 'face icon)
+							  :inherit
+							  ,face)))
+			       (when (and icon title
+					  (not (string-equal icon ""))
+					  (not (string-equal title "")))
+				 (propertize " " 'face 'variable-pitch))
+			       (when title (propertize title 'face face)))
+			 :help-echo help
+			 :action action
+			 :button-face `(:underline nil)
+			 :mouse-face 'highlight
+			 :button-prefix prefix
+			 :button-suffix suffix
+			 :format "%[%t%]")
+	  (insert " ")))
       (let* ((width (current-column)))
-        (beginning-of-line)
-        (dashboard-center-line (make-string width ?\s))
-        (end-of-line))
+	(beginning-of-line)
+	(dashboard-center-line (make-string width ?\s))
+	(end-of-line))
       (insert "\n"))
     (insert "\n")))
 
@@ -516,14 +516,14 @@ ACTION is theaction taken when the user activates the widget button.
 WIDGET-PARAMS are passed to the \"widget-create\" function."
   `(progn
      (dashboard-insert-heading ,section-name
-                               (if (and ,list dashboard-show-shortcuts) ,shortcut))
+			       (if (and ,list dashboard-show-shortcuts) ,shortcut))
      (if ,list
-         (when (dashboard-insert-section-list
-                ,section-name
-                (dashboard-subseq ,list 0 ,list-size)
-                ,action
-                ,@widget-params)
-           (dashboard-insert-shortcut ,shortcut ,section-name))
+	 (when (dashboard-insert-section-list
+		,section-name
+		(dashboard-subseq ,list 0 ,list-size)
+		,action
+		,@widget-params)
+	   (dashboard-insert-shortcut ,shortcut ,section-name))
        (insert "\n    --- No items ---"))))
 
 ;;
@@ -534,34 +534,34 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   `(when (car ,list)
      (mapc
       (lambda (el)
-        (let ((tag ,@rest))
-          (insert "\n    ")
+	(let ((tag ,@rest))
+	  (insert "\n    ")
 
-          (when (and (display-graphic-p)
-                     dashboard-set-file-icons
-                     (or (fboundp 'all-the-icons-icon-for-dir)
-                         (require 'all-the-icons nil 'noerror)))
-            (let* ((path (car (last (split-string ,@rest " - "))))
-                   (icon (if (and (not (file-remote-p path))
-                                  (file-directory-p path))
-                             (all-the-icons-icon-for-dir path nil "")
-                           (cond
-                            ((string-equal ,section-name "Agenda for today:")
-                             (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
-                            ((file-remote-p path)
-                             (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
-                            (t (all-the-icons-icon-for-file (file-name-nondirectory path)
-                                                            :v-adjust -0.05))))))
-              (setq tag (concat icon " " ,@rest))))
+	  (when (and (display-graphic-p)
+		     dashboard-set-file-icons
+		     (or (fboundp 'all-the-icons-icon-for-dir)
+			 (require 'all-the-icons nil 'noerror)))
+	    (let* ((path (car (last (split-string ,@rest " - "))))
+		   (icon (if (and (not (file-remote-p path))
+				  (file-directory-p path))
+			     (all-the-icons-icon-for-dir path nil "")
+			   (cond
+			    ((string-equal ,section-name "Agenda for today:")
+			     (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
+			    ((file-remote-p path)
+			     (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
+			    (t (all-the-icons-icon-for-file (file-name-nondirectory path)
+							    :v-adjust -0.05))))))
+	      (setq tag (concat icon " " ,@rest))))
 
-          (widget-create 'item
-                         :tag tag
-                         :action ,action
-                         :button-face `(:underline nil)
-                         :mouse-face 'highlight
-                         :button-prefix ""
-                         :button-suffix ""
-                         :format "%[%t%]")))
+	  (widget-create 'item
+			 :tag tag
+			 :action ,action
+			 :button-face `(:underline nil)
+			 :mouse-face 'highlight
+			 :button-prefix ""
+			 :button-suffix ""
+			 :format "%[%t%]")))
       ,list)))
 
 ;; Footer
@@ -603,13 +603,13 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   (dashboard-insert-section
    "Bookmarks:"
    (dashboard-subseq (bookmark-all-names)
-                     0 list-size)
+		     0 list-size)
    list-size
    "m"
    `(lambda (&rest ignore) (bookmark-jump ,el))
    (let ((file (bookmark-get-filename el)))
      (if file
-         (format "%s - %s" el (abbreviate-file-name file))
+	 (format "%s - %s" el (abbreviate-file-name file))
        el))))
 
 ;;
@@ -624,7 +624,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   (dashboard-insert-section
    "Projects:"
    (dashboard-subseq (projectile-relevant-known-projects)
-                     0 list-size)
+		     0 list-size)
    list-size
    "p"
    `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
@@ -640,8 +640,8 @@ The result can be used with functions like
 `calendar-date-compare'."
   (let ((decoded-timestamp (decode-time timestamp)))
     (list (nth 4 decoded-timestamp)
-          (nth 3 decoded-timestamp)
-          (nth 5 decoded-timestamp))))
+	  (nth 3 decoded-timestamp)
+	  (nth 5 decoded-timestamp))))
 
 (defun dashboard-date-due-p (timestamp &optional due-date)
   "Check if TIMESTAMP is today or in the past.
@@ -655,43 +655,43 @@ date part is considered."
     (setq due-date (current-time)))
   (setq due-date (time-add due-date 86400))
   (let* ((gregorian-date (dashboard-timestamp-to-gregorian-date timestamp))
-         (gregorian-due-date (dashboard-timestamp-to-gregorian-date due-date)))
+	 (gregorian-due-date (dashboard-timestamp-to-gregorian-date due-date)))
     (calendar-date-compare (list gregorian-date)
-                           (list gregorian-due-date))))
+			   (list gregorian-due-date))))
 
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
   (if (not (boundp 'time-string-formatting))
-      (setq time-string-formatting "%Y-%m-%d")
+      (defvar time-string-formatting "%Y-%m-%d")
       )
   (org-compile-prefix-format 'agenda)
   (let ((due-date nil))
     (if (and (boundp 'show-week-agenda-p) show-week-agenda-p)
-        (setq due-date (time-add (current-time) (* 86400 7)))
+	(setq due-date (time-add (current-time) (* 86400 7)))
       (setq due-date nil)
       )
     (let* ((filtered-entries nil))
       (org-map-entries
        (lambda ()
-         (let* ((schedule-time (org-get-scheduled-time (point)))
-                (deadline-time (org-get-deadline-time (point)))
-                (item (org-agenda-format-item
-                       (format-time-string time-string-formatting schedule-time)
-                       (org-get-heading t t)
-                       (org-outline-level)
-                       (org-get-category)
-                       (org-get-tags)
-                       t))
-                (loc (point))
-                (file (buffer-file-name)))
-           (if (or (equal dashboard-org-agenda-categories nil)
-                   (member (org-get-category) dashboard-org-agenda-categories))
-               (when (and (not (org-entry-is-done-p))
-                          (or (and schedule-time (dashboard-date-due-p schedule-time due-date))
-                              (and deadline-time (dashboard-date-due-p deadline-time due-date))))
-                 (setq filtered-entries
-                       (append filtered-entries
-                               (list (list item schedule-time deadline-time loc file))))))))
+	 (let* ((schedule-time (org-get-scheduled-time (point)))
+		(deadline-time (org-get-deadline-time (point)))
+		(item (org-agenda-format-item
+		       (format-time-string time-string-formatting schedule-time)
+		       (org-get-heading t t)
+		       (org-outline-level)
+		       (org-get-category)
+		       (org-get-tags)
+		       t))
+		(loc (point))
+		(file (buffer-file-name)))
+	   (if (or (equal dashboard-org-agenda-categories nil)
+		   (member (org-get-category) dashboard-org-agenda-categories))
+	       (when (and (not (org-entry-is-done-p))
+			  (or (and schedule-time (dashboard-date-due-p schedule-time due-date))
+			      (and deadline-time (dashboard-date-due-p deadline-time due-date))))
+		 (setq filtered-entries
+		       (append filtered-entries
+			       (list (list item schedule-time deadline-time loc file))))))))
        nil
        'agenda)
       filtered-entries)))
@@ -703,15 +703,15 @@ date part is considered."
   (let ((agenda (dashboard-get-agenda)))
     (dashboard-insert-section
      (or (and (boundp 'show-week-agenda-p) show-week-agenda-p "Agenda for the coming week:")
-         "Agenda for today:")
+	 "Agenda for today:")
      agenda
      list-size
      "a"
      `(lambda (&rest ignore)
-        (let ((buffer (find-file-other-window (nth 4 ',el))))
-          (with-current-buffer buffer
-            (goto-char (nth 3 ',el)))
-          (switch-to-buffer buffer)))
+	(let ((buffer (find-file-other-window (nth 4 ',el))))
+	  (with-current-buffer buffer
+	    (goto-char (nth 3 ',el)))
+	  (switch-to-buffer buffer)))
      (format "%s" (nth 0 el)))))
 
 ;;
