@@ -662,7 +662,7 @@ date part is considered."
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
   (if (not (boundp 'time-string-formatting))
-      (setq time-string-formatting "%Y-%m-%d")
+      (defvar time-string-formatting "%Y-%m-%d")
       )
   (org-compile-prefix-format 'agenda)
   (let ((due-date nil))
