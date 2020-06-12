@@ -176,7 +176,7 @@ To customize which categories from the agenda items should be visible in the das
  ~time-string-formatting~ to a formatting accepted by `format-time-string` (see the internal
  documentation for the function or the [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html][online documentation]] for a list of valid formattings). For
  example, to display the date and month (using the three letter code), set ~time-string-formatting~
- to ~"%e %b"~.
+ to ~%e %b~.
 
 ** Faces
 
