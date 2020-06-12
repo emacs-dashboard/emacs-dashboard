@@ -172,6 +172,12 @@ To customize which categories from the agenda items should be visible in the das
 (setq dashboard-org-agenda-categories '("Tasks" "Appointments"))
  #+END_SRC
 
+ To use an alternate formatting for the date of upcoming events, set the variable
+ ~time-string-formatting~ to a formatting accepted by `format-time-string` (see the internal
+ documentation for the function or the [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html][online documentation]] for a list of valid formattings). For
+ example, to display the date and month (using the three letter code), set ~time-string-formatting~
+ to ~"%e %b"~.
+
 ** Faces
 
 It is possible to customize Dashboard's appearance using the following faces:
