@@ -152,7 +152,7 @@ Example:
 
 (defcustom dashboard-init-info
   ;; Check if package.el was loaded and if package loading was enabled
-  (if (and (and (boundp 'straight--profile-cache) (hash-table-p straight--profile-cache)) (bound-and-true-p package-alist))
+  (if (and (boundp 'straight--profile-cache) (hash-table-p straight--profile-cache) (bound-and-true-p package-alist))
       (format "%d packages loaded in %s"
               (+ (length package-activated-list) (hash-table-size straight--profile-cache)) (emacs-init-time))
     (if (bound-and-true-p package-alist)
