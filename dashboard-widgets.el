@@ -250,6 +250,12 @@ If nil it is disabled.  Possible values for list-type are:
   :type  '(repeat (alist :key-type symbol :value-type string))
   :group 'dashboard)
 
+(defcustom dashboard-projectile-vc nil
+  "When non nil, `dashboard-return' opens `vc-dir' (with
+  `magit-status' if available) at the root of the project."
+  :type 'boolean
+  :group 'dashboard)
+
 (defvar recentf-list nil)
 
 ;;
@@ -627,7 +633,12 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                      0 list-size)
    list-size
    "p"
-   `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
+   `(lambda (&rest ignore)
+      (if dashboard-projectile-vc
+          (let ((magit-display-buffer-function
+                 'magit-display-buffer-same-window-except-diff-v1))
+            (projectile-vc ,el))
+        (projectile-switch-project-by-name ,el)))
    (abbreviate-file-name el)))
 
 ;;
