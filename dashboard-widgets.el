@@ -121,9 +121,8 @@ Example:
   :group 'dashboard)
 
 (defconst dashboard-banners-directory
-  (concat (file-name-directory
-           (locate-library "dashboard"))
-          "/banners/"))
+  (concat (file-name-directory (locate-library "dashboard")) "/banners/")
+  "Banner directory.")
 
 (defconst dashboard-banner-official-png
   (expand-file-name (concat dashboard-banners-directory "emacs.png"))
@@ -364,7 +363,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (insert " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
-  (if shortcut (insert (format " (%s)" shortcut))))
+  (when shortcut (insert (format " (%s)" shortcut))))
 
 (defun dashboard-center-line (string)
   "Center a STRING accoring to it's size."
@@ -426,12 +425,11 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Insert init info when `dashboard-set-init-info' is t."
   (when dashboard-set-init-info
     (dashboard-center-line dashboard-init-info)
-    (insert
-     (propertize dashboard-init-info 'face 'font-lock-comment-face))))
+    (insert (propertize dashboard-init-info 'face 'font-lock-comment-face))))
 
 (defun dashboard-get-banner-path (index)
   "Return the full path to banner with index INDEX."
-  (concat dashboard-banners-directory (format "%d.txt" index)))
+  (format "%s%d.txt" dashboard-banners-directory index))
 
 (defun dashboard-choose-banner ()
   "Return the full path of a banner based on the dotfile value."
@@ -452,8 +450,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                 (display-graphic-p))
            (if (file-exists-p dashboard-startup-banner)
                dashboard-startup-banner
-             (message (format "could not find banner %s"
-                              dashboard-startup-banner))
+             (message "Could not find banner %s" dashboard-startup-banner)
              (dashboard-get-banner-path 1)))
           (t (dashboard-get-banner-path 1)))))
 
@@ -462,13 +459,12 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (goto-char (point-max))
   (let ((banner (dashboard-choose-banner))
         (buffer-read-only nil))
-    (progn
-      (when banner
-        (if (image-type-available-p (intern (file-name-extension banner)))
-            (dashboard-insert-image-banner banner)
-          (dashboard-insert-ascii-banner-centered banner))
-        (dashboard-insert-navigator)
-        (dashboard-insert-init-info)))))
+    (when banner
+      (if (image-type-available-p (intern (file-name-extension banner)))
+          (dashboard-insert-image-banner banner)
+        (dashboard-insert-ascii-banner-centered banner))
+      (dashboard-insert-navigator)
+      (dashboard-insert-init-info))))
 
 (defun dashboard-insert-navigator ()
   "Insert Navigator of the dashboard."
