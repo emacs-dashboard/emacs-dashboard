@@ -672,25 +672,42 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   :type 'boolean
   :group 'dashboard)
 
+(defcustom dashboard-agenda-time-string-format
+  "%Y-%m-%d"
+  "Format time of agenda entries."
+  :type 'string
+  :group 'dashboard)
+
 (defcustom dashboard-match-agenda-entry
   nil
   "Match agenda to extra filter."
   :type 'string
   :group 'dashboard)
 
+(defun dashboard-agenda-entry-time (schedule-time)
+  "Format SCHEDULE-TIME with custom format.
+If SCHEDULE-TIME is nil returns a blank string which length
+is todays date format."
+  (let* ((time (or schedule-time (org-today)))
+         (formated-time (format-time-string
+                         dashboard-agenda-time-string-format time)))
+    (if schedule-time
+        formated-time
+      (replace-regexp-in-string "." " " formated-time))))
+
 (defun dashboard-format-agenda-entry ()
   "Format agenda entry to show it on dashboard."
   (let* ((schedule-time (org-get-scheduled-time (point)))
          (deadline-time (org-get-deadline-time (point)))
          (item (org-agenda-format-item
-                (format-time-string "%Y-%m-%d" schedule-time)
+                (dashboard-agenda-entry-time  (or schedule-time deadline-time))
                 (org-get-heading)
                 (org-outline-level)
                 (org-get-category)
                 (org-get-tags)
                 t))
-        (loc (point))
-        (file (buffer-file-name)))
+         (loc (point))
+         (file (buffer-file-name)))
     (list item schedule-time deadline-time loc file)))
 
 (defun dashboard-due-date-for-agenda()
@@ -699,12 +716,13 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
       (time-add (current-time) (* 86400 8))
     (time-add (current-time) 86400)))
 
-(defun dashboard-filter-agenda-entry ()
-  "Filter agenda entry to show it or not in dasboard."
+(defun dashboard-filter-agenda-by-time ()
+  "Include entry if it has a schedule-time or deadline-time in the future.
+An entry is included if this function returns nil and excluded
+if returns a point."
   (let ((schedule-time (org-get-scheduled-time (point)))
         (deadline-time (org-get-deadline-time (point)))
         (due-date (dashboard-due-date-for-agenda)))
-    ;; TODO: fix this neasted ifs
     (if (or (org-entry-is-done-p)
             (and (null schedule-time)
                  (null deadline-time))
@@ -713,13 +731,24 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
         (point)
       nil)))
 
+(defun dashboard-no-filter-agenda ()
+  "No filter agenda entries."
+  (when (org-entry-is-done-p)
+    (point)))
+
+(defcustom dashboard-filter-agenda-entry
+  `dashboard-filter-agenda-by-time
+  "Function to filter `org-agenda' entries."
+  :type 'function
+  :group 'dashboard)
+
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
   (org-compile-prefix-format 'agenda)
   (org-map-entries `dashboard-format-agenda-entry
                    dashboard-match-agenda-entry
                    'agenda
-                   `dashboard-filter-agenda-entry))
+                   dashboard-filter-agenda-entry))
 
 (defun dashboard-insert-agenda (list-size)
   "Add the list of LIST-SIZE items of agenda."

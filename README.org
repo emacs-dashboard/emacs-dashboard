@@ -176,6 +176,14 @@ To customize which categories from the agenda items should be visible in the das
 (setq dashboard-org-agenda-categories '("Tasks" "Appointments"))
  #+END_SRC
 
+By default org-agenda entries are filter by time, only showing those
+task with ~DEADLINE~ or ~SCHEDULE-TIME~. To show all agenda entries
+(except ~DONE~)
+
+#+begin_src elisp
+(setq dashboard-filter-agenda-entry dashboard-no-filter-agenda)
+#+end_src
+
 To have an extra filter, ~MATCH~ parameter is exposed as
 ~dashboard-match-agenda-entry~ variable, by default is ~nil~
 #+begin_quote
