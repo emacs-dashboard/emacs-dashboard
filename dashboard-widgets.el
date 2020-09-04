@@ -672,14 +672,19 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   :type 'boolean
   :group 'dashboard)
 
+(defcustom dashboard-match-agenda-entry
+  nil
+  "Match agenda to extra filter."
+  :type 'string
+  :group 'dashboard)
+
 (defun dashboard-format-agenda-entry ()
   "Format agenda entry to show it on dashboard."
   (let* ((schedule-time (org-get-scheduled-time (point)))
          (deadline-time (org-get-deadline-time (point)))
          (item (org-agenda-format-item
-                (format-time-string "%Y-%m-%d"
-                                    schedule-time)
-                (org-get-heading t t)
+                (format-time-string "%Y-%m-%d" schedule-time)
+                (org-get-heading)
                 (org-outline-level)
                 (org-get-category)
                 (org-get-tags)
@@ -711,7 +716,9 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
   (org-compile-prefix-format 'agenda)
-  (org-map-entries `dashboard-format-agenda-entry t 'agenda
+  (org-map-entries `dashboard-format-agenda-entry
+                   dashboard-match-agenda-entry
+                   'agenda
                    `dashboard-filter-agenda-entry))
 
 (defun dashboard-insert-agenda (list-size)

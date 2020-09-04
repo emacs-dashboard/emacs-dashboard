@@ -176,6 +176,15 @@ To customize which categories from the agenda items should be visible in the das
 (setq dashboard-org-agenda-categories '("Tasks" "Appointments"))
  #+END_SRC
 
+To have an extra filter, ~MATCH~ parameter is exposed as
+~dashboard-match-agenda-entry~ variable, by default is ~nil~
+#+begin_quote
+‘MATCH’ is a tags/property/TODO match. Org iterates only matched
+headlines. Org iterates over all headlines when MATCH is nil or t.
+#+end_quote
+
+See [[https://www.gnu.org/software/emacs/manual/html_node/org/Using-the-mapping-API.html][Org Manual]] for more information.
+
 ** Faces
 
 It is possible to customize Dashboard's appearance using the following faces:
