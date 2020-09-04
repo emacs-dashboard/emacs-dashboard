@@ -690,11 +690,17 @@ date part is considered."
     (calendar-date-compare (list gregorian-date)
                            (list gregorian-due-date))))
 
+(defcustom dashboard-week-agenda
+  t
+  "Show agenda weekly."
+  :type 'boolean
+  :group 'dashboard)
+
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
   (org-compile-prefix-format 'agenda)
   (let ((due-date nil))
-    (if (and (boundp 'show-week-agenda-p) show-week-agenda-p)
+    (if dashboard-week-agenda
         (setq due-date (time-add (current-time) (* 86400 7)))
       (setq due-date nil)
       )
@@ -730,8 +736,9 @@ date part is considered."
   (require 'calendar)
   (let ((agenda (dashboard-get-agenda)))
     (dashboard-insert-section
-     (or (and (boundp 'show-week-agenda-p) show-week-agenda-p "Agenda for the coming week:")
-         "Agenda for today:")
+     (if dashboard-week-agenda
+         "Agenda for the coming week:"
+       "Agenda for today:")
      agenda
      list-size
      (dashboard-get-shortcut 'agenda)
