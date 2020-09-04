@@ -155,7 +155,8 @@ Example:
   (if (bound-and-true-p package-alist)
       (format "%d packages loaded in %s"
               (length package-activated-list) (emacs-init-time))
-    (if (and (boundp 'straight--profile-cache) (hash-table-p straight--profile-cache))
+    (if (and (boundp 'straight--profile-cache)
+             (hash-table-p straight--profile-cache))
         (format "%d packages loaded in %s"
                 (hash-table-size straight--profile-cache) (emacs-init-time))
       (format "Emacs started in %s" (emacs-init-time))))
@@ -210,11 +211,12 @@ If the value is nil then no banner is displayed."
   :type  'integer
   :group 'dashboard)
 
-(defcustom dashboard-item-generators  '((recents   . dashboard-insert-recents)
-                                        (bookmarks . dashboard-insert-bookmarks)
-                                        (projects  . dashboard-insert-projects)
-                                        (agenda    . dashboard-insert-agenda)
-                                        (registers . dashboard-insert-registers))
+(defcustom dashboard-item-generators
+  '((recents   . dashboard-insert-recents)
+    (bookmarks . dashboard-insert-bookmarks)
+    (projects  . dashboard-insert-projects)
+    (agenda    . dashboard-insert-agenda)
+    (registers . dashboard-insert-registers))
   "Association list of items to how to generate in the startup buffer.
 Will be of the form `(list-type . list-function)'.
 Possible values for list-type are: `recents', `bookmarks', `projects',
@@ -664,76 +666,57 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Org Agenda
 ;;
-(defun dashboard-timestamp-to-gregorian-date (timestamp)
-  "Convert TIMESTAMP to a gregorian date.
-
-The result can be used with functions like
-`calendar-date-compare'."
-  (let ((decoded-timestamp (decode-time timestamp)))
-    (list (nth 4 decoded-timestamp)
-          (nth 3 decoded-timestamp)
-          (nth 5 decoded-timestamp))))
-
-(defun dashboard-date-due-p (timestamp &optional due-date)
-  "Check if TIMESTAMP is today or in the past.
-
-If DUE-DATE is nil, compare TIMESTAMP to today; otherwise,
-compare to the date in DUE-DATE.
-
-The time part of both TIMESTAMP and DUE-DATE is ignored, only the
-date part is considered."
-  (unless due-date
-    (setq due-date (current-time)))
-  (setq due-date (time-add due-date 86400))
-  (let* ((gregorian-date (dashboard-timestamp-to-gregorian-date timestamp))
-         (gregorian-due-date (dashboard-timestamp-to-gregorian-date due-date)))
-    (calendar-date-compare (list gregorian-date)
-                           (list gregorian-due-date))))
-
 (defcustom dashboard-week-agenda
   t
   "Show agenda weekly."
   :type 'boolean
   :group 'dashboard)
 
+(defun dashboard-format-agenda-entry ()
+  "Format agenda entry to show it on dashboard."
+  (let* ((schedule-time (org-get-scheduled-time (point)))
+         (deadline-time (org-get-deadline-time (point)))
+         (item (org-agenda-format-item
+                (format-time-string "%Y-%m-%d"
+                                    schedule-time)
+                (org-get-heading t t)
+                (org-outline-level)
+                (org-get-category)
+                (org-get-tags)
+                t))
+        (loc (point))
+        (file (buffer-file-name)))
+    (list item schedule-time deadline-time loc file)))
+
+(defun dashboard-due-date-for-agenda()
+  "Return due-date for agenda period."
+  (if dashboard-week-agenda
+      (time-add (current-time) (* 86400 8))
+    (time-add (current-time) 86400)))
+
+(defun dashboard-filter-agenda-entry ()
+  "Filter agenda entry to show it or not in dasboard."
+  (let ((schedule-time (org-get-scheduled-time (point)))
+        (deadline-time (org-get-deadline-time (point)))
+        (due-date (dashboard-due-date-for-agenda)))
+    ;; TODO: fix this neasted ifs
+    (if (or (org-entry-is-done-p)
+            (and (null schedule-time)
+                 (null deadline-time))
+            (not (or (org-time-less-p deadline-time due-date)
+                     (org-time-less-p schedule-time due-date))))
+        (point)
+      nil)))
+
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
   (org-compile-prefix-format 'agenda)
-  (let ((due-date nil))
-    (if dashboard-week-agenda
-        (setq due-date (time-add (current-time) (* 86400 7)))
-      (setq due-date nil)
-      )
-    (let* ((filtered-entries nil))
-      (org-map-entries
-       (lambda ()
-         (let* ((schedule-time (org-get-scheduled-time (point)))
-                (deadline-time (org-get-deadline-time (point)))
-                (item (org-agenda-format-item
-                       (format-time-string "%Y-%m-%d" schedule-time)
-                       (org-get-heading t t)
-                       (org-outline-level)
-                       (org-get-category)
-                       (org-get-tags)
-                       t))
-                (loc (point))
-                (file (buffer-file-name)))
-           (if (or (equal dashboard-org-agenda-categories nil)
-                   (member (org-get-category) dashboard-org-agenda-categories))
-               (when (and (not (org-entry-is-done-p))
-                          (or (and schedule-time (dashboard-date-due-p schedule-time due-date))
-                              (and deadline-time (dashboard-date-due-p deadline-time due-date))))
-                 (setq filtered-entries
-                       (append filtered-entries
-                               (list (list item schedule-time deadline-time loc file))))))))
-       nil
-       'agenda)
-      filtered-entries)))
+  (org-map-entries `dashboard-format-agenda-entry t 'agenda
+                   `dashboard-filter-agenda-entry))
 
 (defun dashboard-insert-agenda (list-size)
   "Add the list of LIST-SIZE items of agenda."
   (require 'org-agenda)
-  (require 'calendar)
   (let ((agenda (dashboard-get-agenda)))
     (dashboard-insert-section
      (if dashboard-week-agenda
