@@ -6,7 +6,7 @@ An extensible emacs startup screen showing you what's most important.
   1. Displays an awesome Emacs banner!
   2. Recent files
   3. Bookmarks list
-  4. Recent projectile projects list (Depends on `projectile` package)
+  4. Recent projects list (Depends on `projectile` or `project.el` package)
   5. Org mode agenda
   6. Register list
 
@@ -38,8 +38,13 @@ M-x package-install RET dashboard
  #+END_SRC
 
 By default, this will show three lists, recent files and bookmarks and org-agenda items.
-One more widget is implemented by Dashboard but it's made optional because of it's dependency on a third party application, which is
-`projects` which shows you the list of known projectile projects.
+
+The widget “projects”, which shows a list of recent projects, is not enabled
+by default since it depends on packages that might not be available.  To
+activate the widget, set the variable =dashboard-projects-backend= to either
+='projectile= (projectile, available from melpa) or ='project-el= (project.el,
+included in Emacs 27.1 and above), then add an entry
+=(projects . 5)= to the variable =dashboard-items=.
 
 ** Emacs Daemon
 
