@@ -32,7 +32,8 @@
 (declare-function projectile-load-known-projects "ext:projectile.el")
 (declare-function projectile-mode "ext:projectile.el")
 (declare-function projectile-relevant-known-projects "ext:projectile.el")
-(declare-function project-known-project-roots "ext:project.el")
+;;; project.el in Emacs 26 does not contain this function
+(declare-function project-known-project-roots "ext:project.el" nil t)
 (declare-function org-agenda-format-item "ext:org-agenda.el")
 (declare-function org-compile-prefix-format "ext:org-agenda.el")
 (declare-function org-entry-is-done-p "ext:org.el")
