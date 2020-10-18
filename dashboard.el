@@ -180,8 +180,8 @@ Optional prefix ARG says how many lines to move; default is one line."
     ;; then restore the orginal list afterwards
     ;; (this avoids many saves/loads that would result from
     ;; disabling/enabling recentf-mode)
-    (if recentf-is-on
-        (setq recentf-list (seq-take recentf-list dashboard-num-recents)))
+    (when recentf-is-on
+      (setq recentf-list (seq-take recentf-list dashboard-num-recents)))
     (when (or (not (eq dashboard-buffer-last-width (window-width)))
               (not buffer-exists))
       (setq dashboard-banner-length (window-width)
