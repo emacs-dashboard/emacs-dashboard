@@ -363,7 +363,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (insert " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
-  (if shortcut (insert (format " (%s)" shortcut))))
+  (when shortcut (insert (format " (%s)" shortcut))))
 
 (defun dashboard-center-line (string)
   "Center a STRING accoring to it's size."
