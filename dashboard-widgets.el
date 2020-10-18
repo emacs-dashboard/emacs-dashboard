@@ -454,8 +454,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                 (display-graphic-p))
            (if (file-exists-p dashboard-startup-banner)
                dashboard-startup-banner
-             (message (format "could not find banner %s"
-                              dashboard-startup-banner))
+             (message "could not find banner %s" dashboard-startup-banner)
              (dashboard-get-banner-path 1)))
           (t (dashboard-get-banner-path 1)))))
 
