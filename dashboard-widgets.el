@@ -42,6 +42,9 @@
 (declare-function org-get-tags "ext:org.el")
 (declare-function org-map-entries "ext:org.el")
 (declare-function org-outline-level "ext:org.el")
+;; Org-time-less-p is define in emacs-27 as time-less-p alias
+(when (< emacs-major-version 27)
+  (defalias 'org-time-less-p 'time-less-p))
 (defvar all-the-icons-dir-icon-alist)
 (defvar package-activated-list)
 
