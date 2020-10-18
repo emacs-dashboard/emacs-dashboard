@@ -252,6 +252,8 @@ If nil it is disabled.  Possible values for list-type are:
 
 (defvar recentf-list nil)
 
+(defvar dashboard-buffer-name)
+
 ;;
 ;; Faces
 ;;
