@@ -320,7 +320,7 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
 (defun dashboard-append (msg &optional _messagebuf)
   "Append MSG to dashboard buffer.
 If MESSAGEBUF is not nil then MSG is also written in message buffer."
-  (with-current-buffer (get-buffer-create "*dashboard*")
+  (with-current-buffer (get-buffer-create dashboard-buffer-name)
     (goto-char (point-max))
     (let ((buffer-read-only nil))
       (insert msg))))
