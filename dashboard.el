@@ -250,7 +250,7 @@ assume a filename and skip displaying Dashboard."
                                  ;; Display useful lists of items
                                  (dashboard-insert-startupify-lists)))
     (add-hook 'emacs-startup-hook '(lambda ()
-                                     (switch-to-buffer "*dashboard*")
+                                     (switch-to-buffer dashboard-buffer-name)
                                      (goto-char (point-min))
                                      (redisplay)))))
 
