@@ -162,7 +162,7 @@ Optional prefix ARG says how many lines to move; default is one line."
         (setq max-line-length
               (max max-line-length
                    (- (line-end-position) (line-beginning-position))))
-        (forward-line)))
+        (forward-line 1)))
     max-line-length))
 
 (defun dashboard-insert-startupify-lists ()
