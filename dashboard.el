@@ -245,7 +245,7 @@ Optional prefix ARG says how many lines to move; default is one line."
   "Setup post initialization hooks.
 If a command line argument is provided,
 assume a filename and skip displaying Dashboard."
-  (when (< (length command-line-args) 2 )
+  (when (< (length command-line-args) 2)
     (add-hook 'after-init-hook (lambda ()
                                  ;; Display useful lists of items
                                  (dashboard-insert-startupify-lists)))
