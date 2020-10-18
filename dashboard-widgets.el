@@ -342,6 +342,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (unless (or (fboundp 'all-the-icons-octicon)
                 (require 'all-the-icons nil 'noerror))
       (error "Package `all-the-icons' isn't installed"))
+
     (insert (cond
              ((string-equal heading "Recent Files:")
               (all-the-icons-octicon (cdr (assoc 'recents dashboard-heading-icons))
