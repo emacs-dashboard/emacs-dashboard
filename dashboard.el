@@ -59,8 +59,8 @@
   (when (>= emacs-major-version 26)
     (display-line-numbers-mode -1))
   (page-break-lines-mode 1)
-  (setq inhibit-startup-screen t)
-  (setq buffer-read-only t
+  (setq inhibit-startup-screen t
+        buffer-read-only t
         truncate-lines t))
 
 (defgroup dashboard nil
