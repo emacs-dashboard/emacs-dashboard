@@ -216,8 +216,8 @@ Optional prefix ARG says how many lines to move; default is one line."
           (dashboard-insert-footer))
         (dashboard-mode)
         (goto-char (point-min))))
-    (if recentf-is-on
-        (setq recentf-list origial-recentf-list))))
+    (when recentf-is-on
+      (setq recentf-list origial-recentf-list))))
 
 (add-hook 'window-setup-hook
           (lambda ()
