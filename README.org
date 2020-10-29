@@ -16,7 +16,7 @@ An extensible emacs startup screen showing you what's most important.
 
 * Screenshot
 
-[[./screenshot.png]]
+[[./etc/screenshot.png]]
 
 * Dependencies
 You will need the following packages which are all available on Melpa:
