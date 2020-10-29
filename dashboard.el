@@ -210,8 +210,8 @@ Optional prefix ARG says how many lines to move; default is one line."
               (goto-char (car (last dashboard--section-starts))))
             (let ((margin (floor (/ (max (- (window-width) max-line-length) 0) 2))))
               (while (not (eobp))
-                (and (not (eq ? (char-after)))
-                     (insert (make-string margin ?\ )))
+                (unless (string-suffix-p (thing-at-point 'line) dashboard-page-separator)
+                  (insert (make-string margin ?\ )))
                 (forward-line 1))))
           (dashboard-insert-footer))
         (dashboard-mode)
