@@ -198,11 +198,11 @@ Example:
 Default value is `official', it displays
 the Emacs logo.  `logo' displays Emacs alternative logo.
 An integer value is the index of text
-banner.  A string value must be a path to a .PNG file.
+banner.  A string value must be a path to a .PNG or .TXT file.
 If the value is nil then no banner is displayed."
   :type '(choice (const  :tag "offical"   official)
                  (const  :tag "logo"      logo)
-                 (string :tag "a png path"))
+                 (string :tag "a png or txt path"))
   :group 'dashboard)
 
 (defcustom dashboard-buffer-last-width nil
@@ -448,13 +448,10 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
              (dashboard-get-banner-path 1)))
           ((integerp dashboard-startup-banner)
            (dashboard-get-banner-path dashboard-startup-banner))
-          ((and dashboard-startup-banner
-                (image-type-available-p (intern (file-name-extension
-                                                 dashboard-startup-banner)))
-                (display-graphic-p))
+          ((stringp dashboard-startup-banner)
            (if (file-exists-p dashboard-startup-banner)
                dashboard-startup-banner
-             (message "could not find banner %s" dashboard-startup-banner)
+             (message "could not find banner %s, use default instead" dashboard-startup-banner)
              (dashboard-get-banner-path 1)))
           (t (dashboard-get-banner-path 1)))))
 
