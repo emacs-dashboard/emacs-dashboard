@@ -1,4 +1,8 @@
-* Emacs Dashboard [[https://melpa.org/#/dashboard][https://melpa.org/packages/dashboard-badge.svg]] [[https://stable.melpa.org/#/dashboard][https://stable.melpa.org/packages/dashboard-badge.svg]] [[https://circleci.com/gh/emacs-dashboard][https://img.shields.io/circleci/project/emacs-dashboard/emacs-dashboard/master.svg]]
+[[https://circleci.com/gh/emacs-dashboard][https://img.shields.io/circleci/project/emacs-dashboard/emacs-dashboard/master.svg]]
+[[https://melpa.org/#/dashboard][https://melpa.org/packages/dashboard-badge.svg]]
+[[https://stable.melpa.org/#/dashboard][https://stable.melpa.org/packages/dashboard-badge.svg]]
+
+* Emacs Dashboard
 
 An extensible emacs startup screen showing you what's most important.
 
@@ -12,7 +16,7 @@ An extensible emacs startup screen showing you what's most important.
 
 * Screenshot
 
-[[./screenshot.png]]
+[[./etc/screenshot.png]]
 
 * Dependencies
 You will need the following packages which are all available on Melpa:
@@ -63,7 +67,7 @@ To update the banner or banner title
 ;; 'official which displays the official emacs logo
 ;; 'logo which displays an alternative emacs logo
 ;; 1, 2 or 3 which displays one of the text banners
-;; "path/to/your/image.png" which displays whatever image you would prefer
+;; "path/to/your/image.png" or "path/to/your/text.txt" which displays whatever image/text you would prefer
 
 ;; Content is not centered by default. To center, set
 (setq dashboard-center-content t)
