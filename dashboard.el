@@ -59,8 +59,8 @@
   (when (>= emacs-major-version 26)
     (display-line-numbers-mode -1))
   (page-break-lines-mode 1)
-  (setq inhibit-startup-screen t)
-  (setq buffer-read-only t
+  (setq inhibit-startup-screen t
+        buffer-read-only t
         truncate-lines t))
 
 (defgroup dashboard nil
@@ -162,7 +162,7 @@ Optional prefix ARG says how many lines to move; default is one line."
         (setq max-line-length
               (max max-line-length
                    (- (line-end-position) (line-beginning-position))))
-        (forward-line)))
+        (forward-line 1)))
     max-line-length))
 
 (defun dashboard-insert-startupify-lists ()
@@ -180,8 +180,8 @@ Optional prefix ARG says how many lines to move; default is one line."
     ;; then restore the orginal list afterwards
     ;; (this avoids many saves/loads that would result from
     ;; disabling/enabling recentf-mode)
-    (if recentf-is-on
-        (setq recentf-list (seq-take recentf-list dashboard-num-recents)))
+    (when recentf-is-on
+      (setq recentf-list (seq-take recentf-list dashboard-num-recents)))
     (when (or (not (eq dashboard-buffer-last-width (window-width)))
               (not buffer-exists))
       (setq dashboard-banner-length (window-width)
@@ -208,16 +208,16 @@ Optional prefix ARG says how many lines to move; default is one line."
           (when dashboard-center-content
             (when dashboard--section-starts
               (goto-char (car (last dashboard--section-starts))))
-            (let ((margin (floor (/ (max (- (window-width) max-line-length) 0)  2))))
+            (let ((margin (floor (/ (max (- (window-width) max-line-length) 0) 2))))
               (while (not (eobp))
-                (and (not (eq ? (char-after)))
-                     (insert (make-string margin ?\ )))
+                (unless (string-suffix-p (thing-at-point 'line) dashboard-page-separator)
+                  (insert (make-string margin ?\ )))
                 (forward-line 1))))
           (dashboard-insert-footer))
         (dashboard-mode)
         (goto-char (point-min))))
-    (if recentf-is-on
-        (setq recentf-list origial-recentf-list))))
+    (when recentf-is-on
+      (setq recentf-list origial-recentf-list))))
 
 (add-hook 'window-setup-hook
           (lambda ()
@@ -227,7 +227,8 @@ Optional prefix ARG says how many lines to move; default is one line."
 (defun dashboard-refresh-buffer ()
   "Refresh buffer."
   (interactive)
-  (kill-buffer dashboard-buffer-name)
+  (when (get-buffer dashboard-buffer-name)
+    (kill-buffer dashboard-buffer-name))
   (dashboard-insert-startupify-lists)
   (switch-to-buffer dashboard-buffer-name))
 
@@ -245,12 +246,12 @@ Optional prefix ARG says how many lines to move; default is one line."
   "Setup post initialization hooks.
 If a command line argument is provided,
 assume a filename and skip displaying Dashboard."
-  (when (< (length command-line-args) 2 )
+  (when (< (length command-line-args) 2)
     (add-hook 'after-init-hook (lambda ()
                                  ;; Display useful lists of items
                                  (dashboard-insert-startupify-lists)))
     (add-hook 'emacs-startup-hook '(lambda ()
-                                     (switch-to-buffer "*dashboard*")
+                                     (switch-to-buffer dashboard-buffer-name)
                                      (goto-char (point-min))
                                      (redisplay)))))
 
