@@ -47,7 +47,7 @@ The widget “projects”, which shows a list of recent projects, is not enabled
 by default since it depends on packages that might not be available.  To
 activate the widget, set the variable =dashboard-projects-backend= to either
 ='projectile= (projectile, available from melpa) or ='project-el= (project.el,
-included in Emacs 27.1 and above), then add an entry
+available from GNU elpa), then add an entry like
 =(projects . 5)= to the variable =dashboard-items=.
 
 ** Emacs Daemon
