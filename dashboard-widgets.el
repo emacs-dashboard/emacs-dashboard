@@ -120,6 +120,11 @@ Example:
   :type 'list
   :group 'dashboard)
 
+(defcustom dashboard-agenda-reverse nil
+  "When non nil, agenda will be displayed in reverse order."
+  :type 'boolean
+  :group 'dashboard)
+
 (defconst dashboard-banners-directory
   (concat (file-name-directory
            (locate-library "dashboard"))
@@ -717,9 +722,11 @@ date part is considered."
                (when (and (not (org-entry-is-done-p))
                           (or (and schedule-time (dashboard-date-due-p schedule-time due-date))
                               (and deadline-time (dashboard-date-due-p deadline-time due-date))))
-                 (setq filtered-entries
-                       (append filtered-entries
-                               (list (list item schedule-time deadline-time loc file))))))))
+                 (let ((entries (append filtered-entries
+                                        (list (list item schedule-time deadline-time loc file)))))
+                   (setq filtered-entries (if dashboard-agenda-reverse
+                                              (reverse entries)
+                                            entries)))))))
        nil
        'agenda)
       filtered-entries)))
