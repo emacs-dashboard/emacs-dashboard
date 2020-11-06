@@ -14,7 +14,7 @@
 ;; Created: October 05, 2016
 ;; Package-Version: 1.8.0-SNAPSHOT
 ;; Keywords: startup, screen, tools, dashboard
-;; Package-Requires: ((emacs "25.3") (page-break-lines "0.11"))
+;; Package-Requires: ((emacs "25.3"))
 ;;; Commentary:
 
 ;; An extensible Emacs dashboard, with sections for
@@ -24,7 +24,6 @@
 
 (require 'seq)
 (require 'recentf)
-
 (require 'dashboard-widgets)
 
 ;; Custom splash screen
@@ -62,7 +61,8 @@
   (linum-mode -1)
   (when (>= emacs-major-version 26)
     (display-line-numbers-mode -1))
-  (page-break-lines-mode 1)
+  (when (require 'page-break-lines nil t)
+    (page-break-lines-mode 1))
   (setq inhibit-startup-screen t
         buffer-read-only t
         truncate-lines t))
