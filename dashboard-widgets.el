@@ -16,7 +16,7 @@
 ;;; Commentary:
 
 ;; An extensible Emacs dashboard, with sections for
-;; bookmarks, projectile projects, org-agenda and more.
+;; bookmarks, projects (projectile or project.el), org-agenda and more.
 
 ;;; Code:
 
@@ -32,6 +32,8 @@
 (declare-function projectile-load-known-projects "ext:projectile.el")
 (declare-function projectile-mode "ext:projectile.el")
 (declare-function projectile-relevant-known-projects "ext:projectile.el")
+;;; project.el in Emacs 26 does not contain this function
+(declare-function project-known-project-roots "ext:project.el" nil t)
 (declare-function org-agenda-format-item "ext:org-agenda.el")
 (declare-function org-compile-prefix-format "ext:org-agenda.el")
 (declare-function org-entry-is-done-p "ext:org.el")
@@ -220,6 +222,19 @@ Will be of the form `(list-type . list-function)'.
 Possible values for list-type are: `recents', `bookmarks', `projects',
 `agenda' ,`registers'."
   :type  '(repeat (alist :key-type symbol :value-type function))
+  :group 'dashboard)
+
+(defcustom dashboard-projects-backend 'projectile
+  "The package that supplies the list of recent projects.
+With the value `projectile', the projects widget uses
+projectile (available from MELPA), with `project-el' the widget
+uses project.el (built-in since Emacs 27.1).
+
+To activate the projects widget, add e.g. `(projects . 10)' to
+`dashboard-items' after making sure either of the above packages
+is installed."
+  :type '(choice (const :tag "Use projectile" projectile)
+                 (const :tag "Use project.el" project-el))
   :group 'dashboard)
 
 (defcustom dashboard-items '((recents   . 5)
@@ -645,22 +660,40 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
        el))))
 
 ;;
-;; Projectile
+;; Projects
 ;;
 (defun dashboard-insert-projects (list-size)
   "Add the list of LIST-SIZE items of projects."
-  (require 'projectile)
-  (let ((inhibit-message t) (message-log-max nil))
-    (projectile-cleanup-known-projects))
-  (projectile-load-known-projects)
-  (dashboard-insert-section
-   "Projects:"
-   (dashboard-subseq (projectile-relevant-known-projects)
-                     0 list-size)
-   list-size
-   (dashboard-get-shortcut 'projects)
-   `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
-   (abbreviate-file-name el)))
+  (cond
+   ((eq dashboard-projects-backend 'projectile)
+    (require 'projectile)
+    (let ((inhibit-message t) (message-log-max nil))
+      (projectile-cleanup-known-projects))
+    (projectile-load-known-projects)
+    (dashboard-insert-section
+     "Projects:"
+     (dashboard-subseq (projectile-relevant-known-projects)
+                       0 list-size)
+     list-size
+     (dashboard-get-shortcut 'projects)
+     `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
+     (abbreviate-file-name el)))
+   ((eq dashboard-projects-backend 'project-el)
+    (require 'project)
+    (dashboard-insert-section
+     "Projects:"
+     (dashboard-subseq (project-known-project-roots) 0 list-size)
+     list-size
+     (dashboard-get-shortcut 'projects)
+     `(lambda (&rest ignore)
+        (let ((default-directory ,el)
+              (project-current-inhibit-prompt t))
+          (call-interactively 'project-find-file)))
+     (abbreviate-file-name el)))
+   (t
+    (display-warning '(dashboard)
+                     "Invalid value for `dashboard-projects-backend'"
+                     :error))))
 
 ;;
 ;; Org Agenda

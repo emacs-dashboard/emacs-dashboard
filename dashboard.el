@@ -16,7 +16,7 @@
 ;;; Commentary:
 
 ;; An extensible Emacs dashboard, with sections for
-;; bookmarks, projectile projects, org-agenda and more.
+;; bookmarks, projects (projectile or project.el), org-agenda and more.
 
 ;;; Code:
 
