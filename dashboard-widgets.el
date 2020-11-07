@@ -478,9 +478,10 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
            (dashboard-get-banner-path dashboard-startup-banner))
           ((stringp dashboard-startup-banner)
            (if (and (file-exists-p dashboard-startup-banner)
-                    (or (not (display-graphic-p))
+                    (if (display-graphic-p)
                         (image-type-available-p (intern (file-name-extension
-                                                         dashboard-startup-banner)))))
+                                                         dashboard-startup-banner)))
+                      (string-suffix-p ".txt" dashboard-startup-banner)))
                dashboard-startup-banner
              (message "could not find banner %s, use default instead" dashboard-startup-banner)
              (dashboard-get-banner-path 1)))
