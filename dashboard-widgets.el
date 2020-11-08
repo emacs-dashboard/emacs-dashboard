@@ -669,21 +669,19 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Org Agenda
 ;;
-(defcustom dashboard-week-agenda
-  t
-  "Show agenda weekly."
+(defcustom dashboard-week-agenda t
+  "Show agenda weekly if its not nil."
   :type 'boolean
   :group 'dashboard)
 
-(defcustom dashboard-agenda-time-string-format
-  "%Y-%m-%d"
+(defcustom dashboard-agenda-time-string-format "%Y-%m-%d"
   "Format time of agenda entries."
   :type 'string
   :group 'dashboard)
 
-(defcustom dashboard-match-agenda-entry
-  nil
-  "Match agenda to extra filter."
+(defcustom dashboard-match-agenda-entry nil
+  "Match agenda to extra filter.
+It is the MATCH attribute for `org-map-entries'"
   :type 'string
   :group 'dashboard)
 
