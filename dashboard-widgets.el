@@ -374,8 +374,7 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
 If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (with-current-buffer (get-buffer-create dashboard-buffer-name)
     (goto-char (point-max))
-    (let ((buffer-read-only nil))
-      (insert msg))))
+    (let ((buffer-read-only nil)) (insert msg))))
 
 (defun dashboard-modify-heading-icons (alist)
   "Append ALIST items to `dashboard-heading-icons' to modify icons."
@@ -478,8 +477,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Insert init info when `dashboard-set-init-info' is t."
   (when dashboard-set-init-info
     (dashboard-center-line dashboard-init-info)
-    (insert
-     (propertize dashboard-init-info 'face 'font-lock-comment-face))))
+    (insert (propertize dashboard-init-info 'face 'font-lock-comment-face))))
 
 (defun dashboard-get-banner-path (index)
   "Return the full path to banner with index INDEX."
@@ -514,13 +512,12 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (goto-char (point-max))
   (let ((banner (dashboard-choose-banner))
         (buffer-read-only nil))
-    (progn
-      (when banner
-        (if (image-type-available-p (intern (file-name-extension banner)))
-            (dashboard-insert-image-banner banner)
-          (dashboard-insert-ascii-banner-centered banner))
-        (dashboard-insert-navigator)
-        (dashboard-insert-init-info)))))
+    (when banner
+      (if (image-type-available-p (intern (file-name-extension banner)))
+          (dashboard-insert-image-banner banner)
+        (dashboard-insert-ascii-banner-centered banner))
+      (dashboard-insert-navigator)
+      (dashboard-insert-init-info))))
 
 (defun dashboard-insert-navigator ()
   "Insert Navigator of the dashboard."
@@ -656,8 +653,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   (require 'bookmark)
   (dashboard-insert-section
    "Bookmarks:"
-   (dashboard-subseq (bookmark-all-names)
-                     0 list-size)
+   (dashboard-subseq (bookmark-all-names) 0 list-size)
    list-size
    (dashboard-get-shortcut 'bookmarks)
    `(lambda (&rest ignore) (bookmark-jump ,el))
@@ -747,7 +743,7 @@ is todays date format."
          (file (buffer-file-name)))
     (list item schedule-time deadline-time loc file)))
 
-(defun dashboard-due-date-for-agenda()
+(defun dashboard-due-date-for-agenda ()
   "Return due-date for agenda period."
   (if dashboard-week-agenda
       (time-add (current-time) (* 86400 8))
@@ -770,11 +766,9 @@ if returns a point."
 
 (defun dashboard-no-filter-agenda ()
   "No filter agenda entries."
-  (when (org-entry-is-done-p)
-    (point)))
+  (when (org-entry-is-done-p) (point)))
 
-(defcustom dashboard-filter-agenda-entry
-  `dashboard-filter-agenda-by-time
+(defcustom dashboard-filter-agenda-entry `dashboard-filter-agenda-by-time
   "Function to filter `org-agenda' entries."
   :type 'function
   :group 'dashboard)
@@ -800,8 +794,7 @@ if returns a point."
      (dashboard-get-shortcut 'agenda)
      `(lambda (&rest ignore)
         (let ((buffer (find-file-other-window (nth 4 ',el))))
-          (with-current-buffer buffer
-            (goto-char (nth 3 ',el)))
+          (with-current-buffer buffer (goto-char (nth 3 ',el)))
           (switch-to-buffer buffer)))
      (format "%s" (nth 0 el)))))
 
