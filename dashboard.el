@@ -48,6 +48,9 @@
     map)
   "Keymap for dashboard mode.")
 
+(defvar dashboard-after-initialize-hook nil
+  "Hook that is run after dashboard buffer is initialized.")
+
 (define-derived-mode dashboard-mode special-mode "Dashboard"
   "Dashboard major mode for startup screen.
 \\<dashboard-mode-map>
@@ -255,7 +258,8 @@ assume a filename and skip displaying Dashboard."
     (add-hook 'emacs-startup-hook '(lambda ()
                                      (switch-to-buffer dashboard-buffer-name)
                                      (goto-char (point-min))
-                                     (redisplay)))))
+                                     (redisplay)
+                                     (run-hooks 'dashboard-after-initialize-hook)))))
 
 (provide 'dashboard)
 ;;; dashboard.el ends here
