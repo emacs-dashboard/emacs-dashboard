@@ -48,8 +48,10 @@
     map)
   "Keymap for dashboard mode.")
 
-(defvar dashboard-after-initialize-hook nil
-  "Hook that is run after dashboard buffer is initialized.")
+(defcustom dashboard-after-initialize-hook nil
+  "Hook that is run after dashboard buffer is initialized."
+  :group 'dashboard
+  :type 'hook)
 
 (define-derived-mode dashboard-mode special-mode "Dashboard"
   "Dashboard major mode for startup screen.
