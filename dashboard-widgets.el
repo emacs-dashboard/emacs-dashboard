@@ -27,6 +27,15 @@
 ;; Compiler pacifier
 (declare-function all-the-icons-icon-for-dir "ext:all-the-icons.el")
 (declare-function all-the-icons-icon-for-file "ext:all-the-icons.el")
+;; ---
+;; TODO: Not sure why macro `declare-function' wouldn't address compile
+;; warning here.
+;;
+;; See https://github.com/domtronn/all-the-icons.el/issues/230.
+;; ---
+;;(declare-function all-the-icons-fileicon "ext:all-the-icons.el")
+;; ---
+(declare-function all-the-icons-octicon "ext:all-the-icons.el")
 (declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
 (declare-function calendar-date-compare "ext:calendar.el")
@@ -46,6 +55,8 @@
 (declare-function org-get-tags "ext:org.el")
 (declare-function org-map-entries "ext:org.el")
 (declare-function org-outline-level "ext:org.el")
+(declare-function org-today "ext:org.el")
+(declare-function org-time-less-p "ext:org-compat.el")
 ;; Org-time-less-p is define in emacs-27 as time-less-p alias
 (when (< emacs-major-version 27)
   (defalias 'org-time-less-p 'time-less-p))
