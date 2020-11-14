@@ -808,7 +808,7 @@ if returns a point."
    "Registers:"
    register-alist
    list-size
-   (dashboard-get-shortcut 'register)
+   (dashboard-get-shortcut 'registers)
    (lambda (&rest _ignore) (jump-to-register (car el)))
    (format "%c - %s" (car el) (register-describe-oneline (car el)))))
 
