@@ -1,4 +1,8 @@
-* Emacs Dashboard [[https://melpa.org/#/dashboard][https://melpa.org/packages/dashboard-badge.svg]] [[https://stable.melpa.org/#/dashboard][https://stable.melpa.org/packages/dashboard-badge.svg]] [[https://circleci.com/gh/emacs-dashboard][https://img.shields.io/circleci/project/emacs-dashboard/emacs-dashboard/master.svg]]
+[[https://circleci.com/gh/emacs-dashboard][https://img.shields.io/circleci/project/emacs-dashboard/emacs-dashboard/master.svg]]
+[[https://melpa.org/#/dashboard][https://melpa.org/packages/dashboard-badge.svg]]
+[[https://stable.melpa.org/#/dashboard][https://stable.melpa.org/packages/dashboard-badge.svg]]
+
+* Emacs Dashboard
 
 An extensible emacs startup screen showing you what's most important.
 
@@ -6,13 +10,13 @@ An extensible emacs startup screen showing you what's most important.
   1. Displays an awesome Emacs banner!
   2. Recent files
   3. Bookmarks list
-  4. Recent projectile projects list (Depends on `projectile` package)
+  4. Recent projects list (Depends on `projectile` or `project.el` package)
   5. Org mode agenda
   6. Register list
 
 * Screenshot
 
-[[./screenshot.png]]
+[[./etc/screenshot.png]]
 
 * Dependencies
 You will need the following packages which are all available on Melpa:
@@ -38,8 +42,13 @@ M-x package-install RET dashboard
  #+END_SRC
 
 By default, this will show three lists, recent files and bookmarks and org-agenda items.
-One more widget is implemented by Dashboard but it's made optional because of it's dependency on a third party application, which is
-`projects` which shows you the list of known projectile projects.
+
+The widget “projects”, which shows a list of recent projects, is not enabled
+by default since it depends on packages that might not be available.  To
+activate the widget, set the variable =dashboard-projects-backend= to either
+='projectile= (projectile, available from melpa) or ='project-el= (project.el,
+available from GNU elpa), then add an entry like
+=(projects . 5)= to the variable =dashboard-items=.
 
 ** Emacs Daemon
 
@@ -63,7 +72,7 @@ To update the banner or banner title
 ;; 'official which displays the official emacs logo
 ;; 'logo which displays an alternative emacs logo
 ;; 1, 2 or 3 which displays one of the text banners
-;; "path/to/your/image.png" which displays whatever image you would prefer
+;; "path/to/your/image.png" or "path/to/your/text.txt" which displays whatever image/text you would prefer
 
 ;; Content is not centered by default. To center, set
 (setq dashboard-center-content t)
@@ -159,9 +168,9 @@ To customize it and customize its icon;
 (add-to-list 'dashboard-items '(agenda) t)
 #+END_SRC
 
-To show agenda for the upcoming seven days set the variable ~show-week-agenda-p~ to ~t~.
+To show agenda for the upcoming seven days set the variable ~dashboard-week-agenda~ to ~t~.
 #+BEGIN_SRC elisp
-(setq show-week-agenda-p t)
+(setq dashboard-week-agenda t)
 #+END_SRC
 
 Note that setting list-size for the agenda list is intentionally ignored; all agenda items for the current day will be displayed.
@@ -171,6 +180,23 @@ To customize which categories from the agenda items should be visible in the das
 #+BEGIN_SRC elisp
 (setq dashboard-org-agenda-categories '("Tasks" "Appointments"))
  #+END_SRC
+
+By default org-agenda entries are filter by time, only showing those
+task with ~DEADLINE~ or ~SCHEDULE-TIME~. To show all agenda entries
+(except ~DONE~)
+
+#+begin_src elisp
+(setq dashboard-filter-agenda-entry dashboard-no-filter-agenda)
+#+end_src
+
+To have an extra filter, ~MATCH~ parameter is exposed as
+~dashboard-match-agenda-entry~ variable, by default is ~nil~
+#+begin_quote
+‘MATCH’ is a tags/property/TODO match. Org iterates only matched
+headlines. Org iterates over all headlines when MATCH is nil or t.
+#+end_quote
+
+See [[https://www.gnu.org/software/emacs/manual/html_node/org/Using-the-mapping-API.html][Org Manual]] for more information.
 
 ** Faces
 
