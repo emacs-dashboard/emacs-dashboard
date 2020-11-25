@@ -159,13 +159,13 @@ Example:
 
 (defcustom dashboard-init-info
   (let ((package-count 0) (time (emacs-init-time)))
-    (when (boundp 'straight--profile-cache)
-      (setq package-count (hash-table-size straight--profile-cache)))
     (when (bound-and-true-p package-alist)
-      (setq package-count (+ (length package-activated-list) package-count)))
-    (if (null (zerop package-count))
-        (format "%d packages loaded in %s" package-count time)
-      (format "Emacs started in %s" time)))
+      (setq package-count (length package-activated-list)))
+    (when (boundp 'straight--profile-cache)
+      (setq package-count (+ (hash-table-size straight--profile-cache) package-count)))
+    (if (zerop package-count)
+        (format "Emacs started in %s" time)
+      (format "%d packages loaded in %s" package-count time)))
   "Init info with packages loaded and init time."
   :type 'boolean
   :group 'dashboard)
