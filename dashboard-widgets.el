@@ -232,13 +232,13 @@ Possible values for list-type are: `recents', `bookmarks', `projects',
 
 (defcustom dashboard-projects-backend 'projectile
   "The package that supplies the list of recent projects.
-With the value `projectile', the projects widget uses
-projectile (available from MELPA), with `project-el' the widget
-uses project.el (built-in since Emacs 27.1).
+With the value `projectile', the projects widget uses the package
+projectile (available in MELPA).  With the value `project-el',
+the widget uses the package project (available in GNU ELPA).
 
 To activate the projects widget, add e.g. `(projects . 10)' to
-`dashboard-items' after making sure either of the above packages
-is installed."
+`dashboard-items' after making sure the necessary package is
+installed."
   :type '(choice (const :tag "Use projectile" projectile)
                  (const :tag "Use project.el" project-el))
   :group 'dashboard)
