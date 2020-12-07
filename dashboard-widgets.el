@@ -311,6 +311,11 @@ If nil it is disabled.  Possible values for list-type are:
   "Face used for widget headings."
   :group 'dashboard)
 
+(defface dashboard-no-items
+  '((t (:inherit widget-button)))
+  "Face used for no items."
+  :group 'dashboard)
+
 (defface dashboard-footer
   '((t (:inherit font-lock-doc-face)))
   "Face used for widget headings."
@@ -574,7 +579,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                      ,@widget-params)
                     ,shortcut)
            (dashboard-insert-shortcut ,shortcut ,section-name))
-       (insert "\n    --- No items ---"))))
+       (insert (propertize "\n    --- No items ---" 'face 'dashboard-no-items)))))
 
 ;;
 ;; Section list
