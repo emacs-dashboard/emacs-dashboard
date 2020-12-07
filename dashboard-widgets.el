@@ -545,7 +545,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                                (when title (propertize title 'face face)))
                          :help-echo help
                          :action action
-                         :button-face `(:underline nil)
+                         :button-face 'widget-button
                          :mouse-face 'highlight
                          :button-prefix prefix
                          :button-suffix suffix
@@ -607,7 +607,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
           (widget-create 'item
                          :tag tag
                          :action ,action
-                         :button-face `(:underline nil)
+                         :button-face 'widget-button
                          :mouse-face 'highlight
                          :button-prefix ""
                          :button-suffix ""
