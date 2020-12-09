@@ -108,8 +108,7 @@ to the specified width, with aspect ratio preserved."
     "Happy coding!"
     "Vi Vi Vi, the editor of the beast"
     "Welcome to the church of Emacs"
-    "While any text editor can save your files,\
- only Emacs can save your soul"
+    "While any text editor can save your files, only Emacs can save your soul"
     "I showed you my source code, pls respond")
   "A list of messages, one of which dashboard chooses to display."
   :type 'list
@@ -128,9 +127,8 @@ Example:
   :group 'dashboard)
 
 (defconst dashboard-banners-directory
-  (concat (file-name-directory
-           (locate-library "dashboard"))
-          "/banners/"))
+  (concat (file-name-directory (locate-library "dashboard")) "/banners/")
+  "Default banner directory.")
 
 (defconst dashboard-banner-official-png
   (expand-file-name (concat dashboard-banners-directory "emacs.png"))
@@ -171,18 +169,7 @@ Example:
   :group 'dashboard)
 
 (defcustom dashboard-footer
-  (let ((list '("The one true editor, Emacs!"
-                "Who the hell uses VIM anyway? Go Evil!"
-                "Free as free speech, free as free Beer"
-                "Richard Stallman is proud of you"
-                "Happy coding!"
-                "Vi Vi Vi, the editor of the beast"
-                "Welcome to the church of Emacs"
-                "While any text editor can save your files,\
- only Emacs can save your soul"
-                "I showed you my source code, pls respond"
-                )))
-    (nth (random (1- (1+ (length list)))) list))
+  (nth (random (1- (1+ (length dashboard-footer-messages)))) dashboard-footer-messages)
   "A footer with some short message."
   :type 'string
   :group 'dashboard)
@@ -692,8 +679,7 @@ Return function that returns a list of projects."
   (cond
    ((eq dashboard-projects-backend 'projectile)
     (require 'projectile)
-    (let ((inhibit-message t)
-          (message-log-max nil))
+    (let ((inhibit-message t) (message-log-max nil))
       (projectile-cleanup-known-projects))
     (projectile-load-known-projects))
    ((eq dashboard-projects-backend 'project-el)
