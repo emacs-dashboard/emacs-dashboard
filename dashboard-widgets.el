@@ -669,39 +669,58 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Projects
 ;;
+(defcustom dashboard-projects-switch-function
+  nil
+  "Custom function to switch to projects from dashboard."
+  :type 'function
+  :group 'dashboard)
+
 (defun dashboard-insert-projects (list-size)
   "Add the list of LIST-SIZE items of projects."
+  (dashboard-insert-section
+   "Projects:"
+   (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
+   list-size
+   (dashboard-get-shortcut 'projects)
+   `(lambda (&rest ignore)
+      (funcall (dashboard-projects-backend-switch-function) ,el))
+   (abbreviate-file-name el)))
+
+(defun dashboard-projects-backend-load-projects ()
+  "Depending on `dashboard-projects-backend' load corresponding backend.
+Return function that returns a list of projects."
   (cond
    ((eq dashboard-projects-backend 'projectile)
     (require 'projectile)
-    (let ((inhibit-message t) (message-log-max nil))
+    (let ((inhibit-message t)
+          (message-log-max nil))
       (projectile-cleanup-known-projects))
-    (projectile-load-known-projects)
-    (dashboard-insert-section
-     "Projects:"
-     (dashboard-subseq (projectile-relevant-known-projects)
-                       0 list-size)
-     list-size
-     (dashboard-get-shortcut 'projects)
-     `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
-     (abbreviate-file-name el)))
+    (projectile-load-known-projects))
    ((eq dashboard-projects-backend 'project-el)
     (require 'project)
-    (dashboard-insert-section
-     "Projects:"
-     (dashboard-subseq (project-known-project-roots) 0 list-size)
-     list-size
-     (dashboard-get-shortcut 'projects)
-     `(lambda (&rest ignore)
-        (let ((default-directory ,el)
-              (project-current-inhibit-prompt t))
-          (call-interactively 'project-find-file)))
-     (abbreviate-file-name el)))
+    (project-known-project-roots))
    (t
     (display-warning '(dashboard)
                      "Invalid value for `dashboard-projects-backend'"
                      :error))))
 
+(defun dashboard-projects-backend-switch-function ()
+  "Return the function to switch to a project.
+Custom variable `dashboard-projects-switch-function' variable takes preference
+over custom backends."
+  (or dashboard-projects-switch-function
+      (cond
+       ((eq dashboard-projects-backend 'projectile)
+        'projectile-switch-project-by-name)
+       ((eq dashboard-projects-backend 'project-el)
+        (lambda (project)
+          "This function is used to switch to `PROJECT'."
+          (let ((default-directory project))
+            (project-find-file))))
+       (t
+        (display-warning '(dashboard)
+                         "Invalid value for `dashboard-projects-backend'"
+                         :error)))))
 ;;
 ;; Org Agenda
 ;;
