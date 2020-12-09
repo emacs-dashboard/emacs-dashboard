@@ -779,13 +779,12 @@ if returns a point."
   (let ((schedule-time (org-get-scheduled-time (point)))
         (deadline-time (org-get-deadline-time (point)))
         (due-date (dashboard-due-date-for-agenda)))
-    (if (or (org-entry-is-done-p)
-            (and (null schedule-time)
-                 (null deadline-time))
-            (not (or (org-time-less-p deadline-time due-date)
-                     (org-time-less-p schedule-time due-date))))
-        (point)
-      nil)))
+    (unless (and (not (org-entry-is-done-p))
+                 (or (and schedule-time
+                          (org-time-less-p schedule-time due-date))
+                     (and deadline-time
+                          (org-time-less-p deadline-time due-date))))
+      (point))))
 
 (defun dashboard-no-filter-agenda ()
   "No filter agenda entries."
