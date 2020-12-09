@@ -671,8 +671,11 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 (defcustom dashboard-projects-switch-function
   nil
-  "Custom function to switch to projects from dashboard."
-  :type 'function
+  "Custom function to switch to projects from dashboard.
+If non-NIL, should be bound to a function with one argument.  The
+function will be called with the root directory of the project to
+switch to."
+  :type '(choice (const :tag "Default" nil) function)
   :group 'dashboard)
 
 (defun dashboard-insert-projects (list-size)
