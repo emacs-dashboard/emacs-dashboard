@@ -220,7 +220,7 @@ It is possible to customize Dashboard's appearance using the following faces:
      Highlights text banners.
 - ~dashboard-heading~ ::
      Highlights widget headings.
-- ~widget-button~ ::
+- ~dashboard-items-face~ ::
      Highlights widget items.
 
 * Shortcuts
