@@ -298,6 +298,11 @@ If nil it is disabled.  Possible values for list-type are:
   "Face used for widget headings."
   :group 'dashboard)
 
+(defface dashboard-items
+  '((t (:inherit widget-button)))
+  "Face used for items."
+  :group 'dashboard)
+
 (defface dashboard-no-items
   '((t (:inherit widget-button)))
   "Face used for no items."
@@ -537,7 +542,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                                (when title (propertize title 'face face)))
                          :help-echo help
                          :action action
-                         :button-face 'widget-button
+                         :button-face 'dashboard-items
                          :mouse-face 'highlight
                          :button-prefix prefix
                          :button-suffix suffix
@@ -599,7 +604,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
           (widget-create 'item
                          :tag tag
                          :action ,action
-                         :button-face 'widget-button
+                         :button-face 'dashboard-items
                          :mouse-face 'highlight
                          :button-prefix ""
                          :button-suffix ""
