@@ -780,13 +780,25 @@ if returns a point."
                           (org-time-less-p deadline-time due-date))))
       (point))))
 
+(defun dashboard-filter-agenda-by-todo ()
+  "Include entry if it is todo and not done.
+An entry is included if this function returns nil and excluded
+if returns a point."
+  (unless (and (org-entry-is-todo-p)
+               (not (org-entry-is-done-p)))
+    (point)))
+
 (defun dashboard-no-filter-agenda ()
   "No filter agenda entries."
   (when (org-entry-is-done-p) (point)))
 
-(defcustom dashboard-filter-agenda-entry `dashboard-filter-agenda-by-time
+(defcustom dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-time
   "Function to filter `org-agenda' entries."
-  :type 'function
+  :type '(choice
+          (const :tag "No filter" dashboard-no-filter-agenda)
+          (const :tag "Filter by time" dashboard-filter-agenda-by-time)
+          (const :tag "Filter by todo" dashboard-filter-agenda-by-todo)
+          (function :tag "Custom function"))
   :group 'dashboard)
 
 (defun dashboard-get-agenda ()
