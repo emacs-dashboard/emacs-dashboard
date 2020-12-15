@@ -780,6 +780,14 @@ if returns a point."
                           (org-time-less-p deadline-time due-date))))
       (point))))
 
+(defun dashboard-filter-agenda-by-todo ()
+  "Include entry if it is todo and not done.
+An entry is included if this function returns nil and excluded
+if returns a point."
+  (unless (and (org-entry-is-todo-p)
+               (not (org-entry-is-done-p)))
+    (point)))
+
 (defun dashboard-no-filter-agenda ()
   "No filter agenda entries."
   (when (org-entry-is-done-p) (point)))
