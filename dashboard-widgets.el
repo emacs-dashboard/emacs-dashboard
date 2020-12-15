@@ -792,9 +792,13 @@ if returns a point."
   "No filter agenda entries."
   (when (org-entry-is-done-p) (point)))
 
-(defcustom dashboard-filter-agenda-entry `dashboard-filter-agenda-by-time
+(defcustom dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-time
   "Function to filter `org-agenda' entries."
-  :type 'function
+  :type '(choice
+          (const :tag "No filter" dashboard-no-filter-agenda)
+          (const :tag "Filter by time" dashboard-filter-agenda-by-time)
+          (const :tag "Filter by todo" dashboard-filter-agenda-by-todo)
+          (function :tag "Custom function"))
   :group 'dashboard)
 
 (defun dashboard-get-agenda ()
