@@ -655,6 +655,14 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Truncate
 ;;
+(defun dashboard-f-filename (path)
+  "Return file name from PATH."
+  (file-name-nondirectory path))
+
+(defun dashboard-f-base (path)
+  "Return directory name from PATH."
+  (file-name-nondirectory (directory-file-name (file-name-directory path))))
+
 (defun dashboard-shorten-path-beginning (path)
   "Shorten PATH from beginning if exceeding maximum length."
   (let* ((len-path (length path)) (len-rep (length dashboard-path-shorten-string))
@@ -748,7 +756,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    (let ((file (dashboard-expand-path-alist el dashboard-recentf-alist))
          (path (dashboard-extract-key-path-alist el dashboard-recentf-alist)))
      (if dasbhoard-recentf-show-base
-         (format dasbhoard-recentf-item-format (f-filename file) path)
+         (format dasbhoard-recentf-item-format (dashboard-f-filename file) path)
        path))))
 
 ;;
@@ -811,7 +819,7 @@ switch to."
    (let ((file (dashboard-expand-path-alist el dashboard-projects-alist))
          (path (dashboard-extract-key-path-alist el dashboard-projects-alist)))
      (if dasbhoard-projects-show-base
-         (format dasbhoard-projects-item-format ((f-base file)) path)
+         (format dasbhoard-projects-item-format (dashboard-f-base file) path)
        path))))
 
 (defun dashboard-projects-backend-load-projects ()
