@@ -273,9 +273,15 @@ If nil it is disabled.  Possible values for list-type are:
   :type  '(repeat (alist :key-type symbol :value-type string))
   :group 'dashboard)
 
+(defcustom dashboard-path-style nil
+  "Style to display path."
+  :type '(choice (const :tag "No specify" nil)
+                 (const :tag "Truncate by length" truncate-length))
+  :group 'dashboard)
+
 (defcustom dashboard-path-max-length 70
   "Maximum length for path to display."
-  :type 'string
+  :type 'integer
   :group 'dashboard)
 
 (defcustom dashboard-path-shorten-string "..."
@@ -646,9 +652,9 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Truncate
 ;;
-(defun dashboard-shorten-path (path)
-  "Shorten the PATH."
-  (setq path (abbreviate-file-name path))
+
+(defun dashboard-shorten-path-by-length (path)
+  "Shorten the PATH by length."
   (let* ((len-path (length path)) (len-rep (length dashboard-path-shorten-string))
          (len-total (- dashboard-path-max-length len-rep))
          (center (/ len-total 2))
@@ -659,6 +665,13 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
       (setq back (substring path 0 end-back)
             front (substring path start-front len-path))
       (concat back dashboard-path-shorten-string front))))
+
+(defun dashboard-shorten-path (path)
+  "Shorten the PATH."
+  (setq path (abbreviate-file-name path))
+  (cl-case dashboard-path-style
+    (truncate-length (dashboard-shorten-path-by-length path))
+    (t path)))
 
 (defun dashboard-shorten-paths (paths alist)
   "Shorten all path from PATHS."
