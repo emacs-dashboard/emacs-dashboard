@@ -275,8 +275,11 @@ If nil it is disabled.  Possible values for list-type are:
 
 (defcustom dashboard-path-style nil
   "Style to display path."
-  :type '(choice (const :tag "No specify" nil)
-                 (const :tag "Truncate by length" truncate-length))
+  :type '(choice
+          (const :tag "No specify" nil)
+          (const :tag "Truncate the beginning part of the path" truncate-beginning)
+          (const :tag "Truncate the middle part of the path" truncate-middle)
+          (const :tag "Truncate the end part of the path" truncate-end))
   :group 'dashboard)
 
 (defcustom dashboard-path-max-length 70
@@ -652,40 +655,83 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Truncate
 ;;
-(defun dashboard-shorten-path-by-length (path)
-  "Shorten the PATH by length."
+(defun dashboard-shorten-path-beginning (path)
+  "Shorten PATH from beginning if exceeding maximum length."
+  (let* ((len-path (length path)) (len-rep (length dashboard-path-shorten-string))
+         (len-total (- dashboard-path-max-length len-rep))
+         front)
+    (if (<= len-path dashboard-path-max-length) path
+      (setq front (substring path (- len-path len-total) len-path))
+      (concat dashboard-path-shorten-string front))))
+
+(defun dashboard-shorten-path-middle (path)
+  "Shorten PATH from middle if exceeding maximum length."
   (let* ((len-path (length path)) (len-rep (length dashboard-path-shorten-string))
          (len-total (- dashboard-path-max-length len-rep))
          (center (/ len-total 2))
          (end-back center)
          (start-front (- len-path center))
-         back front )
+         back front)
     (if (<= len-path dashboard-path-max-length) path
       (setq back (substring path 0 end-back)
             front (substring path start-front len-path))
       (concat back dashboard-path-shorten-string front))))
 
+(defun dashboard-shorten-path-end (path)
+  "Shorten PATH from end if exceeding maximum length."
+  (let* ((len-path (length path)) (len-rep (length dashboard-path-shorten-string))
+         (len-total (- dashboard-path-max-length len-rep))
+         back)
+    (if (<= len-path dashboard-path-max-length) path
+      (setq back (substring path 0 len-total))
+      (concat back dashboard-path-shorten-string))))
+
 (defun dashboard-shorten-path (path)
   "Shorten the PATH."
   (setq path (abbreviate-file-name path))
   (cl-case dashboard-path-style
-    (truncate-length (dashboard-shorten-path-by-length path))
+    (truncate-beginning (dashboard-shorten-path-beginning path))
+    (truncate-middle (dashboard-shorten-path-middle path))
+    (truncate-end (dashboard-shorten-path-end path))
     (t path)))
 
 (defun dashboard-shorten-paths (paths alist)
   "Shorten all path from PATHS and store it to ALIST."
-  (let (lst-display abbrev)
+  (let (lst-display abbrev (index 0))
     (setf (symbol-value alist) nil)  ; reset
     (dolist (item paths)
-      (setq abbrev (dashboard-shorten-path item))
+      (setq abbrev (dashboard-shorten-path item)
+            ;; Add salt here, and use for extraction.
+            ;; See function `dashboard-extract-key-path-alist'.
+            abbrev (format "%s|%s" index abbrev))
       ;; store `abbrev' as id; and `item' with value
       (push (cons abbrev item) (symbol-value alist))
-      (push abbrev lst-display))
+      (push abbrev lst-display)
+      (cl-incf index))
     (reverse lst-display)))
+
+(defun dashboard-extract-key-path-alist (key alist)
+  "Remove salt from KEY, and return true shorten path from ALIST."
+  (let* ((key (car (assoc key alist))) (split (split-string key "|")))
+    (nth 1 split)))
+
+(defun dashboard-expand-path-alist (key alist)
+  "Get the full path (un-shorten) using KEY from ALIST."
+  (cdr (assoc key alist)))
 
 ;;
 ;; Recentf
 ;;
+(defcustom dasbhoard-recentf-show-base nil
+  "Show the base file name infront of it's path."
+  :type 'boolean
+  :group 'dashboard)
+
+(defcustom dasbhoard-recentf-item-format "[%s] %s"
+  "Format to use when showing the base of the file name."
+  :type 'string
+  :group 'dashboard)
+
 (defvar dashboard-recentf-alist nil
   "Alist records shorten's recent files and it's full paths.")
 
@@ -698,8 +744,12 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    list-size
    (dashboard-get-shortcut 'recents)
    `(lambda (&rest ignore)
-      (find-file-existing (cdr (assoc ,el dashboard-recentf-alist))))
-   (abbreviate-file-name el)))
+      (find-file-existing (dashboard-expand-path-alist ,el dashboard-recentf-alist)))
+   (let ((file (dashboard-expand-path-alist el dashboard-recentf-alist))
+         (path (dashboard-extract-key-path-alist el dashboard-recentf-alist)))
+     (if dasbhoard-recentf-show-base
+         (format dasbhoard-recentf-item-format (f-filename file) path)
+       path))))
 
 ;;
 ;; Bookmarks
@@ -733,6 +783,16 @@ switch to."
   :type '(choice (const :tag "Default" nil) function)
   :group 'dashboard)
 
+(defcustom dasbhoard-projects-show-base nil
+  "Show the project name infront of it's path."
+  :type 'boolean
+  :group 'dashboard)
+
+(defcustom dasbhoard-projects-item-format "[%s] %s"
+  "Format to use when showing the base of the project name."
+  :type 'string
+  :group 'dashboard)
+
 (defvar dashboard-projects-alist nil
   "Alist records the shorten's project paths and it's full paths.")
 
@@ -747,8 +807,12 @@ switch to."
    (dashboard-get-shortcut 'projects)
    `(lambda (&rest ignore)
       (funcall (dashboard-projects-backend-switch-function)
-               (cdr (assoc ,el dashboard-projects-alist))))
-   (abbreviate-file-name el)))
+               (dashboard-expand-path-alist ,el dashboard-projects-alist)))
+   (let ((file (dashboard-expand-path-alist el dashboard-projects-alist))
+         (path (dashboard-extract-key-path-alist el dashboard-projects-alist)))
+     (if dasbhoard-projects-show-base
+         (format dasbhoard-projects-item-format ((f-base file)) path)
+       path))))
 
 (defun dashboard-projects-backend-load-projects ()
   "Depending on `dashboard-projects-backend' load corresponding backend.
