@@ -694,16 +694,19 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   (recentf-mode)
   (dashboard-insert-section
    "Recent Files:"
-   (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist)
+   recentf-list
    list-size
    (dashboard-get-shortcut 'recents)
    `(lambda (&rest ignore)
       (find-file-existing (cdr (assoc ,el dashboard-recentf-alist))))
-   (abbreviate-file-name el)))
+   (dashboard-shorten-path el)))
 
 ;;
 ;; Bookmarks
 ;;
+(defvar dashboard-bookmark-alist nil
+  "Alist records shorten's recent files and it's full paths.")
+
 (defun dashboard-insert-bookmarks (list-size)
   "Add the list of LIST-SIZE items of bookmarks."
   (require 'bookmark)
@@ -715,7 +718,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    `(lambda (&rest ignore) (bookmark-jump ,el))
    (let ((file (bookmark-get-filename el)))
      (if file
-         (format "%s - %s" el (abbreviate-file-name file))
+         (format "%s - %s" el (dashboard-shorten-path file))
        el))))
 
 ;;
@@ -737,15 +740,13 @@ switch to."
   "Add the list of LIST-SIZE items of projects."
   (dashboard-insert-section
    "Projects:"
-   (dashboard-shorten-paths
-    (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
-    'dashboard-projects-alist)
+   (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
    list-size
    (dashboard-get-shortcut 'projects)
    `(lambda (&rest ignore)
       (funcall (dashboard-projects-backend-switch-function)
                (cdr (assoc ,el dashboard-projects-alist))))
-   (abbreviate-file-name el)))
+   (dashboard-shorten-path el)))
 
 (defun dashboard-projects-backend-load-projects ()
   "Depending on `dashboard-projects-backend' load corresponding backend.
