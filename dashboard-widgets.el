@@ -652,7 +652,6 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Truncate
 ;;
-
 (defun dashboard-shorten-path-by-length (path)
   "Shorten the PATH by length."
   (let* ((len-path (length path)) (len-rep (length dashboard-path-shorten-string))
