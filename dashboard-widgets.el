@@ -727,15 +727,37 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   "Get the full path (un-shorten) using KEY from ALIST."
   (cdr (assoc key alist)))
 
+(defun dashboard--generate-align-format (fmt len)
+  "Return inserted align LEN to FMT."
+  (let ((pos (1+ (string-match-p "%s" fmt))))
+    (concat (substring fmt 0 pos)
+            (concat "-" (number-to-string len))
+            (substring fmt pos (length fmt)))))
+
+(defun dashboard--get-align-length (alist &optional dir)
+  "Return maximum align length from ALIST.
+
+If optional argument DIR is non-nil; align with directory name instead."
+  (let ((align-length -1) path len-path)
+    (dolist (item alist)
+      (setq path (cdr item)
+            path (if dir (dashboard-f-base path) (dashboard-f-filename path))
+            len-path (length path)
+            align-length (max len-path align-length)))
+    align-length))
+
 ;;
 ;; Recentf
 ;;
-(defcustom dasbhoard-recentf-show-base nil
+(defcustom dashboard-recentf-show-base nil
   "Show the base file name infront of it's path."
-  :type 'boolean
+  :type '(choice
+          (const :tag "Don't show the base infront" nil)
+          (const :tag "Respect format" t)
+          (const :tag "Align the from base" align))
   :group 'dashboard)
 
-(defcustom dasbhoard-recentf-item-format "[%s] %s"
+(defcustom dashboard-recentf-item-format "%s  %s"
   "Format to use when showing the base of the file name."
   :type 'string
   :group 'dashboard)
@@ -743,8 +765,12 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 (defvar dashboard-recentf-alist nil
   "Alist records shorten's recent files and it's full paths.")
 
+(defvar dashboard--recentf-cache-item-format nil
+  "Cache to record the new generated align format.")
+
 (defun dashboard-insert-recents (list-size)
   "Add the list of LIST-SIZE items from recently edited files."
+  (setq dashboard--recentf-cache-item-format nil)
   (recentf-mode)
   (dashboard-insert-section
    "Recent Files:"
@@ -753,11 +779,19 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    (dashboard-get-shortcut 'recents)
    `(lambda (&rest ignore)
       (find-file-existing (dashboard-expand-path-alist ,el dashboard-recentf-alist)))
-   (let ((file (dashboard-expand-path-alist el dashboard-recentf-alist))
-         (path (dashboard-extract-key-path-alist el dashboard-recentf-alist)))
-     (if dasbhoard-recentf-show-base
-         (format dasbhoard-recentf-item-format (dashboard-f-filename file) path)
-       path))))
+   (let* ((file (dashboard-expand-path-alist el dashboard-recentf-alist))
+          (filename (dashboard-f-filename file))
+          (path (dashboard-extract-key-path-alist el dashboard-recentf-alist)))
+     (cl-case dashboard-recentf-show-base
+       (align
+        (unless dashboard--recentf-cache-item-format
+          (let* ((len-align (dashboard--get-align-length dashboard-recentf-alist))
+                 (new-fmt (dashboard--generate-align-format
+                           dashboard-recentf-item-format len-align)))
+            (setq dashboard--recentf-cache-item-format new-fmt)))
+        (format dashboard--recentf-cache-item-format filename path))
+       (nil (format dashboard-recentf-item-format filename path))
+       (t path)))))
 
 ;;
 ;; Bookmarks
@@ -791,12 +825,15 @@ switch to."
   :type '(choice (const :tag "Default" nil) function)
   :group 'dashboard)
 
-(defcustom dasbhoard-projects-show-base nil
+(defcustom dashboard-projects-show-base nil
   "Show the project name infront of it's path."
-  :type 'boolean
+  :type '(choice
+          (const :tag "Don't show the base infront" nil)
+          (const :tag "Respect format" t)
+          (const :tag "Align the from base" align))
   :group 'dashboard)
 
-(defcustom dasbhoard-projects-item-format "[%s] %s"
+(defcustom dashboard-projects-item-format "%s  %s"
   "Format to use when showing the base of the project name."
   :type 'string
   :group 'dashboard)
@@ -804,8 +841,12 @@ switch to."
 (defvar dashboard-projects-alist nil
   "Alist records the shorten's project paths and it's full paths.")
 
+(defvar dashboard--projects-cache-item-format nil
+  "Cache to record the new generated align format.")
+
 (defun dashboard-insert-projects (list-size)
   "Add the list of LIST-SIZE items of projects."
+  (setq dashboard--projects-cache-item-format nil)
   (dashboard-insert-section
    "Projects:"
    (dashboard-shorten-paths
@@ -816,11 +857,19 @@ switch to."
    `(lambda (&rest ignore)
       (funcall (dashboard-projects-backend-switch-function)
                (dashboard-expand-path-alist ,el dashboard-projects-alist)))
-   (let ((file (dashboard-expand-path-alist el dashboard-projects-alist))
-         (path (dashboard-extract-key-path-alist el dashboard-projects-alist)))
-     (if dasbhoard-projects-show-base
-         (format dasbhoard-projects-item-format (dashboard-f-base file) path)
-       path))))
+   (let* ((file (dashboard-expand-path-alist el dashboard-projects-alist))
+          (filename (dashboard-f-base file))
+          (path (dashboard-extract-key-path-alist el dashboard-projects-alist)))
+     (cl-case dashboard-projects-show-base
+       (align
+        (unless dashboard--projects-cache-item-format
+          (let* ((len-align (dashboard--get-align-length dashboard-projects-alist t))
+                 (new-fmt (dashboard--generate-align-format
+                           dashboard-projects-item-format len-align)))
+            (setq dashboard--projects-cache-item-format new-fmt)))
+        (format dashboard--projects-cache-item-format filename path))
+       (nil (format dashboard-projects-item-format filename path))
+       (t path)))))
 
 (defun dashboard-projects-backend-load-projects ()
   "Depending on `dashboard-projects-backend' load corresponding backend.
