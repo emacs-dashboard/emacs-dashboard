@@ -5,5 +5,4 @@
 (files "*.el" "*.org" "banners")
 
 (development
- (depends-on "page-break-lines")
- (depends-on "f"))
+ (depends-on "page-break-lines"))
