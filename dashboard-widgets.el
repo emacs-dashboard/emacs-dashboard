@@ -694,12 +694,12 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   (recentf-mode)
   (dashboard-insert-section
    "Recent Files:"
-   recentf-list
+   (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist)
    list-size
    (dashboard-get-shortcut 'recents)
    `(lambda (&rest ignore)
       (find-file-existing (cdr (assoc ,el dashboard-recentf-alist))))
-   (dashboard-shorten-path el)))
+   (abbreviate-file-name el)))
 
 ;;
 ;; Bookmarks
@@ -740,13 +740,15 @@ switch to."
   "Add the list of LIST-SIZE items of projects."
   (dashboard-insert-section
    "Projects:"
-   (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
+   (dashboard-shorten-paths
+    (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
+    'dashboard-projects-alist)
    list-size
    (dashboard-get-shortcut 'projects)
    `(lambda (&rest ignore)
       (funcall (dashboard-projects-backend-switch-function)
                (cdr (assoc ,el dashboard-projects-alist))))
-   (dashboard-shorten-path el)))
+   (abbreviate-file-name el)))
 
 (defun dashboard-projects-backend-load-projects ()
   "Depending on `dashboard-projects-backend' load corresponding backend.
