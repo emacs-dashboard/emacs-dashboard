@@ -728,7 +728,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   (cdr (assoc key alist)))
 
 (defun dashboard--generate-align-format (fmt len)
-  "Return inserted align LEN to FMT."
+  "Return FMT after inserting align LEN."
   (let ((pos (1+ (string-match-p "%s" fmt))))
     (concat (substring fmt 0 pos)
             (concat "-" (number-to-string len))
