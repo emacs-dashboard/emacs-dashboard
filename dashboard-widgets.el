@@ -273,6 +273,16 @@ If nil it is disabled.  Possible values for list-type are:
   :type  '(repeat (alist :key-type symbol :value-type string))
   :group 'dashboard)
 
+(defcustom dashboard-path-max-length 70
+  "Maximum length for path to display."
+  :type 'string
+  :group 'dashboard)
+
+(defcustom dashboard-path-shorten-string "..."
+  "String the that displays in the center of the path."
+  :type 'string
+  :group 'dashboard)
+
 (defvar recentf-list nil)
 
 (defvar dashboard-buffer-name)
@@ -634,17 +644,49 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
       (insert "\n"))))
 
 ;;
+;; Truncate
+;;
+(defun dashboard-shorten-path (path)
+  "Shorten the PATH."
+  (setq path (abbreviate-file-name path))
+  (let* ((len-path (length path)) (len-rep (length dashboard-path-shorten-string))
+         (len-total (- dashboard-path-max-length len-rep))
+         (center (/ len-total 2))
+         (end-back center)
+         (start-front (- len-path center))
+         back front )
+    (if (<= len-path dashboard-path-max-length) path
+      (setq back (substring path 0 end-back)
+            front (substring path start-front len-path))
+      (concat back dashboard-path-shorten-string front))))
+
+(defun dashboard-shorten-paths (paths alist)
+  "Shorten all path from PATHS."
+  (let (lst-display abbrev)
+    (setf (symbol-value alist) nil)  ; reset
+    (dolist (item paths)
+      (setq abbrev (dashboard-shorten-path item))
+      ;; store `abbrev' as id; and `item' with value
+      (push (cons abbrev item) (symbol-value alist))
+      (push abbrev lst-display))
+    (reverse lst-display)))
+
+;;
 ;; Recentf
 ;;
+(defvar dashboard-recentf-alist nil
+  "Alist records shorten's recent files and it's full paths.")
+
 (defun dashboard-insert-recents (list-size)
   "Add the list of LIST-SIZE items from recently edited files."
   (recentf-mode)
   (dashboard-insert-section
    "Recent Files:"
-   recentf-list
+   (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist)
    list-size
    (dashboard-get-shortcut 'recents)
-   `(lambda (&rest ignore) (find-file-existing ,el))
+   `(lambda (&rest ignore)
+      (find-file-existing (cdr (assoc ,el dashboard-recentf-alist))))
    (abbreviate-file-name el)))
 
 ;;
@@ -676,15 +718,20 @@ switch to."
   :type '(choice (const :tag "Default" nil) function)
   :group 'dashboard)
 
+(defvar dashboard-projects-alist nil
+  "Alist records the shorten's project paths and it's full paths.")
+
 (defun dashboard-insert-projects (list-size)
   "Add the list of LIST-SIZE items of projects."
   (dashboard-insert-section
    "Projects:"
-   (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
+   (dashboard-shorten-paths (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
+                            'dashboard-projects-alist)
    list-size
    (dashboard-get-shortcut 'projects)
    `(lambda (&rest ignore)
-      (funcall (dashboard-projects-backend-switch-function) ,el))
+      (funcall (dashboard-projects-backend-switch-function)
+               (cdr (assoc ,el dashboard-projects-alist))))
    (abbreviate-file-name el)))
 
 (defun dashboard-projects-backend-load-projects ()
