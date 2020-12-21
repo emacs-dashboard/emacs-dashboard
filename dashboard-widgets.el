@@ -674,7 +674,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
     (t path)))
 
 (defun dashboard-shorten-paths (paths alist)
-  "Shorten all path from PATHS."
+  "Shorten all path from PATHS and store it to ALIST."
   (let (lst-display abbrev)
     (setf (symbol-value alist) nil)  ; reset
     (dolist (item paths)
