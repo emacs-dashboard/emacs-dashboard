@@ -60,18 +60,20 @@
 (defcustom dashboard-image-banner-max-height 0
   "Maximum height of banner image.
 
-This setting applies only if Emacs is compiled with Imagemagick
-support.  When value is non-zero the image banner will be resized
-to the specified height, with aspect ratio preserved."
+This setting applies only if Emacs supports image transforms or
+compiled with Imagemagick support.  When value is non-zero the image
+banner will be resized to the specified height in pixels, with aspect
+ratio preserved."
   :type 'integer
   :group 'dashboard)
 
 (defcustom dashboard-image-banner-max-width 0
   "Maximum width of banner image.
 
-This setting applies if Emacs is compiled with Imagemagick
-support.  When value is non-zero the image banner will be resized
-to the specified width, with aspect ratio preserved."
+This setting applies if Emacs supports image transforms or compiled
+with Imagemagick support.  When value is non-zero the image banner
+will be resized to the specified width in pixels, with aspect ratio
+preserved."
   :type 'integer
   :group 'dashboard)
 
@@ -446,14 +448,18 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Display an image BANNER."
   (when (file-exists-p banner)
     (let* ((title dashboard-banner-logo-title)
+           (size-props
+            (append (when (> dashboard-image-banner-max-width 0)
+                      (list :max-width dashboard-image-banner-max-width))
+                    (when (> dashboard-image-banner-max-height 0)
+                      (list :max-height dashboard-image-banner-max-height))))
            (spec
             (if (image-type-available-p 'imagemagick)
-                (apply 'create-image banner 'imagemagick nil
-                       (append (when (> dashboard-image-banner-max-width 0)
-                                 (list :max-width dashboard-image-banner-max-width))
-                               (when (> dashboard-image-banner-max-height 0)
-                                 (list :max-height dashboard-image-banner-max-height))))
-              (create-image banner)))
+                (apply 'create-image banner 'imagemagick nil size-props)
+              (apply 'create-image banner nil nil
+                     (when (and (fboundp 'image-transforms-p)
+                                (memq 'scale (funcall 'image-transforms-p)))
+                       size-props))))
            (size (image-size spec))
            (width (car size))
            (left-margin (max 0 (floor (- dashboard-banner-length width) 2))))
