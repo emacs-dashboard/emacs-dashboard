@@ -737,8 +737,9 @@ switch to."
   "Add the list of LIST-SIZE items of projects."
   (dashboard-insert-section
    "Projects:"
-   (dashboard-shorten-paths (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
-                            'dashboard-projects-alist)
+   (dashboard-shorten-paths
+    (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
+    'dashboard-projects-alist)
    list-size
    (dashboard-get-shortcut 'projects)
    `(lambda (&rest ignore)
