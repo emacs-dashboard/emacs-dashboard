@@ -682,8 +682,10 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
          back front)
     (if (<= len-path dashboard-path-max-length) path
       (setq back (substring path 0 end-back)
-            front (substring path start-front len-path))
-      (concat back dashboard-path-shorten-string front))))
+            front (ignore-errors (substring path start-front len-path)))
+      (if front
+          (concat back dashboard-path-shorten-string front)
+        ""))))
 
 (defun dashboard-shorten-path-end (path)
   "Shorten PATH from end if exceeding maximum length."
