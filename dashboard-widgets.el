@@ -669,8 +669,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
          (len-total (- dashboard-path-max-length len-rep))
          front)
     (if (<= len-path dashboard-path-max-length) path
-      (setq front (substring path (- len-path len-total) len-path))
-      (concat dashboard-path-shorten-string front))))
+      (setq front (ignore-errors (substring path (- len-path len-total) len-path)))
+      (if front (concat dashboard-path-shorten-string front) ""))))
 
 (defun dashboard-shorten-path-middle (path)
   "Shorten PATH from middle if exceeding maximum length."
@@ -682,8 +682,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
          back front)
     (if (<= len-path dashboard-path-max-length) path
       (setq back (substring path 0 end-back)
-            front (substring path start-front len-path))
-      (concat back dashboard-path-shorten-string front))))
+            front (ignore-errors (substring path start-front len-path)))
+      (if front (concat back dashboard-path-shorten-string front) ""))))
 
 (defun dashboard-shorten-path-end (path)
   "Shorten PATH from end if exceeding maximum length."
@@ -691,8 +691,9 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
          (len-total (- dashboard-path-max-length len-rep))
          back)
     (if (<= len-path dashboard-path-max-length) path
-      (setq back (substring path 0 len-total))
-      (concat back dashboard-path-shorten-string))))
+      (setq back (ignore-errors (substring path 0 len-total)))
+      (if (and back (< 0 dashboard-path-max-length))
+          (concat back dashboard-path-shorten-string) ""))))
 
 (defun dashboard-shorten-path (path)
   "Shorten the PATH."
