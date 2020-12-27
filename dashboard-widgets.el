@@ -46,6 +46,7 @@
 (declare-function org-get-tags "ext:org.el")
 (declare-function org-map-entries "ext:org.el")
 (declare-function org-outline-level "ext:org.el")
+(declare-function org-get-todo-face "ext:org.el")
 ;; Org-time-less-p is define in emacs-27 as time-less-p alias
 (when (< emacs-major-version 27)
   (defalias 'org-time-less-p 'time-less-p))
@@ -936,12 +937,12 @@ is todays date format."
         formated-time
       (replace-regexp-in-string "." " " formated-time))))
 
-(defun dashboard-format-agenda-entry ()
+(defun dashboard-agenda-entry-format ()
   "Format agenda entry to show it on dashboard."
   (let* ((schedule-time (org-get-scheduled-time (point)))
          (deadline-time (org-get-deadline-time (point)))
          (item (org-agenda-format-item
-                (dashboard-agenda-entry-time  (or schedule-time deadline-time))
+                (dashboard-agenda-entry-time (or schedule-time deadline-time))
                 (org-get-heading)
                 (org-outline-level)
                 (org-get-category)
@@ -949,7 +950,34 @@ is todays date format."
                 t))
          (loc (point))
          (file (buffer-file-name)))
-    (list item schedule-time deadline-time loc file)))
+    (dashboard-agenda--set-agenda-headline-face item)
+    (list item loc file)))
+
+(defcustom dashboard-agenda-highligth-headlines t
+  "Ensure agenda headlines are highlighted."
+  :type 'boolean
+  :group 'dashboard)
+
+(defun dashboard-agenda--set-agenda-headline-face (headline)
+  "Set agenda faces to `HEADLINE' when face text property is nil."
+  (if dashboard-agenda-highligth-headlines
+      (let ((todo (org-get-todo-state))
+            (org-level-face (nth (- (org-outline-level) 1) org-level-faces)))
+        (dashboard-agenda--set-face-when-match org-level-face
+                                               (org-get-heading t t t t)
+                                               headline)
+        (dashboard-agenda--set-face-when-match (org-get-todo-face todo)
+                                               todo
+                                               headline))
+    (remove-text-properties 0 (length headline) '(face) headline)))
+
+(defun dashboard-agenda--set-face-when-match (face text entry)
+  "Set `FACE' to match text between `TEXT' and `ENTRY'.
+Do nothing if `TEXT' has already a face property or is nil."
+  (let ((match-part (and text (string-match text entry))))
+    (when (and match-part (null (get-text-property 0 'face text)))
+      (add-face-text-property (match-beginning 0) (match-end 0)
+                              face t entry))))
 
 (defun dashboard-due-date-for-agenda ()
   "Return due-date for agenda period."
@@ -995,7 +1023,7 @@ if returns a point."
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
   (org-compile-prefix-format 'agenda)
-  (org-map-entries `dashboard-format-agenda-entry
+  (org-map-entries 'dashboard-agenda-entry-format
                    dashboard-match-agenda-entry
                    'agenda
                    dashboard-filter-agenda-entry))
@@ -1012,9 +1040,10 @@ if returns a point."
      list-size
      (dashboard-get-shortcut 'agenda)
      `(lambda (&rest ignore)
-        (let ((buffer (find-file-other-window (nth 4 ',el))))
-          (with-current-buffer buffer (goto-char (nth 3 ',el)))
-          (switch-to-buffer buffer)))
+        (let ((buffer (find-file-other-window (nth 2 ',el))))
+          (with-current-buffer buffer
+            (goto-char (nth 1 ',el))
+            (switch-to-buffer buffer))))
      (format "%s" (nth 0 el)))))
 
 ;;
