@@ -953,23 +953,16 @@ is todays date format."
     (dashboard-agenda--set-agenda-headline-face item)
     (list item loc file)))
 
-(defcustom dashboard-agenda-highligth-headlines t
-  "Ensure agenda headlines are highlighted."
-  :type 'boolean
-  :group 'dashboard)
-
 (defun dashboard-agenda--set-agenda-headline-face (headline)
   "Set agenda faces to `HEADLINE' when face text property is nil."
-  (if dashboard-agenda-highligth-headlines
-      (let ((todo (org-get-todo-state))
-            (org-level-face (nth (- (org-outline-level) 1) org-level-faces)))
-        (dashboard-agenda--set-face-when-match org-level-face
-                                               (org-get-heading t t t t)
-                                               headline)
-        (dashboard-agenda--set-face-when-match (org-get-todo-face todo)
-                                               todo
-                                               headline))
-    (remove-text-properties 0 (length headline) '(face) headline)))
+  (let ((todo (org-get-todo-state))
+        (org-level-face (nth (- (org-outline-level) 1) org-level-faces)))
+    (dashboard-agenda--set-face-when-match org-level-face
+                                           (org-get-heading t t t t)
+                                           headline)
+    (dashboard-agenda--set-face-when-match (org-get-todo-face todo)
+                                           todo
+                                           headline)))
 
 (defun dashboard-agenda--set-face-when-match (face text entry)
   "Set `FACE' to match text between `TEXT' and `ENTRY'.
