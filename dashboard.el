@@ -1,6 +1,8 @@
 ;;; dashboard.el --- A startup screen extracted from Spacemacs  -*- lexical-binding: t -*-
 
-;; Copyright (c) 2016-2020 Rakan Al-Hneiti & Contributors
+;; Copyright (c) 2016-2020 Rakan Al-Hneiti <rakan.alhneiti@gmail.com>
+;; Copyright (c) 2019-2020 Jesús Martínez <jesusmartinez93@gmail.com>
+;; Copyright (c) 2020 Shen, Jen-Chieh <jcs090218@gmail.com>
 ;;
 ;; Author: Rakan Al-Hneiti
 ;; URL: https://github.com/emacs-dashboard/emacs-dashboard
@@ -16,7 +18,7 @@
 ;;; Commentary:
 
 ;; An extensible Emacs dashboard, with sections for
-;; bookmarks, projectile projects, org-agenda and more.
+;; bookmarks, projects (projectile or project.el), org-agenda and more.
 
 ;;; Code:
 
@@ -45,6 +47,11 @@
     (define-key map (kbd "{") #'dashboard-previous-section)
     map)
   "Keymap for dashboard mode.")
+
+(defcustom dashboard-after-initialize-hook nil
+  "Hook that is run after dashboard buffer is initialized."
+  :group 'dashboard
+  :type 'hook)
 
 (define-derived-mode dashboard-mode special-mode "Dashboard"
   "Dashboard major mode for startup screen.
@@ -252,7 +259,9 @@ assume a filename and skip displaying Dashboard."
                                  (dashboard-insert-startupify-lists)))
     (add-hook 'emacs-startup-hook '(lambda ()
                                      (switch-to-buffer dashboard-buffer-name)
-                                     (redisplay)))))
+                                     (goto-char (point-min))
+                                     (redisplay)
+                                     (run-hooks 'dashboard-after-initialize-hook)))))
 
 (provide 'dashboard)
 ;;; dashboard.el ends here

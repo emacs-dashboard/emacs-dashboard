@@ -10,7 +10,7 @@ An extensible emacs startup screen showing you what's most important.
   1. Displays an awesome Emacs banner!
   2. Recent files
   3. Bookmarks list
-  4. Recent projectile projects list (Depends on `projectile` package)
+  4. Recent projects list (Depends on `projectile` or `project.el` package)
   5. Org mode agenda
   6. Register list
 
@@ -42,8 +42,13 @@ M-x package-install RET dashboard
  #+END_SRC
 
 By default, this will show three lists, recent files and bookmarks and org-agenda items.
-One more widget is implemented by Dashboard but it's made optional because of it's dependency on a third party application, which is
-`projects` which shows you the list of known projectile projects.
+
+The widget “projects”, which shows a list of recent projects, is not enabled
+by default since it depends on packages that might not be available.  To
+activate the widget, set the variable =dashboard-projects-backend= to either
+='projectile= (projectile, available from melpa) or ='project-el= (project.el,
+available from GNU elpa), then add an entry like
+=(projects . 5)= to the variable =dashboard-items=.
 
 ** Emacs Daemon
 
@@ -155,6 +160,18 @@ To customize it and customize its icon;
                                                    :face 'font-lock-keyword-face))
 #+END_SRC
 
+To use it with [[https://github.com/ericdanan/counsel-projectile][counsel-projectile]] or [[https://github.com/bbatsov/persp-projectile][persp-projectile]]
+
+#+begin_src elisp
+(setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
+#+end_src
+
+Or
+
+#+begin_src elisp
+(setq dashboard-projects-switch-function 'projectile-persp-switch-project)
+#+end_src
+
 ** Org mode’s agenda
 
    To display today’s agenda items on the dashboard, add ~agenda~ to ~dashboard-items~:
@@ -163,9 +180,9 @@ To customize it and customize its icon;
 (add-to-list 'dashboard-items '(agenda) t)
 #+END_SRC
 
-To show agenda for the upcoming seven days set the variable ~show-week-agenda-p~ to ~t~.
+To show agenda for the upcoming seven days set the variable ~dashboard-week-agenda~ to ~t~.
 #+BEGIN_SRC elisp
-(setq show-week-agenda-p t)
+(setq dashboard-week-agenda t)
 #+END_SRC
 
 Note that setting list-size for the agenda list is intentionally ignored; all agenda items for the current day will be displayed.
@@ -175,6 +192,23 @@ To customize which categories from the agenda items should be visible in the das
 #+BEGIN_SRC elisp
 (setq dashboard-org-agenda-categories '("Tasks" "Appointments"))
  #+END_SRC
+
+By default org-agenda entries are filter by time, only showing those
+task with ~DEADLINE~ or ~SCHEDULE-TIME~. To show all agenda entries
+(except ~DONE~)
+
+#+begin_src elisp
+(setq dashboard-filter-agenda-entry dashboard-no-filter-agenda)
+#+end_src
+
+To have an extra filter, ~MATCH~ parameter is exposed as
+~dashboard-match-agenda-entry~ variable, by default is ~nil~
+#+begin_quote
+‘MATCH’ is a tags/property/TODO match. Org iterates only matched
+headlines. Org iterates over all headlines when MATCH is nil or t.
+#+end_quote
+
+See [[https://www.gnu.org/software/emacs/manual/html_node/org/Using-the-mapping-API.html][Org Manual]] for more information.
 
 ** Faces
 
@@ -186,7 +220,7 @@ It is possible to customize Dashboard's appearance using the following faces:
      Highlights text banners.
 - ~dashboard-heading~ ::
      Highlights widget headings.
-- ~widget-button~ ::
+- ~dashboard-items-face~ ::
      Highlights widget items.
 
 * Shortcuts
