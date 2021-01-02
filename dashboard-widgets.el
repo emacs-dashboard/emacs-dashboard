@@ -348,7 +348,12 @@ If nil it is disabled.  Possible values for list-type are:
 (defun dashboard-widget-button-click ()
   "Mouse click on widget button."
   (interactive)
-  (or (call-interactively 'widget-button-click) nil))
+  ;; TODO: I don't think returning `nil' would fix issue #184
+  ;; On my Window machine, I need to call function `widget-button-click'
+  ;; to trigger it's functionality on both graphic and terminal versions.
+  ;;
+  ;; In issue #184, we need to set keymap `down-mouse-1' to `nil' to resolve this.
+  (or (call-interactively #'widget-button-click) nil))
 
 (defun dashboard-subseq (seq start end)
   "Return the subsequence of SEQ from START to END..
