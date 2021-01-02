@@ -41,6 +41,7 @@
     (define-key map (kbd "C-i") 'widget-forward)
     (define-key map [backtab] 'widget-backward)
     (define-key map (kbd "RET") 'dashboard-return)
+    (define-key map [down-mouse-1] 'dashboard-widget-button-click)
     (define-key map (kbd "g") #'dashboard-refresh-buffer)
     (define-key map (kbd "}") #'dashboard-next-section)
     (define-key map (kbd "{") #'dashboard-previous-section)
