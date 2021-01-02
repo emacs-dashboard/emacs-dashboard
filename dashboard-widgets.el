@@ -345,6 +345,11 @@ If nil it is disabled.  Possible values for list-type are:
 ;;
 ;; Generic widget helpers
 ;;
+(defun dashboard-widget-button-click ()
+  "Mouse click on widget button."
+  (interactive)
+  (or (call-interactively 'widget-button-click) nil))
+
 (defun dashboard-subseq (seq start end)
   "Return the subsequence of SEQ from START to END..
 Uses `cl-subseq`, but accounts for end points greater than the size of the
