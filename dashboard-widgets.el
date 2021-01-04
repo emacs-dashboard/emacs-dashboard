@@ -27,6 +27,8 @@
 ;; Compiler pacifier
 (declare-function all-the-icons-icon-for-dir "ext:all-the-icons.el")
 (declare-function all-the-icons-icon-for-file "ext:all-the-icons.el")
+(declare-function all-the-icons-fileicon "ext:data-fileicons.el")
+(declare-function all-the-icons-octicon "ext:data-octicons.el")
 (declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
 (declare-function calendar-date-compare "ext:calendar.el")
@@ -46,10 +48,12 @@
 (declare-function org-get-tags "ext:org.el")
 (declare-function org-map-entries "ext:org.el")
 (declare-function org-outline-level "ext:org.el")
+(declare-function org-today "ext:org.el")
 (declare-function org-get-todo-face "ext:org.el")
-;; Org-time-less-p is define in emacs-27 as time-less-p alias
-(when (< emacs-major-version 27)
-  (defalias 'org-time-less-p 'time-less-p))
+(declare-function org-get-todo-state "ext:org.el")
+(declare-function org-entry-is-todo-p "ext:org.el")
+(defalias 'org-time-less-p 'time-less-p)
+(defvar org-level-faces "ext:org-faces.el")
 (defvar all-the-icons-dir-icon-alist)
 (defvar package-activated-list)
 
