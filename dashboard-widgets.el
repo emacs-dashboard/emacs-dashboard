@@ -49,7 +49,6 @@
 (declare-function org-map-entries "ext:org.el")
 (declare-function org-outline-level "ext:org.el")
 (declare-function org-today "ext:org.el")
-(declare-function org-time-less-p "ext:org-compat.el")
 (declare-function org-get-todo-face "ext:org.el")
 ;; Org-time-less-p is define in emacs-27 as time-less-p alias
 (when (< emacs-major-version 27)
