@@ -160,6 +160,18 @@ To customize it and customize its icon;
                                                    :face 'font-lock-keyword-face))
 #+END_SRC
 
+To use it with [[https://github.com/ericdanan/counsel-projectile][counsel-projectile]] or [[https://github.com/bbatsov/persp-projectile][persp-projectile]]
+
+#+begin_src elisp
+(setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
+#+end_src
+
+Or
+
+#+begin_src elisp
+(setq dashboard-projects-switch-function 'projectile-persp-switch-project)
+#+end_src
+
 ** Org mode’s agenda
 
    To display today’s agenda items on the dashboard, add ~agenda~ to ~dashboard-items~:
@@ -208,7 +220,7 @@ It is possible to customize Dashboard's appearance using the following faces:
      Highlights text banners.
 - ~dashboard-heading~ ::
      Highlights widget headings.
-- ~widget-button~ ::
+- ~dashboard-items-face~ ::
      Highlights widget items.
 
 * Shortcuts
