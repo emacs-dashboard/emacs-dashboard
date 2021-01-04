@@ -27,14 +27,7 @@
 ;; Compiler pacifier
 (declare-function all-the-icons-icon-for-dir "ext:all-the-icons.el")
 (declare-function all-the-icons-icon-for-file "ext:all-the-icons.el")
-;; ---
-;; TODO: Not sure why macro `declare-function' wouldn't address compile
-;; warning here.
-;;
-;; See https://github.com/domtronn/all-the-icons.el/issues/230.
-;; ---
 (declare-function all-the-icons-fileicon "ext:data-fileicons.el")
-;; ---
 (declare-function all-the-icons-octicon "ext:data-octicons.el")
 (declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
