@@ -50,9 +50,10 @@
 (declare-function org-outline-level "ext:org.el")
 (declare-function org-today "ext:org.el")
 (declare-function org-get-todo-face "ext:org.el")
-;; Org-time-less-p is define in emacs-27 as time-less-p alias
-(when (< emacs-major-version 27)
-  (defalias 'org-time-less-p 'time-less-p))
+(declare-function org-get-todo-state "ext:org.el")
+(declare-function org-entry-is-todo-p "ext:org.el")
+(defalias 'org-time-less-p 'time-less-p)
+(defvar org-level-faces "ext:org-faces.el")
 (defvar all-the-icons-dir-icon-alist)
 (defvar package-activated-list)
 
