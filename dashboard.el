@@ -163,8 +163,9 @@ Optional prefix ARG says how many lines to move; default is one line."
 (defun dashboard-mouse-1 ()
   "Key for keymap `mouse-1'."
   (interactive)
-  (when (call-interactively #'widget-button-click)
-    (setq track-mouse nil)))
+  (let ((old-track-mouse track-mouse))
+    (when (call-interactively #'widget-button-click)
+      (setq track-mouse old-track-mouse))))
 
 (defun dashboard-maximum-section-length ()
   "For the just-inserted section, calculate the length of the longest line."
