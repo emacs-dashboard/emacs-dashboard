@@ -33,7 +33,7 @@
 ;;
 ;; See https://github.com/domtronn/all-the-icons.el/issues/230.
 ;; ---
-;;(declare-function all-the-icons-fileicon "ext:all-the-icons.el")
+(declare-function all-the-icons-fileicon "ext:all-the-icons.el")
 ;; ---
 (declare-function all-the-icons-octicon "ext:all-the-icons.el")
 (declare-function bookmark-get-filename "ext:bookmark.el")
