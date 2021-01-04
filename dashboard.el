@@ -23,7 +23,7 @@
 ;;; Code:
 
 (require 'seq)
-(require 'page-break-lines)
+(require 'page-break-lines nil 'noerror)
 (require 'recentf)
 
 (require 'dashboard-widgets)
