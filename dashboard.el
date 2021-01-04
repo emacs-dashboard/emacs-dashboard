@@ -41,7 +41,7 @@
     (define-key map (kbd "C-i") 'widget-forward)
     (define-key map [backtab] 'widget-backward)
     (define-key map (kbd "RET") 'dashboard-return)
-    (define-key map [mouse-1] 'widget-button-click)
+    (define-key map [mouse-1] 'dashboard-mouse-1)
     (define-key map (kbd "g") #'dashboard-refresh-buffer)
     (define-key map (kbd "}") #'dashboard-next-section)
     (define-key map (kbd "{") #'dashboard-previous-section)
@@ -159,6 +159,12 @@ Optional prefix ARG says how many lines to move; default is one line."
     (if entry-pt
         (widget-button-press entry-pt)
       (call-interactively #'widget-button-press))))
+
+(defun dashboard-mouse-1 ()
+  "Key for keymap `mouse-1'."
+  (interactive)
+  (when (call-interactively #'widget-button-click)
+    (setq track-mouse nil)))
 
 (defun dashboard-maximum-section-length ()
   "For the just-inserted section, calculate the length of the longest line."
