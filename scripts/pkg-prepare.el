@@ -4,9 +4,12 @@
 
 (require 'package)
 
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(setq package-enable-at-startup nil
+(setq package-archives
+      '(("celpa" . "https://celpa.conao3.com/packages/")
+        ("gnu" . "http://elpa.gnu.org/packages/")
+        ;;("marmalade" . "http://marmalade-repo.org/packages/")
+        ("melpa" . "http://melpa.org/packages/"))
+      package-enable-at-startup nil
       package-check-signature nil)
 
 (package-initialize)
