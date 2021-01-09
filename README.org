@@ -1,4 +1,5 @@
-[[https://circleci.com/gh/emacs-dashboard][https://img.shields.io/circleci/project/emacs-dashboard/emacs-dashboard/master.svg]]
+[[https://github.com/emacs-dashboard/emacs-dashboard/actions][https://img.shields.io/circleci/project/emacs-dashboard/emacs-dashboard/master.svg]]
+[[https://circleci.com/gh/emacs-dashboard][https://github.com/emacs-dashboard/emacs-dashboard/workflows/CI/badge.svg]]
 [[https://melpa.org/#/dashboard][https://melpa.org/packages/dashboard-badge.svg]]
 [[https://stable.melpa.org/#/dashboard][https://stable.melpa.org/packages/dashboard-badge.svg]]
 
