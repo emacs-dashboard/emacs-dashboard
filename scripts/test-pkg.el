@@ -6,7 +6,11 @@
 (add-to-list 'load-path "./scripts/")
 (require 'pkg-prepare)
 
-(jcs-ensure-package-installed '(elisp-lint org page-break-lines all-the-icons package-lint dash) t)
+(jcs-ensure-package-installed
+ (append
+  '(page-break-lines org all-the-icons)
+  '(elisp-lint package-lint dash))
+ t)
 
 ;;
 ;; (@* "Test" )
