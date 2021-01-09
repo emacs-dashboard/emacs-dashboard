@@ -17,7 +17,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         emacs-version:
-          - 25.3
           - 26.1
           - 26.2
           - 26.3
@@ -38,7 +37,6 @@ jobs:
       matrix:
         os: [windows-latest]
         emacs-version:
-          - 25.3
           - 26.1
           - 26.2
           - 26.3
