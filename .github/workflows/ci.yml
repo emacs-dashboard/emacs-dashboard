@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+    - '**.md'
+
+jobs:
+  test-unix:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        emacs-version:
+          - 25.3
+          - 26.1
+          - 26.2
+          - 26.3
+          - 27.1
+          - snapshot
+    steps:
+    - uses: purcell/setup-emacs@master
+      with:
+        version: ${{ matrix.emacs-version }}
+
+    - uses: actions/checkout@v2
+    - name: Test package
+      run: sh ./scripts/test-pkg.sh
+
+  test-windows:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        emacs-version:
+          - 25.3
+          - 26.1
+          - 26.2
+          - 26.3
+          - 27.1
+          - snapshot
+    steps:
+    - uses: jcs090218/setup-emacs-windows@master
+      with:
+        version: ${{ matrix.emacs-version }}
+
+    - uses: actions/checkout@v2
+    - name: Test package
+      run: ./scripts/test-pkg.bat
