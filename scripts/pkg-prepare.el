@@ -3,7 +3,6 @@
 ;;; Code:
 
 (require 'package)
-(require 'tls)
 
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (setq package-enable-at-startup nil
