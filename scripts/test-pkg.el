@@ -18,5 +18,3 @@
 
 (require 'dashboard)
 (dashboard-insert-startupify-lists)
-
-(shell-command "emacs --batch -q -l \"./elisp-lint/elisp-lint.el\" -f elisp-lint-files-batch --no-package-lint dashboard-widgets.el dashboard.el")
