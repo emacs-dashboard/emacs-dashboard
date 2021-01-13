@@ -484,7 +484,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                      (when (and (fboundp 'image-transforms-p)
                                 (memq 'scale (funcall 'image-transforms-p)))
                        size-props))))
-           (size (image-size spec))
+           ;; TODO: For some reason, `elisp-lint' is reporting error void
+           ;; function `image-size'.
+           (size (when (fboundp 'image-size) (image-size spec)))
            (width (car size))
            (left-margin (max 0 (floor (- dashboard-banner-length width) 2))))
       (goto-char (point-min))
