@@ -32,5 +32,4 @@
   (when (get 'jcs-package-install 'state)
     (package-initialize)))
 
-(provide 'pkg-prepare)
 ;;; pkg-prepare.el ends here

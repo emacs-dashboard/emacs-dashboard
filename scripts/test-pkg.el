@@ -3,8 +3,7 @@
 ;;
 
 (add-to-list 'load-path "./")
-(add-to-list 'load-path "./scripts/")
-(require 'pkg-prepare)
+(load-file (expand-file-name "./scripts/pkg-prepare.el"))
 
 (jcs-ensure-package-installed
  (append
