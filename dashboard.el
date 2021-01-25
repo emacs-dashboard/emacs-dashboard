@@ -21,7 +21,7 @@
 ;; bookmarks, projects (projectile or project.el), org-agenda and more.
 
 ;;; Code:
-
+ 
 (require 'seq)
 (require 'recentf)
 
