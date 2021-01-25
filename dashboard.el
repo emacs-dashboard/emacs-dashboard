@@ -9,7 +9,7 @@
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
-;;; License: GPLv3
+;;; License: GPLv3c
 ;;
 ;; Created: October 05, 2016
 ;; Package-Version: 1.8.0-SNAPSHOT
