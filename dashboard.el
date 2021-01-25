@@ -84,6 +84,9 @@
 (defvar dashboard--section-starts nil
   "List of section starting positions.")
 
+(defvar dashboard-force-refresh nil
+  "If non-nil, force refresh dashboard buffer.")
+
 (defun dashboard-previous-section ()
   "Navigate back to previous section."
   (interactive)
@@ -195,7 +198,8 @@ Optional prefix ARG says how many lines to move; default is one line."
     ;; disabling/enabling recentf-mode)
     (when recentf-is-on
       (setq recentf-list (seq-take recentf-list dashboard-num-recents)))
-    (when (or (not (eq dashboard-buffer-last-width (window-width)))
+    (when (or dashboard-force-refresh
+              (not (eq dashboard-buffer-last-width (window-width)))
               (not buffer-exists))
       (setq dashboard-banner-length (window-width)
             dashboard-buffer-last-width dashboard-banner-length)
@@ -240,9 +244,7 @@ Optional prefix ARG says how many lines to move; default is one line."
 (defun dashboard-refresh-buffer ()
   "Refresh buffer."
   (interactive)
-  (when (get-buffer dashboard-buffer-name)
-    (kill-buffer dashboard-buffer-name))
-  (dashboard-insert-startupify-lists)
+  (let ((dashboard-force-refresh t)) (dashboard-insert-startupify-lists))
   (switch-to-buffer dashboard-buffer-name))
 
 (defun dashboard-resize-on-hook (&optional _)
