@@ -779,7 +779,9 @@ If optional argument DIR is non-nil; align with directory name instead."
 (defun dashboard-insert-recents (list-size)
   "Add the list of LIST-SIZE items from recently edited files."
   (setq dashboard--recentf-cache-item-format nil)
-  (recentf-mode) (recentf-cleanup)
+  (recentf-mode)
+  (let ((inhibit-message t) (message-log-max nil))
+    (recentf-cleanup))
   (dashboard-insert-section
    "Recent Files:"
    (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist)
