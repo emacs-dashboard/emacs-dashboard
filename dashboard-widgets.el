@@ -936,6 +936,11 @@ It is the MATCH attribute for `org-map-entries'"
   :type 'string
   :group 'dashboard)
 
+(defcustom dashboard-agenda-release-buffers nil
+  "If not nil use `org-release-buffers' after getting the entries."
+  :type 'boolean
+  :group 'dashboard)
+
 (defun dashboard-agenda-entry-time (schedule-time)
   "Format SCHEDULE-TIME with custom format.
 If SCHEDULE-TIME is nil returns a blank string which length
@@ -1030,6 +1035,12 @@ if returns a point."
                           dashboard-match-agenda-entry
                           'agenda
                           dashboard-filter-agenda-entry)
+    (dashboard-agenda--release-buffers)))
+
+(defun dashboard-agenda--release-buffers ()
+  "Release agenda buffers buffers.
+This is what `org-agenda-exit' do."
+  (when dashboard-agenda-release-buffers
     (org-release-buffers org-agenda-new-buffers)
     (setq org-agenda-new-buffers nil)))
 
