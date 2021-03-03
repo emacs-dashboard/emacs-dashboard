@@ -52,8 +52,10 @@
 (declare-function org-get-todo-face "ext:org.el")
 (declare-function org-get-todo-state "ext:org.el")
 (declare-function org-entry-is-todo-p "ext:org.el")
+(declare-function org-release-buffers "ext:org.el")
 (defalias 'org-time-less-p 'time-less-p)
 (defvar org-level-faces "ext:org-faces.el")
+(defvar org-agenda-new-buffers "ext:org.el")
 (defvar all-the-icons-dir-icon-alist)
 (defvar package-activated-list)
 
@@ -934,6 +936,11 @@ It is the MATCH attribute for `org-map-entries'"
   :type 'string
   :group 'dashboard)
 
+(defcustom dashboard-agenda-release-buffers nil
+  "If not nil use `org-release-buffers' after getting the entries."
+  :type 'boolean
+  :group 'dashboard)
+
 (defun dashboard-agenda-entry-time (schedule-time)
   "Format SCHEDULE-TIME with custom format.
 If SCHEDULE-TIME is nil returns a blank string which length
@@ -1024,10 +1031,18 @@ if returns a point."
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
   (org-compile-prefix-format 'agenda)
-  (org-map-entries 'dashboard-agenda-entry-format
-                   dashboard-match-agenda-entry
-                   'agenda
-                   dashboard-filter-agenda-entry))
+  (prog1 (org-map-entries 'dashboard-agenda-entry-format
+                          dashboard-match-agenda-entry
+                          'agenda
+                          dashboard-filter-agenda-entry)
+    (dashboard-agenda--release-buffers)))
+
+(defun dashboard-agenda--release-buffers ()
+  "Release agenda buffers buffers.
+This is what `org-agenda-exit' do."
+  (when dashboard-agenda-release-buffers
+    (org-release-buffers org-agenda-new-buffers)
+    (setq org-agenda-new-buffers nil)))
 
 (defun dashboard-insert-agenda (list-size)
   "Add the list of LIST-SIZE items of agenda."
