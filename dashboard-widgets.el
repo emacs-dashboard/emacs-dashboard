@@ -627,7 +627,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                                   (file-directory-p path))
                              (all-the-icons-icon-for-dir path nil "")
                            (cond
-                            ((string-equal ,section-name "Agenda for today:")
+                            ((or (string-equal ,section-name "Agenda for today:")
+                                 (string-equal ,section-name "Agenda for the coming week:"))
                              (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
                             ((file-remote-p path)
                              (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
