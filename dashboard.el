@@ -218,6 +218,8 @@ Optional prefix ARG says how many lines to move; default is one line."
                           (cdr-safe (assoc el dashboard-item-generators))))
                     (add-to-list 'dashboard--section-starts (point))
                     (funcall item-generator list-size)
+                    (when recentf-is-on
+                      (setq recentf-list origial-recentf-list))
                     (setq max-line-length
                           (max max-line-length (dashboard-maximum-section-length)))
                     (dashboard-insert-page-break)))
