@@ -267,11 +267,11 @@ assume a filename and skip displaying Dashboard."
     (add-hook 'after-init-hook (lambda ()
                                  ;; Display useful lists of items
                                  (dashboard-insert-startupify-lists)))
-    (add-hook 'emacs-startup-hook '(lambda ()
-                                     (switch-to-buffer dashboard-buffer-name)
-                                     (goto-char (point-min))
-                                     (redisplay)
-                                     (run-hooks 'dashboard-after-initialize-hook)))))
+    (add-hook 'emacs-startup-hook (lambda ()
+                                    (switch-to-buffer dashboard-buffer-name)
+                                    (goto-char (point-min))
+                                    (redisplay)
+                                    (run-hooks 'dashboard-after-initialize-hook)))))
 
 (provide 'dashboard)
 ;;; dashboard.el ends here
