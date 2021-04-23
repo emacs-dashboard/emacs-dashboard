@@ -53,9 +53,7 @@
   :type 'hook)
 
 (define-derived-mode dashboard-mode special-mode "Dashboard"
-  "Dashboard major mode for startup screen.
-\\<dashboard-mode-map>
-"
+  "Dashboard major mode for startup screen."
   :group 'dashboard
   :syntax-table nil
   :abbrev-table nil
