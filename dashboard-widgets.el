@@ -760,7 +760,8 @@ If optional argument DIR is non-nil; align with directory name instead."
   "Return the align length by TYPE of the section."
   (cl-case type
     (recents (dashboard--get-align-length dashboard-recentf-alist))
-    (projects (dashboard--get-align-length dashboard-projects-alist t))))
+    (projects (dashboard--get-align-length dashboard-projects-alist t))
+    (t (error "Unknown type for align length: %s" type))))
 
 ;;
 ;; Recentf
