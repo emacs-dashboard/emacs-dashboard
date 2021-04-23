@@ -794,16 +794,17 @@ If optional argument DIR is non-nil; align with directory name instead."
    (let* ((file (dashboard-expand-path-alist el dashboard-recentf-alist))
           (filename (dashboard-f-filename file))
           (path (dashboard-extract-key-path-alist el dashboard-recentf-alist)))
-     (cl-case dashboard-recentf-show-base
-       (align
-        (unless dashboard--recentf-cache-item-format
-          (let* ((len-align (dashboard--get-align-length dashboard-recentf-alist))
-                 (new-fmt (dashboard--generate-align-format
-                           dashboard-recentf-item-format len-align)))
-            (setq dashboard--recentf-cache-item-format new-fmt)))
-        (format dashboard--recentf-cache-item-format filename path))
-       ('nil path)
-       (t (format dashboard-recentf-item-format filename path))))))
+     (cond
+      ((eq dashboard-recentf-show-base 'align)
+       (unless dashboard--recentf-cache-item-format
+         (let* ((len-align (dashboard--get-align-length dashboard-recentf-alist))
+                (new-fmt (dashboard--generate-align-format
+                          dashboard-recentf-item-format len-align)))
+           (setq dashboard--recentf-cache-item-format new-fmt)))
+       (format dashboard--recentf-cache-item-format filename path))
+      ((null dashboard-recentf-show-base)
+       path)
+      (t (format dashboard-recentf-item-format filename path))))))
 
 ;;
 ;; Bookmarks
@@ -872,16 +873,16 @@ switch to."
    (let* ((file (dashboard-expand-path-alist el dashboard-projects-alist))
           (filename (dashboard-f-base file))
           (path (dashboard-extract-key-path-alist el dashboard-projects-alist)))
-     (cl-case dashboard-projects-show-base
-       (align
-        (unless dashboard--projects-cache-item-format
-          (let* ((len-align (dashboard--get-align-length dashboard-projects-alist t))
-                 (new-fmt (dashboard--generate-align-format
-                           dashboard-projects-item-format len-align)))
-            (setq dashboard--projects-cache-item-format new-fmt)))
-        (format dashboard--projects-cache-item-format filename path))
-       ('nil path)
-       (t (format dashboard-projects-item-format filename path))))))
+     (cond
+      ((eq dashboard-projects-show-base 'align)
+       (unless dashboard--projects-cache-item-format
+         (let* ((len-align (dashboard--get-align-length dashboard-projects-alist t))
+                (new-fmt (dashboard--generate-align-format
+                          dashboard-projects-item-format len-align)))
+           (setq dashboard--projects-cache-item-format new-fmt)))
+       (format dashboard--projects-cache-item-format filename path))
+      ((null dashboard-projects-show-base) path)
+      (t (format dashboard-projects-item-format filename path))))))
 
 (defun dashboard-projects-backend-load-projects ()
   "Depending on `dashboard-projects-backend' load corresponding backend.
