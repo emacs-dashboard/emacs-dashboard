@@ -707,11 +707,13 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 (defun dashboard-shorten-path (path)
   "Shorten the PATH."
   (setq path (abbreviate-file-name path))
-  (cl-case dashboard-path-style
-    (truncate-beginning (dashboard-shorten-path-beginning path))
-    (truncate-middle (dashboard-shorten-path-middle path))
-    (truncate-end (dashboard-shorten-path-end path))
-    (t path)))
+  (let ((dashboard-path-max-length (window-width)
+                                   ))
+    (cl-case dashboard-path-style
+      (truncate-beginning (dashboard-shorten-path-beginning path))
+      (truncate-middle (dashboard-shorten-path-middle path))
+      (truncate-end (dashboard-shorten-path-end path))
+      (t path))))
 
 (defun dashboard-shorten-paths (paths alist)
   "Shorten all path from PATHS and store it to ALIST."
@@ -756,6 +758,12 @@ If optional argument DIR is non-nil; align with directory name instead."
             align-length (max len-path align-length)))
     align-length))
 
+(defun dashboard--align-length-by-type (type)
+  "Return the align length by TYPE of the section."
+  (cl-case type
+    (recents (dashboard--get-align-length dashboard-recentf-alist))
+    (projects (dashboard--get-align-length dashboard-projects-alist t))))
+
 ;;
 ;; Recentf
 ;;
@@ -797,7 +805,7 @@ If optional argument DIR is non-nil; align with directory name instead."
      (cond
       ((eq dashboard-recentf-show-base 'align)
        (unless dashboard--recentf-cache-item-format
-         (let* ((len-align (dashboard--get-align-length dashboard-recentf-alist))
+         (let* ((len-align (dashboard--align-length-by-type 'recents))
                 (new-fmt (dashboard--generate-align-format
                           dashboard-recentf-item-format len-align)))
            (setq dashboard--recentf-cache-item-format new-fmt)))
@@ -876,7 +884,7 @@ switch to."
      (cond
       ((eq dashboard-projects-show-base 'align)
        (unless dashboard--projects-cache-item-format
-         (let* ((len-align (dashboard--get-align-length dashboard-projects-alist t))
+         (let* ((len-align (dashboard--align-length-by-type 'projects))
                 (new-fmt (dashboard--generate-align-format
                           dashboard-projects-item-format len-align)))
            (setq dashboard--projects-cache-item-format new-fmt)))
