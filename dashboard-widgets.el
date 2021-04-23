@@ -731,7 +731,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   "Shorten the PATH by TYPE."
   (setq path (abbreviate-file-name path))
   (let ((dashboard-path-max-length
-         (if dashboard-shorten-by-window-width
+         (if (and dashboard-path-style dashboard-shorten-by-window-width)
              (- (window-width) (dashboard--get-base-length path type)
                 dashboard-shorten-path-offset)
            dashboard-path-max-length)))
@@ -789,7 +789,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
          (setq len-list (length bookmarks-lst))
          (while (and (< count len-item) (< count len-list))
            (setq base (nth count bookmarks-lst)
-                 align-length (max align-length (length (dashboard-f-filename base))))
+                 align-length (max align-length (length base)))
            (cl-incf count))))
       (projects
        (let ((projects-lst (dashboard-projects-backend-load-projects)))
@@ -852,7 +852,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Bookmarks
 ;;
-(defcustom dashboard-bookmark-show-base nil
+(defcustom dashboard-bookmark-show-base t
   "Show the base file name infront of it's path."
   :type '(choice
           (const :tag "Don't show the base infront" nil)
@@ -860,13 +860,10 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
           (const :tag "Align the from base" align))
   :group 'dashboard)
 
-(defcustom dashboard-bookmark-item-format "%s  %s"
+(defcustom dashboard-bookmark-item-format "%s - %s"
   "Format to use when showing the base of the file name."
   :type 'string
   :group 'dashboard)
-
-(defvar dashboard-bookmark-alist nil
-  "Alist records shorten's recent files and it's full paths.")
 
 (defvar dashboard--bookmark-cache-item-format nil
   "Cache to record the new generated align format.")
@@ -876,14 +873,13 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   (require 'bookmark)
   (dashboard-insert-section
    "Bookmarks:"
-   (dashboard-shorten-paths (dashboard-subseq (bookmark-all-names) 0 list-size)
-                            'dashboard-bookmark-alist 'bookmarks)
+   (dashboard-subseq (bookmark-all-names) 0 list-size)
    list-size
    (dashboard-get-shortcut 'bookmarks)
    `(lambda (&rest ignore) (bookmark-jump ,el))
-   (let* ((file (dashboard-expand-path-alist el dashboard-bookmark-alist))
-          (filename (dashboard-f-filename file))
-          (path (dashboard-extract-key-path-alist el dashboard-bookmark-alist)))
+   (let* ((filename el)
+          (path (bookmark-get-filename el))
+          (path-shorten (dashboard-shorten-path path 'bookmarks)))
      (cond
       ((eq dashboard-bookmark-show-base 'align)
        (unless dashboard--bookmark-cache-item-format
@@ -891,9 +887,9 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                 (new-fmt (dashboard--generate-align-format
                           dashboard-bookmark-item-format len-align)))
            (setq dashboard--bookmark-cache-item-format new-fmt)))
-       (format dashboard--bookmark-cache-item-format filename path))
-      ((null dashboard-bookmark-show-base) path)
-      (t (format dashboard-bookmark-item-format filename path))))))
+       (format dashboard--bookmark-cache-item-format filename path-shorten))
+      ((null dashboard-bookmark-show-base) path-shorten)
+      (t (format dashboard-bookmark-item-format filename path-shorten))))))
 
 ;;
 ;; Projects
