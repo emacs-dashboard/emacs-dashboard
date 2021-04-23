@@ -664,6 +664,16 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Truncate
 ;;
+(defcustom dashboard-shorten-by-window-width nil
+  "Shorten path by window edges."
+  :type 'boolean
+  :group 'dashboard)
+
+(defcustom dashboard-shorten-path-offset 0
+  "Shorten path offset on the edges."
+  :type 'integer
+  :group 'dashboard)
+
 (defun dashboard-f-filename (path)
   "Return file name from PATH."
   (file-name-nondirectory path))
@@ -704,14 +714,32 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
       (if (and back (< 0 dashboard-path-max-length))
           (concat back dashboard-path-shorten-string) ""))))
 
+(defun dashboard--get-base-length (path)
+  "Return the length of the base from the PATH."
+  (let* ((is-dir (file-directory-p path))
+         (base (if is-dir (dashboard-f-base path) (dashboard-f-filename path)))
+         (option (if is-dir 'dashboard-projects-show-base 'dashboard-recentf-show-base))
+         (option-val (symbol-value option))
+         base-len)
+    (cond ((eq option-val 'align)
+           (setq base-len (if is-dir (dashboard--align-length-by-type 'projects)
+                            (dashboard--align-length-by-type 'recents))))
+          ((null option-val) (setq base-len 0))
+          (t (setq base-len (length base))))
+    base-len))
+
 (defun dashboard-shorten-path (path)
   "Shorten the PATH."
   (setq path (abbreviate-file-name path))
-  (cl-case dashboard-path-style
-    (truncate-beginning (dashboard-shorten-path-beginning path))
-    (truncate-middle (dashboard-shorten-path-middle path))
-    (truncate-end (dashboard-shorten-path-end path))
-    (t path)))
+  (let ((dashboard-path-max-length
+         (if dashboard-shorten-by-window-width
+             (- (window-width) (dashboard--get-base-length path) dashboard-shorten-path-offset)
+           dashboard-path-max-length)))
+    (cl-case dashboard-path-style
+      (truncate-beginning (dashboard-shorten-path-beginning path))
+      (truncate-middle (dashboard-shorten-path-middle path))
+      (truncate-end (dashboard-shorten-path-end path))
+      (t path))))
 
 (defun dashboard-shorten-paths (paths alist)
   "Shorten all path from PATHS and store it to ALIST."
