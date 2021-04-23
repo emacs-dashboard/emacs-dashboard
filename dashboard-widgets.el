@@ -778,6 +778,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
         len-list file dir)
     (cl-case type
       (recents
+       (require 'recentf)
        (setq len-list (length recentf-list))
        (while (and (< count len-item) (< count len-list))
          (setq file (nth count recentf-list)
