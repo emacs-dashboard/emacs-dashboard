@@ -742,7 +742,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
       (t path))))
 
 (defun dashboard-shorten-paths (paths alist type)
-  "Shorten all path from PATHS and store it to ALIST."
+  "Shorten all path from PATHS by TYPE and store it to ALIST."
   (let (lst-display abbrev (index 0))
     (setf (symbol-value alist) nil)  ; reset
     (dolist (item paths)
@@ -784,19 +784,19 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
          (setq base (nth count recentf-list)
                align-length (max align-length (length (dashboard-f-filename base))))
          (cl-incf count)))
-      (projects
-       (let ((projects-lst (dashboard-projects-backend-load-projects)))
-         (setq len-list (length projects-lst))
-         (while (and (< count len-item) (< count len-list))
-           (setq base (nth count projects-lst)
-                 align-length (max align-length (length (dashboard-f-base base))))
-           (cl-incf count))))
       (bookmarks
        (let ((bookmarks-lst (bookmark-all-names)))
          (setq len-list (length bookmarks-lst))
          (while (and (< count len-item) (< count len-list))
            (setq base (nth count bookmarks-lst)
                  align-length (max align-length (length (dashboard-f-filename base))))
+           (cl-incf count))))
+      (projects
+       (let ((projects-lst (dashboard-projects-backend-load-projects)))
+         (setq len-list (length projects-lst))
+         (while (and (< count len-item) (< count len-list))
+           (setq base (nth count projects-lst)
+                 align-length (max align-length (length (dashboard-f-base base))))
            (cl-incf count))))
       (t (error "Unknown type for align length: %s" type)))
     align-length))
@@ -827,8 +827,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   "Add the list of LIST-SIZE items from recently edited files."
   (setq dashboard--recentf-cache-item-format nil)
   (recentf-mode)
-  (let ((inhibit-message t) (message-log-max nil))
-    (recentf-cleanup))
+  (let ((inhibit-message t) (message-log-max nil)) (recentf-cleanup))
   (dashboard-insert-section
    "Recent Files:"
    (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist 'recents)
@@ -877,7 +876,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   (require 'bookmark)
   (dashboard-insert-section
    "Bookmarks:"
-   (dashboard-subseq (bookmark-all-names) 0 list-size)
+   (dashboard-shorten-paths (dashboard-subseq (bookmark-all-names) 0 list-size)
+                            'dashboard-bookmark-alist 'bookmarks)
    list-size
    (dashboard-get-shortcut 'bookmarks)
    `(lambda (&rest ignore) (bookmark-jump ,el))
@@ -931,10 +931,8 @@ switch to."
   (setq dashboard--projects-cache-item-format nil)
   (dashboard-insert-section
    "Projects:"
-   (dashboard-shorten-paths
-    (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
-    'dashboard-projects-alist
-    'projects)
+   (dashboard-shorten-paths (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
+                            'dashboard-projects-alist 'projects)
    list-size
    (dashboard-get-shortcut 'projects)
    `(lambda (&rest ignore)
