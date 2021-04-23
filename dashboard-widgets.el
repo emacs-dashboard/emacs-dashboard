@@ -717,7 +717,10 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   "Return the length of the base from the PATH by TYPE."
   (let* ((is-dir (file-directory-p path))
          (base (if is-dir (dashboard-f-base path) (dashboard-f-filename path)))
-         (option (if is-dir 'dashboard-projects-show-base 'dashboard-recentf-show-base))
+         (option (cl-case type
+                   (recents 'dashboard-recentf-show-base)
+                   (bookmarks 'dashboard-bookmarks-show-base)
+                   (projects 'dashboard-projects-show-base)))
          (option-val (symbol-value option))
          base-len)
     (cond ((eq option-val 'align)
@@ -851,7 +854,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;;
 ;; Bookmarks
 ;;
-(defcustom dashboard-bookmark-show-base t
+(defcustom dashboard-bookmarks-show-base t
   "Show the base file name infront of it's path."
   :type '(choice
           (const :tag "Don't show the base infront" nil)
@@ -859,12 +862,12 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
           (const :tag "Align the from base" align))
   :group 'dashboard)
 
-(defcustom dashboard-bookmark-item-format "%s - %s"
+(defcustom dashboard-bookmarks-item-format "%s - %s"
   "Format to use when showing the base of the file name."
   :type 'string
   :group 'dashboard)
 
-(defvar dashboard--bookmark-cache-item-format nil
+(defvar dashboard--bookmarks-cache-item-format nil
   "Cache to record the new generated align format.")
 
 (defun dashboard-insert-bookmarks (list-size)
@@ -880,15 +883,15 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
           (path (bookmark-get-filename el))
           (path-shorten (dashboard-shorten-path path 'bookmarks)))
      (cond
-      ((eq dashboard-bookmark-show-base 'align)
-       (unless dashboard--bookmark-cache-item-format
+      ((eq dashboard-bookmarks-show-base 'align)
+       (unless dashboard--bookmarks-cache-item-format
          (let* ((len-align (dashboard--align-length-by-type 'bookmarks))
                 (new-fmt (dashboard--generate-align-format
-                          dashboard-bookmark-item-format len-align)))
-           (setq dashboard--bookmark-cache-item-format new-fmt)))
-       (format dashboard--bookmark-cache-item-format filename path-shorten))
-      ((null dashboard-bookmark-show-base) path-shorten)
-      (t (format dashboard-bookmark-item-format filename path-shorten))))))
+                          dashboard-bookmarks-item-format len-align)))
+           (setq dashboard--bookmarks-cache-item-format new-fmt)))
+       (format dashboard--bookmarks-cache-item-format filename path-shorten))
+      ((null dashboard-bookmarks-show-base) path-shorten)
+      (t (format dashboard-bookmarks-item-format filename path-shorten))))))
 
 ;;
 ;; Projects
