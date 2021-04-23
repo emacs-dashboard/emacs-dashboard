@@ -746,15 +746,22 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 
 (defun dashboard--align-length-by-type (type)
   "Return the align length by TYPE of the section."
-  (let ((item-len (cdr (assoc type dashboard-items))) (align-length -1))
+  (let ((len-item (cdr (assoc type dashboard-items))) (count 0) (align-length -1)
+        len-list file dir)
     (cl-case type
       (recents
-       (dolist (file recentf-list)
-         (setq align-length (max align-length (length (dashboard-f-filename file))))))
+       (setq len-list (length recentf-list))
+       (while (and (< count len-item) (< count len-list))
+         (setq file (nth count recentf-list)
+               align-length (max align-length (length (dashboard-f-filename file))))
+         (cl-incf count)))
       (projects
        (let ((projects-lst (dashboard-projects-backend-load-projects)))
-         (dolist (dir projects-lst)
-           (setq align-length (max align-length (length (dashboard-f-base dir)))))))
+         (setq len-list (length projects-lst))
+         (while (and (< count len-item) (< count len-list))
+           (setq dir (nth count projects-lst)
+                 align-length (max align-length (length (dashboard-f-base dir))))
+           (cl-incf count))))
       (t (error "Unknown type for align length: %s" type)))
     align-length))
 
