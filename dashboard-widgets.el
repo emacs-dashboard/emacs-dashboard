@@ -744,24 +744,19 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
             (concat "-" (number-to-string len))
             (substring fmt pos (length fmt)))))
 
-(defun dashboard--get-align-length (alist &optional dir)
-  "Return maximum align length from ALIST.
-
-If optional argument DIR is non-nil; align with directory name instead."
-  (let ((align-length -1) path len-path)
-    (dolist (item alist)
-      (setq path (cdr item)
-            path (if dir (dashboard-f-base path) (dashboard-f-filename path))
-            len-path (length path)
-            align-length (max len-path align-length)))
-    align-length))
-
 (defun dashboard--align-length-by-type (type)
   "Return the align length by TYPE of the section."
-  (cl-case type
-    (recents (dashboard--get-align-length dashboard-recentf-alist))
-    (projects (dashboard--get-align-length dashboard-projects-alist t))
-    (t (error "Unknown type for align length: %s" type))))
+  (let ((item-len (cdr (assoc type dashboard-items))) (align-length -1))
+    (cl-case type
+      (recents
+       (dolist (file recentf-list)
+         (setq align-length (max align-length (length (dashboard-f-filename file))))))
+      (projects
+       (let ((projects-lst (dashboard-projects-backend-load-projects)))
+         (dolist (dir projects-lst)
+           (setq align-length (max align-length (length (dashboard-f-base dir)))))))
+      (t (error "Unknown type for align length: %s" type)))
+    align-length))
 
 ;;
 ;; Recentf
