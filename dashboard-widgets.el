@@ -714,7 +714,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
       (if (and back (< 0 dashboard-path-max-length))
           (concat back dashboard-path-shorten-string) ""))))
 
-(defun dashboard--get-base-length (path)
+(defun dashboard--get-base-length (path type)
   "Return the length of the base from the PATH."
   (let* ((is-dir (file-directory-p path))
          (base (if is-dir (dashboard-f-base path) (dashboard-f-filename path)))
@@ -722,18 +722,18 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
          (option-val (symbol-value option))
          base-len)
     (cond ((eq option-val 'align)
-           (setq base-len (if is-dir (dashboard--align-length-by-type 'projects)
-                            (dashboard--align-length-by-type 'recents))))
+           (setq base-len (dashboard--align-length-by-type type)))
           ((null option-val) (setq base-len 0))
           (t (setq base-len (length base))))
     base-len))
 
-(defun dashboard-shorten-path (path)
+(defun dashboard-shorten-path (path type)
   "Shorten the PATH."
   (setq path (abbreviate-file-name path))
   (let ((dashboard-path-max-length
          (if dashboard-shorten-by-window-width
-             (- (window-width) (dashboard--get-base-length path) dashboard-shorten-path-offset)
+             (- (window-width) (dashboard--get-base-length path type)
+                dashboard-shorten-path-offset)
            dashboard-path-max-length)))
     (cl-case dashboard-path-style
       (truncate-beginning (dashboard-shorten-path-beginning path))
@@ -741,12 +741,12 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
       (truncate-end (dashboard-shorten-path-end path))
       (t path))))
 
-(defun dashboard-shorten-paths (paths alist)
+(defun dashboard-shorten-paths (paths alist type)
   "Shorten all path from PATHS and store it to ALIST."
   (let (lst-display abbrev (index 0))
     (setf (symbol-value alist) nil)  ; reset
     (dolist (item paths)
-      (setq abbrev (dashboard-shorten-path item)
+      (setq abbrev (dashboard-shorten-path item type)
             ;; Add salt here, and use for extraction.
             ;; See function `dashboard-extract-key-path-alist'.
             abbrev (format "%s|%s" index abbrev))
@@ -775,21 +775,28 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 (defun dashboard--align-length-by-type (type)
   "Return the align length by TYPE of the section."
   (let ((len-item (cdr (assoc type dashboard-items))) (count 0) (align-length -1)
-        len-list file dir)
+        len-list base)
     (cl-case type
       (recents
        (require 'recentf)
        (setq len-list (length recentf-list))
        (while (and (< count len-item) (< count len-list))
-         (setq file (nth count recentf-list)
-               align-length (max align-length (length (dashboard-f-filename file))))
+         (setq base (nth count recentf-list)
+               align-length (max align-length (length (dashboard-f-filename base))))
          (cl-incf count)))
       (projects
        (let ((projects-lst (dashboard-projects-backend-load-projects)))
          (setq len-list (length projects-lst))
          (while (and (< count len-item) (< count len-list))
-           (setq dir (nth count projects-lst)
-                 align-length (max align-length (length (dashboard-f-base dir))))
+           (setq base (nth count projects-lst)
+                 align-length (max align-length (length (dashboard-f-base base))))
+           (cl-incf count))))
+      (bookmarks
+       (let ((bookmarks-lst (bookmark-all-names)))
+         (setq len-list (length bookmarks-lst))
+         (while (and (< count len-item) (< count len-list))
+           (setq base (nth count bookmarks-lst)
+                 align-length (max align-length (length (dashboard-f-filename base))))
            (cl-incf count))))
       (t (error "Unknown type for align length: %s" type)))
     align-length))
@@ -824,7 +831,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
     (recentf-cleanup))
   (dashboard-insert-section
    "Recent Files:"
-   (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist)
+   (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist 'recents)
    list-size
    (dashboard-get-shortcut 'recents)
    `(lambda (&rest ignore)
@@ -861,7 +868,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    `(lambda (&rest ignore) (bookmark-jump ,el))
    (let ((file (bookmark-get-filename el)))
      (if file
-         (format "%s - %s" el (dashboard-shorten-path file))
+         (format "%s - %s" el (dashboard-shorten-path file 'bookmarks))
        el))))
 
 ;;
@@ -902,7 +909,8 @@ switch to."
    "Projects:"
    (dashboard-shorten-paths
     (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
-    'dashboard-projects-alist)
+    'dashboard-projects-alist
+    'projects)
    list-size
    (dashboard-get-shortcut 'projects)
    `(lambda (&rest ignore)
