@@ -352,8 +352,7 @@ If nil it is disabled.  Possible values for list-type are:
 ;;
 (defun dashboard-subseq (seq start end)
   "Return the subsequence of SEQ from START to END..
-Uses `cl-subseq`, but accounts for end points greater than the size of the
-list.
+Uses `cl-subseq`, but accounts for end points greater than the size of the list.
 Return entire list if `END' is omitted."
   (let ((len (length seq)))
     (cl-subseq seq start (and (number-or-marker-p end)
@@ -927,8 +926,9 @@ switch to."
   (setq dashboard--projects-cache-item-format nil)
   (dashboard-insert-section
    "Projects:"
-   (dashboard-shorten-paths (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
-                            'dashboard-projects-alist 'projects)
+   (dashboard-shorten-paths
+    (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
+    'dashboard-projects-alist 'projects)
    list-size
    (dashboard-get-shortcut 'projects)
    `(lambda (&rest ignore)
