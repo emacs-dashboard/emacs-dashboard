@@ -715,7 +715,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
           (concat back dashboard-path-shorten-string) ""))))
 
 (defun dashboard--get-base-length (path type)
-  "Return the length of the base from the PATH."
+  "Return the length of the base from the PATH by TYPE."
   (let* ((is-dir (file-directory-p path))
          (base (if is-dir (dashboard-f-base path) (dashboard-f-filename path)))
          (option (if is-dir 'dashboard-projects-show-base 'dashboard-recentf-show-base))
@@ -728,7 +728,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
     base-len))
 
 (defun dashboard-shorten-path (path type)
-  "Shorten the PATH."
+  "Shorten the PATH by TYPE."
   (setq path (abbreviate-file-name path))
   (let ((dashboard-path-max-length
          (if dashboard-shorten-by-window-width
@@ -847,15 +847,30 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                           dashboard-recentf-item-format len-align)))
            (setq dashboard--recentf-cache-item-format new-fmt)))
        (format dashboard--recentf-cache-item-format filename path))
-      ((null dashboard-recentf-show-base)
-       path)
+      ((null dashboard-recentf-show-base) path)
       (t (format dashboard-recentf-item-format filename path))))))
 
 ;;
 ;; Bookmarks
 ;;
+(defcustom dashboard-bookmark-show-base nil
+  "Show the base file name infront of it's path."
+  :type '(choice
+          (const :tag "Don't show the base infront" nil)
+          (const :tag "Respect format" t)
+          (const :tag "Align the from base" align))
+  :group 'dashboard)
+
+(defcustom dashboard-bookmark-item-format "%s  %s"
+  "Format to use when showing the base of the file name."
+  :type 'string
+  :group 'dashboard)
+
 (defvar dashboard-bookmark-alist nil
   "Alist records shorten's recent files and it's full paths.")
+
+(defvar dashboard--bookmark-cache-item-format nil
+  "Cache to record the new generated align format.")
 
 (defun dashboard-insert-bookmarks (list-size)
   "Add the list of LIST-SIZE items of bookmarks."
@@ -866,10 +881,19 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    list-size
    (dashboard-get-shortcut 'bookmarks)
    `(lambda (&rest ignore) (bookmark-jump ,el))
-   (let ((file (bookmark-get-filename el)))
-     (if file
-         (format "%s - %s" el (dashboard-shorten-path file 'bookmarks))
-       el))))
+   (let* ((file (dashboard-expand-path-alist el dashboard-bookmark-alist))
+          (filename (dashboard-f-filename file))
+          (path (dashboard-extract-key-path-alist el dashboard-bookmark-alist)))
+     (cond
+      ((eq dashboard-bookmark-show-base 'align)
+       (unless dashboard--bookmark-cache-item-format
+         (let* ((len-align (dashboard--align-length-by-type 'bookmarks))
+                (new-fmt (dashboard--generate-align-format
+                          dashboard-bookmark-item-format len-align)))
+           (setq dashboard--bookmark-cache-item-format new-fmt)))
+       (format dashboard--bookmark-cache-item-format filename path))
+      ((null dashboard-bookmark-show-base) path)
+      (t (format dashboard-bookmark-item-format filename path))))))
 
 ;;
 ;; Projects
