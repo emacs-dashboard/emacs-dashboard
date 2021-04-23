@@ -802,8 +802,8 @@ If optional argument DIR is non-nil; align with directory name instead."
                            dashboard-recentf-item-format len-align)))
             (setq dashboard--recentf-cache-item-format new-fmt)))
         (format dashboard--recentf-cache-item-format filename path))
-       (nil (format dashboard-recentf-item-format filename path))
-       (t path)))))
+       ('nil path)
+       (t (format dashboard-recentf-item-format filename path))))))
 
 ;;
 ;; Bookmarks
@@ -880,8 +880,8 @@ switch to."
                            dashboard-projects-item-format len-align)))
             (setq dashboard--projects-cache-item-format new-fmt)))
         (format dashboard--projects-cache-item-format filename path))
-       (nil (format dashboard-projects-item-format filename path))
-       (t path)))))
+       ('nil path)
+       (t (format dashboard-projects-item-format filename path))))))
 
 (defun dashboard-projects-backend-load-projects ()
   "Depending on `dashboard-projects-backend' load corresponding backend.
