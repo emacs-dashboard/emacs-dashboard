@@ -707,13 +707,11 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 (defun dashboard-shorten-path (path)
   "Shorten the PATH."
   (setq path (abbreviate-file-name path))
-  (let ((dashboard-path-max-length (window-width)
-                                   ))
-    (cl-case dashboard-path-style
-      (truncate-beginning (dashboard-shorten-path-beginning path))
-      (truncate-middle (dashboard-shorten-path-middle path))
-      (truncate-end (dashboard-shorten-path-end path))
-      (t path))))
+  (cl-case dashboard-path-style
+    (truncate-beginning (dashboard-shorten-path-beginning path))
+    (truncate-middle (dashboard-shorten-path-middle path))
+    (truncate-end (dashboard-shorten-path-end path))
+    (t path)))
 
 (defun dashboard-shorten-paths (paths alist)
   "Shorten all path from PATHS and store it to ALIST."
