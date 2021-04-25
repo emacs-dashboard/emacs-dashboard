@@ -879,19 +879,20 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    list-size
    (dashboard-get-shortcut 'bookmarks)
    `(lambda (&rest ignore) (bookmark-jump ,el))
-   (let* ((filename el)
-          (path (bookmark-get-filename el))
-          (path-shorten (dashboard-shorten-path path 'bookmarks)))
-     (cond
-      ((eq dashboard-bookmarks-show-base 'align)
-       (unless dashboard--bookmarks-cache-item-format
-         (let* ((len-align (dashboard--align-length-by-type 'bookmarks))
-                (new-fmt (dashboard--generate-align-format
-                          dashboard-bookmarks-item-format len-align)))
-           (setq dashboard--bookmarks-cache-item-format new-fmt)))
-       (format dashboard--bookmarks-cache-item-format filename path-shorten))
-      ((null dashboard-bookmarks-show-base) path-shorten)
-      (t (format dashboard-bookmarks-item-format filename path-shorten))))))
+   (if-let* ((filename el)
+             (path (bookmark-get-filename el))
+             (path-shorten (dashboard-shorten-path path 'bookmarks)))
+       (cond
+        ((eq dashboard-bookmarks-show-base 'align)
+         (unless dashboard--bookmarks-cache-item-format
+           (let* ((len-align (dashboard--align-length-by-type 'bookmarks))
+                  (new-fmt (dashboard--generate-align-format
+                            dashboard-bookmarks-item-format len-align)))
+             (setq dashboard--bookmarks-cache-item-format new-fmt)))
+         (format dashboard--bookmarks-cache-item-format filename path-shorten))
+        ((null dashboard-bookmarks-show-base) path-shorten)
+        (t (format dashboard-bookmarks-item-format filename path-shorten)))
+     el)))
 
 ;;
 ;; Projects
