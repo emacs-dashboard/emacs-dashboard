@@ -14,7 +14,7 @@
 ;; Created: October 05, 2016
 ;; Package-Version: 1.8.0-SNAPSHOT
 ;; Keywords: startup, screen, tools, dashboard
-;; Package-Requires: ((emacs "25.3") (page-break-lines "0.11"))
+;; Package-Requires: ((emacs "25.3"))
 ;;; Commentary:
 
 ;; An extensible Emacs dashboard, with sections for
@@ -60,7 +60,7 @@
 (defvar all-the-icons-dir-icon-alist)
 (defvar package-activated-list)
 
-(defcustom dashboard-page-separator "\n\f\n"
+(defcustom dashboard-page-separator "\n\n"
   "Separator to use between the different pages."
   :type 'string
   :group 'dashboard)
