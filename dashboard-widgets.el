@@ -271,7 +271,8 @@ Possible values for default-name are:
 \"Agenda for the coming week:\" \"Registers:\" \"Projects:\"."
   :type '(alist :key-type string :value-type string)
   :options '("Recent Files:" "Bookmarks:" "Agenda for today:"
-             "Agenda for the coming week:" "Registers:" "Projects:"))
+             "Agenda for the coming week:" "Registers:" "Projects:")
+  :group 'dashboard)
 
 (defcustom dashboard-items-default-length 20
   "Length used for startup lists with otherwise unspecified bounds.
