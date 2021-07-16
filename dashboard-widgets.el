@@ -262,6 +262,17 @@ value is nil, that item's shortcut is disbaled.  See
   :type '(repeat (alist :key-type symbol :value-type string))
   :group 'dashboard)
 
+(defcustom dashboard-item-names nil
+  "Association list of item heading names.
+When an item is nil or not present, the default name is used.
+Will be of the form `(default-name . new-name)'.
+Possible values for default-name are:
+\"Recent Files:\" \"Bookmarks:\" \"Agenda for today:\",
+\"Agenda for the coming week:\" \"Registers:\" \"Projects:\"."
+  :type '(alist :key-type string :value-type string)
+  :options '("Recent Files:" "Bookmarks:" "Agenda for today:"
+             "Agenda for the coming week:" "Registers:" "Projects:"))
+
 (defcustom dashboard-items-default-length 20
   "Length used for startup lists with otherwise unspecified bounds.
 Set to nil for unbounded."
@@ -438,6 +449,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (insert " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
+  (overlay-put (make-overlay (- (point) (length heading)) (point))
+               'display (or (cdr (assoc heading dashboard-item-names)) heading))
   (when shortcut (insert (format " (%s)" shortcut))))
 
 (defun dashboard-center-line (string)
