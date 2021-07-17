@@ -450,8 +450,16 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (insert " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
-  (overlay-put (make-overlay (- (point) (length heading)) (point))
-               'display (or (cdr (assoc heading dashboard-item-names)) heading))
+  
+  ;; Turn the inserted heading into an overlay, so that we may freely change
+  ;; its name without breaking any of the functions that expect the default name.
+  ;; If there isn't a suitable entry in `dashboard-item-names',
+  ;; we fallback to using HEADING.  In that case we still want it to be an
+  ;; overlay to maintain consistent behavior (such as the point movement)
+  ;; between modified and default headings.
+  (let ((ov (make-overlay (- (point) (length heading)) (point) nil t)))
+    (overlay-put ov 'display (or (cdr (assoc heading dashboard-item-names)) heading))
+    (overlay-put ov 'face 'dashboard-heading))
   (when shortcut (insert (format " (%s)" shortcut))))
 
 (defun dashboard-center-line (string)
