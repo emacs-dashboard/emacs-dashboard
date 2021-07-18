@@ -21,7 +21,7 @@ An extensible emacs startup screen showing you what's most important.
 * Dependencies
 You will need the following packages which are all available on Melpa:
 
-1. page-break-lines - [[https://github.com/purcell/page-break-lines]]
+1. (optional) page-break-lines - [[https://github.com/purcell/page-break-lines]]
 2. (optional) projectile - [[https://github.com/bbatsov/projectile]]
 3. (optional) all-the-icons - [[https://github.com/domtronn/all-the-icons.el]]
 
