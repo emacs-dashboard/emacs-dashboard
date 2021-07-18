@@ -450,7 +450,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (insert " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
-  
+
   ;; Turn the inserted heading into an overlay, so that we may freely change
   ;; its name without breaking any of the functions that expect the default name.
   ;; If there isn't a suitable entry in `dashboard-item-names',
