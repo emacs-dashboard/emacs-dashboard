@@ -194,12 +194,6 @@ To show agenda for the upcoming seven days set the variable ~dashboard-week-agen
 
 Note that setting list-size for the agenda list is intentionally ignored; all agenda items for the current day will be displayed.
 
-To customize which categories from the agenda items should be visible in the dashboard set the ~dashboard-org-agenda-categories~ to the list of categories you need.
-
-#+BEGIN_SRC elisp
-(setq dashboard-org-agenda-categories '("Tasks" "Appointments"))
- #+END_SRC
-
 By default org-agenda entries are filter by time, only showing those
 task with ~DEADLINE~ or ~SCHEDULE-TIME~. To show all agenda entries
 (except ~DONE~)
