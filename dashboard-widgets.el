@@ -128,13 +128,6 @@ preserved."
   :type 'boolean
   :group 'dashboard)
 
-(defcustom dashboard-org-agenda-categories nil
-  "Specify the Categories to consider when using agenda in dashboard.
-Example:
-'(\"Tasks\" \"Habits\")"
-  :type 'list
-  :group 'dashboard)
-
 (defconst dashboard-banners-directory
   (concat (file-name-directory (locate-library "dashboard")) "/banners/")
   "Default banner directory.")
