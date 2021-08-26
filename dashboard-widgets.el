@@ -55,8 +55,8 @@
 (declare-function org-entry-is-todo-p "ext:org.el")
 (declare-function org-release-buffers "ext:org.el")
 (defalias 'org-time-less-p 'time-less-p)
-(defvar org-level-faces "ext:org-faces.el")
-(defvar org-agenda-new-buffers "ext:org.el")
+(defvar org-level-faces)
+(defvar org-agenda-new-buffers)
 (defvar all-the-icons-dir-icon-alist)
 (defvar package-activated-list)
 
