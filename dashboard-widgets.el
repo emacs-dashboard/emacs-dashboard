@@ -1056,8 +1056,9 @@ is todays date format."
   "Format agenda entry to show it on dashboard."
   (let* ((schedule-time (org-get-scheduled-time (point)))
          (deadline-time (org-get-deadline-time (point)))
+         (entry-time (or schedule-time deadline-time))
          (item (org-agenda-format-item
-                (dashboard-agenda-entry-time (or schedule-time deadline-time))
+                (dashboard-agenda-entry-time entry-time)
                 (org-get-heading)
                 (org-outline-level)
                 (org-get-category)
@@ -1066,7 +1067,7 @@ is todays date format."
          (loc (point))
          (file (buffer-file-name)))
     (dashboard-agenda--set-agenda-headline-face item)
-    (list item loc file)))
+    (list item loc file (list (cons 'time entry-time)))))
 
 (defun dashboard-agenda--set-agenda-headline-face (headline)
   "Set agenda faces to `HEADLINE' when face text property is nil."
@@ -1144,15 +1145,24 @@ This is what `org-agenda-exit' do."
     (org-release-buffers org-agenda-new-buffers)
     (setq org-agenda-new-buffers nil)))
 
+(defun dashboard-agenda-entry-sort (entry1 entry2)
+  (let ((time1 (alist-get 'time (nth 3 entry1)))
+        (time2 (alist-get 'time (nth 3 entry2))))
+    (org-time-less-p time1 time2)))
+
 (defun dashboard-insert-agenda (list-size)
   "Add the list of LIST-SIZE items of agenda."
   (require 'org-agenda)
-  (let ((agenda (dashboard-get-agenda)))
+  (let* ((agenda (dashboard-get-agenda))
+         (sorted-agenda (if (eq dashboard-filter-agenda-entry
+                                 'dashboard-filter-agenda-by-time)
+                            (sort agenda 'dashboard-agenda-entry-sort)
+                          agenda)))
     (dashboard-insert-section
      (if dashboard-week-agenda
          "Agenda for the coming week:"
        "Agenda for today:")
-     agenda
+     sorted-agenda
      list-size
      (dashboard-get-shortcut 'agenda)
      `(lambda (&rest ignore)
