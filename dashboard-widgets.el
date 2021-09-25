@@ -485,7 +485,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (insert ascii-banner)))
 
 (defun dashboard--type-is-gif-p (image-path)
-  "Returns if image is a gif. string -> bool"
+  "Return if image is a gif.
+String -> bool.
+Argument IMAGE-PATH path to the image."
   (eq 'gif (image-type image-path)))
 
 (defun dashboard-insert-image-banner (banner)
