@@ -72,7 +72,7 @@ To update the banner or banner title
 ;; 'official which displays the official emacs logo
 ;; 'logo which displays an alternative emacs logo
 ;; 1, 2 or 3 which displays one of the text banners
-;; "path/to/your/image.png" or "path/to/your/text.txt" which displays whatever image/text you would prefer
+;; "path/to/your/image.gif", "path/to/your/image.png" or "path/to/your/text.txt" which displays whatever gif/image/text you would prefer
 
 ;; Content is not centered by default. To center, set
 (setq dashboard-center-content t)
@@ -282,3 +282,4 @@ make install
 ** Prerequisites
 
   * [[https://github.com/cask/cask][Cask]]
+    

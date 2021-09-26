@@ -484,6 +484,12 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (put-text-property 0 (length ascii-banner) 'face 'dashboard-text-banner ascii-banner)
     (insert ascii-banner)))
 
+(defun dashboard--type-is-gif-p (image-path)
+  "Return if image is a gif.
+String -> bool.
+Argument IMAGE-PATH path to the image."
+  (eq 'gif (image-type image-path)))
+
 (defun dashboard-insert-image-banner (banner)
   "Display an image BANNER."
   (when (file-exists-p banner)
@@ -494,12 +500,15 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                     (when (> dashboard-image-banner-max-height 0)
                       (list :max-height dashboard-image-banner-max-height))))
            (spec
-            (if (image-type-available-p 'imagemagick)
-                (apply 'create-image banner 'imagemagick nil size-props)
-              (apply 'create-image banner nil nil
-                     (when (and (fboundp 'image-transforms-p)
-                                (memq 'scale (funcall 'image-transforms-p)))
-                       size-props))))
+            (cond ((dashboard--type-is-gif-p banner)
+                   (create-image banner))
+                  ((image-type-available-p 'imagemagick)
+                   (apply 'create-image banner 'imagemagick nil size-props))
+                  (t
+                   (apply 'create-image banner nil nil
+                          (when (and (fboundp 'image-transforms-p)
+                                     (memq 'scale (funcall 'image-transforms-p)))
+                            size-props)))))
            ;; TODO: For some reason, `elisp-lint' is reporting error void
            ;; function `image-size'.
            (size (when (fboundp 'image-size) (image-size spec)))
@@ -509,6 +518,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
       (insert "\n")
       (insert (make-string left-margin ?\ ))
       (insert-image spec)
+      (when (dashboard--type-is-gif-p banner) (image-animate spec 0 t))
       (insert "\n\n")
       (when title
         (dashboard-center-line title)
