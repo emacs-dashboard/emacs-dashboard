@@ -1,11 +1,11 @@
 ;;; dashboard.el --- A startup screen extracted from Spacemacs  -*- lexical-binding: t -*-
 
-;; Copyright (c) 2016-2020 Rakan Al-Hneiti <rakan.alhneiti@gmail.com>
-;; Copyright (c) 2019-2021 Jesús Martínez <jesusmartinez93@gmail.com>
-;; Copyright (c) 2020-2021 Shen, Jen-Chieh <jcs090218@gmail.com>
+;; Copyright (c) 2016-2021 emacs-dashboard maintainers
 ;;
-;; Author: Rakan Al-Hneiti
-;; URL: https://github.com/emacs-dashboard/emacs-dashboard
+;; Author     : Rakan Al-Hneiti <rakan.alhneiti@gmail.com>
+;; Maintainer : Jesús Martínez <jesusmartinez93@gmail.com>
+;;              Shen, Jen-Chieh <jcs090218@gmail.com>
+;; URL        : https://github.com/emacs-dashboard/emacs-dashboard
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
