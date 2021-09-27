@@ -1,8 +1,10 @@
-[[https://circleci.com/gh/emacs-dashboard][https://github.com/emacs-dashboard/emacs-dashboard/workflows/CI/badge.svg]]
+[[https://www.gnu.org/licenses/gpl-3.0][https://img.shields.io/badge/License-GPL%20v3-blue.svg]]
 [[https://melpa.org/#/dashboard][https://melpa.org/packages/dashboard-badge.svg]]
 [[https://stable.melpa.org/#/dashboard][https://stable.melpa.org/packages/dashboard-badge.svg]]
 
 * Emacs Dashboard
+
+[[https://github.com/emacs-dashboard/emacs-dashboard/actions/workflows/ci.yml][https://github.com/emacs-dashboard/emacs-dashboard/workflows/CI/badge.svg]]
 
 An extensible emacs startup screen showing you what's most important.
 
