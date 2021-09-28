@@ -158,16 +158,17 @@ Example:
   :group 'dashboard)
 
 (defcustom dashboard-init-info
-  (let ((package-count 0) (time (emacs-init-time)))
-    (when (bound-and-true-p package-alist)
-      (setq package-count (length package-activated-list)))
-    (when (boundp 'straight--profile-cache)
-      (setq package-count (+ (hash-table-size straight--profile-cache) package-count)))
-    (if (zerop package-count)
-        (format "Emacs started in %s" time)
-      (format "%d packages loaded in %s" package-count time)))
+  (lambda ()
+    (let ((package-count 0) (time (emacs-init-time)))
+      (when (bound-and-true-p package-alist)
+        (setq package-count (length package-activated-list)))
+      (when (boundp 'straight--profile-cache)
+        (setq package-count (+ (hash-table-size straight--profile-cache) package-count)))
+      (if (zerop package-count)
+          (format "Emacs started in %s" time)
+        (format "%d packages loaded in %s" package-count time))))
   "Init info with packages loaded and init time."
-  :type 'boolean
+  :type '(function string)
   :group 'dashboard)
 
 (defcustom dashboard-footer
@@ -530,8 +531,11 @@ Argument IMAGE-PATH path to the image."
 (defun dashboard-insert-init-info ()
   "Insert init info when `dashboard-set-init-info' is t."
   (when dashboard-set-init-info
-    (dashboard-center-line dashboard-init-info)
-    (insert (propertize dashboard-init-info 'face 'font-lock-comment-face))))
+    (let ((init-info (if (functionp dashboard-init-info)
+                         (funcall dashboard-init-info)
+                       dashboard-init-info)))
+      (dashboard-center-line init-info)
+      (insert (propertize init-info 'face 'font-lock-comment-face)))))
 
 (defun dashboard-get-banner-path (index)
   "Return the full path to banner with index INDEX."
