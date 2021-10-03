@@ -8,6 +8,8 @@
 (setq package-enable-at-startup nil
       package-check-signature nil)
 
+(setq network-security-level 'low)
+
 (package-initialize)
 
 (defun jcs-package-install (pkg)
