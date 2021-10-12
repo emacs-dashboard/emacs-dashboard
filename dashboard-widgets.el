@@ -1041,22 +1041,22 @@ It is the MATCH attribute for `org-map-entries'"
   :type 'boolean
   :group 'dashboard)
 
-(defun dashboard-agenda-entry-time (schedule-time)
-  "Format SCHEDULE-TIME with custom format.
-If SCHEDULE-TIME is nil returns a blank string which length
+(defun dashboard-agenda-entry-time (entry-time)
+  "Format ENTRY-TIME with custom format.
+If ENTRY-TIME is nil returns a blank string which length
 is todays date format."
-  (let* ((time (or schedule-time (org-today)))
+  (let* ((time (or entry-time (org-today)))
          (formated-time (format-time-string
                          dashboard-agenda-time-string-format time)))
-    (if schedule-time
+    (if entry-time
         formated-time
       (replace-regexp-in-string "." " " formated-time))))
 
 (defun dashboard-agenda-entry-format ()
   "Format agenda entry to show it on dashboard."
-  (let* ((schedule-time (org-get-scheduled-time (point)))
+  (let* ((scheduled-time (org-get-scheduled-time (point)))
          (deadline-time (org-get-deadline-time (point)))
-         (entry-time (or schedule-time deadline-time))
+         (entry-time (or scheduled-time deadline-time))
          (item (org-agenda-format-item
                 (dashboard-agenda-entry-time entry-time)
                 (org-get-heading)
@@ -1095,15 +1095,15 @@ Do nothing if `TEXT' has already a face property or is nil."
     (time-add (current-time) 86400)))
 
 (defun dashboard-filter-agenda-by-time ()
-  "Include entry if it has a schedule-time or deadline-time in the future.
+  "Include entry if it has a scheduled-time or deadline-time in the future.
 An entry is included if this function returns nil and excluded
 if returns a point."
-  (let ((schedule-time (org-get-scheduled-time (point)))
+  (let ((scheduled-time (org-get-scheduled-time (point)))
         (deadline-time (org-get-deadline-time (point)))
         (due-date (dashboard-due-date-for-agenda)))
     (unless (and (not (org-entry-is-done-p))
-                 (or (and schedule-time
-                          (org-time-less-p schedule-time due-date))
+                 (or (and scheduled-time
+                          (org-time-less-p scheduled-time due-date))
                      (and deadline-time
                           (org-time-less-p deadline-time due-date))))
       (point))))
