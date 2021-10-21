@@ -1041,6 +1041,11 @@ It is the MATCH attribute for `org-map-entries'"
   :type 'boolean
   :group 'dashboard)
 
+(defcustom dashboard-agenda-sort-strategy ()
+  "If not nil agenda is sorted."
+  :type 'list
+  :group 'dashboard)
+
 (defun dashboard-agenda-entry-time (entry-time)
   "Format ENTRY-TIME with custom format.
 If ENTRY-TIME is nil returns a blank string which length
@@ -1145,24 +1150,41 @@ This is what `org-agenda-exit' do."
     (org-release-buffers org-agenda-new-buffers)
     (setq org-agenda-new-buffers nil)))
 
-(defun dashboard-agenda-entry-sort (entry1 entry2)
-  (let ((time1 (alist-get 'time (nth 3 entry1)))
-        (time2 (alist-get 'time (nth 3 entry2))))
-    (org-time-less-p time1 time2)))
+(defun dashboard-agenda--sorted-agenda ()
+  "Returns agenda sorted by time.
+For now, it only works when dashboard-agenda has been filter by time
+and dashboard-agenda-sort is not nil."
+  (let ((agenda (dashboard-get-agenda))
+        (sort-function (dashboard-agenda--sort-function)))
+    (sort agenda sort-function)))
+
+(defun dashboard-agenda--sort-function ()
+  "Get the function use to sorted the agenda depending on `dashboard-agenda-sorting-strategy'.
+This is similar as `org-entries-lessp' but with a different aproach."
+  (dashboard-agenda--guess-sort-function dashboard-agenda-sort-strategy))
+
+(defun dashboard-agenda--guess-sort-function (strategies)
+  "Get the function to compare entries based on strategies."
+  (cond
+   ((null strategies) (lambda (dont care) nil))
+   ((eq 'time-up (car strategies)) (lambda (entry1 entry2)
+                                     (let ((time1 (alist-get 'time (nth 3 entry1)))
+                                           (time2 (alist-get 'time (nth 3 entry2))))
+                                       (org-time-less-p time1 time2))))
+   ((eq 'time-down (car strategies)) (lambda (entry1 entry2)
+                                       (let ((time1 (alist-get 'time (nth 3 entry1)))
+                                             (time2 (alist-get 'time (nth 3 entry2))))
+                                         (org-time-less-p time2 time1))))
+   (t (lambda (dont care) nil))))
 
 (defun dashboard-insert-agenda (list-size)
   "Add the list of LIST-SIZE items of agenda."
   (require 'org-agenda)
-  (let* ((agenda (dashboard-get-agenda))
-         (sorted-agenda (if (eq dashboard-filter-agenda-entry
-                                 'dashboard-filter-agenda-by-time)
-                            (sort agenda 'dashboard-agenda-entry-sort)
-                          agenda)))
-    (dashboard-insert-section
+  (dashboard-insert-section
      (if dashboard-week-agenda
          "Agenda for the coming week:"
        "Agenda for today:")
-     sorted-agenda
+     (dashboard-agenda--sorted-agenda)
      list-size
      (dashboard-get-shortcut 'agenda)
      `(lambda (&rest ignore)
@@ -1170,7 +1192,7 @@ This is what `org-agenda-exit' do."
           (with-current-buffer buffer
             (goto-char (nth 1 ',el))
             (switch-to-buffer buffer))))
-     (format "%s" (nth 0 el)))))
+     (format "%s" (nth 0 el))))
 
 ;;
 ;; Registers
