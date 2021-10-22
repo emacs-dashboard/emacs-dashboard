@@ -1167,26 +1167,32 @@ This is similar as `org-entries-lessp' but with a different aproach."
   (dashboard-agenda--build-sort-function dashboard-agenda-sort-strategy))
 
 (defun dashboard-agenda--build-sort-function (strategies)
-  "Get the function to compare entries based on strategies."
+  "Build a function to sort the dashboard agenda.
+If `STRATEGIES' is nil then sort by the constant nil and don't do anything. Look for the strategy comparator
+and the attributes of the entry and compare entries. If no comparator is found then sort by constant nil."
+  (if (null strategies) (lambda (dont care) nil)
+    (let ((comparator (dashboard-agenda--build-sort-function-comparator (car strategies)))
+          (attribute (dashboard-agenda--build-sort-function-attribute (car strategies))))
+      (if (null comparator) (lambda (dont care) nil)
+        (lambda (entry1 entry2)
+          (dashboard-agenda--compare-entries entry1 entry2 (cdr strategies)
+                                             :with comparator :by attribute))))))
+
+(defun dashboard-agenda--build-sort-function-comparator (strategy)
+  "Depends on the `STRATEGY' it returns a function to compare two dashboard-agenda entries."
   (cond
-   ((null strategies) (lambda (dont care) nil))
-   ((eq 'time-up (car strategies))
-    (lambda (entry1 entry2)
-      (dashboard-agenda--compare-entries entry1 entry2 (cdr strategies)
-                                         :with 'org-time-less-p :by 'time)))
-   ((eq 'time-down (car strategies))
-    (lambda (entry1 entry2)
-      (dashboard-agenda--compare-entries entry1 entry2 (cdr strategies)
-                                         :with (lambda (a b) (org-time-less-p b a)) :by 'time)))
-   ((eq 'todo-state-up (car strategies))
-    (lambda (entry1 entry2)
-      (dashboard-agenda--compare-entries entry1 entry2 (cdr strategies)
-                                         :with '> :by 'todo-index)))
-   ((eq 'todo-state-down (car strategies))
-    (lambda (entry1 entry2)
-      (dashboard-agenda--compare-entries entry1 entry2 (cdr strategies)
-                                         :with '< :by 'todo-index)))
-   (t (lambda (dont care) nil))))
+   ((eq 'time-up strategy) 'org-time-less-p)
+   ((eq 'time-down strategy) (lambda (a b) (org-time-less-p b a)))
+   ((eq 'todo-state-up strategy) '>)
+   ((eq 'todo-state-down strategy) '<)
+   (t nil)))
+
+(defun dashboard-agenda--build-sort-function-attribute (strategy)
+  "Depends on the `STRATEGY' it returns a function to compare two dashboard-agenda entries."
+  (cond
+   ((memq strategy '(time-up time-down)) 'time)
+   ((memq strategy '(todo-state-up todo-state-down)) 'todo-index)
+   (t nil)))
 
 (defun dashboard-agenda--compare-entries (entry1 entry2 strategies :with comparator :by attribute)
   "Compare entries using comparator as a function and getting attributes form list."
@@ -1195,8 +1201,7 @@ This is similar as `org-entries-lessp' but with a different aproach."
     (cond
      ((or (and (null arg1) (null arg2))
           (equal arg1 arg2))
-      (apply (dashboard-agenda--build-sort-function strategies)
-             (list entry1 entry2)))
+      (apply (dashboard-agenda--build-sort-function strategies) (list entry1 entry2)))
      ((null arg1) nil)
      ((null arg2) t)
      (t (apply comparator (list arg1 arg2))))))
