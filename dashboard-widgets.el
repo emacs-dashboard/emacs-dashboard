@@ -1072,7 +1072,10 @@ is todays date format."
          (loc (point))
          (file (buffer-file-name)))
     (dashboard-agenda--set-agenda-headline-face item)
-    (list item loc file (list (cons 'time entry-time)))))
+    (list item loc file (list (cons 'time entry-time)
+                              (cons 'todo-index (and (org-get-todo-state)
+                                                     (length (member (org-get-todo-state)
+                                                                     org-todo-keywords-1))))))))
 
 (defun dashboard-agenda--set-agenda-headline-face (headline)
   "Set agenda faces to `HEADLINE' when face text property is nil."
@@ -1161,21 +1164,42 @@ and dashboard-agenda-sort is not nil."
 (defun dashboard-agenda--sort-function ()
   "Get the function use to sorted the agenda depending on `dashboard-agenda-sorting-strategy'.
 This is similar as `org-entries-lessp' but with a different aproach."
-  (dashboard-agenda--guess-sort-function dashboard-agenda-sort-strategy))
+  (dashboard-agenda--build-sort-function dashboard-agenda-sort-strategy))
 
-(defun dashboard-agenda--guess-sort-function (strategies)
+(defun dashboard-agenda--build-sort-function (strategies)
   "Get the function to compare entries based on strategies."
   (cond
    ((null strategies) (lambda (dont care) nil))
-   ((eq 'time-up (car strategies)) (lambda (entry1 entry2)
-                                     (let ((time1 (alist-get 'time (nth 3 entry1)))
-                                           (time2 (alist-get 'time (nth 3 entry2))))
-                                       (org-time-less-p time1 time2))))
-   ((eq 'time-down (car strategies)) (lambda (entry1 entry2)
-                                       (let ((time1 (alist-get 'time (nth 3 entry1)))
-                                             (time2 (alist-get 'time (nth 3 entry2))))
-                                         (org-time-less-p time2 time1))))
+   ((eq 'time-up (car strategies))
+    (lambda (entry1 entry2)
+      (dashboard-agenda--compare-entries entry1 entry2 (cdr strategies)
+                                         :with 'org-time-less-p :by 'time)))
+   ((eq 'time-down (car strategies))
+    (lambda (entry1 entry2)
+      (dashboard-agenda--compare-entries entry1 entry2 (cdr strategies)
+                                         :with (lambda (a b) (org-time-less-p b a)) :by 'time)))
+   ((eq 'todo-state-up (car strategies))
+    (lambda (entry1 entry2)
+      (dashboard-agenda--compare-entries entry1 entry2 (cdr strategies)
+                                         :with '> :by 'todo-index)))
+   ((eq 'todo-state-down (car strategies))
+    (lambda (entry1 entry2)
+      (dashboard-agenda--compare-entries entry1 entry2 (cdr strategies)
+                                         :with '< :by 'todo-index)))
    (t (lambda (dont care) nil))))
+
+(defun dashboard-agenda--compare-entries (entry1 entry2 strategies :with comparator :by attribute)
+  "Compare entries using comparator as a function and getting attributes form list."
+  (let ((arg1 (alist-get attribute (nth 3 entry1)))
+        (arg2 (alist-get attribute (nth 3 entry2))))
+    (cond
+     ((or (and (null arg1) (null arg2))
+          (equal arg1 arg2))
+      (apply (dashboard-agenda--build-sort-function strategies)
+             (list entry1 entry2)))
+     ((null arg1) nil)
+     ((null arg2) t)
+     (t (apply comparator (list arg1 arg2))))))
 
 (defun dashboard-insert-agenda (list-size)
   "Add the list of LIST-SIZE items of agenda."
