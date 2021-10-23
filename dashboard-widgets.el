@@ -1041,9 +1041,19 @@ It is the MATCH attribute for `org-map-entries'"
   :type 'boolean
   :group 'dashboard)
 
-(defcustom dashboard-agenda-sort-strategy ()
-  "If not nil agenda is sorted."
-  :type 'list
+(defcustom dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-time
+  "Function to filter `org-agenda' entries."
+  :type '(choice
+          (const :tag "No filter" dashboard-no-filter-agenda)
+          (const :tag "Filter by time" dashboard-filter-agenda-by-time)
+          (const :tag "Filter by todo" dashboard-filter-agenda-by-todo)
+          (function :tag "Custom function"))
+  :group 'dashboard)
+
+(defcustom dashboard-agenda-sort-strategy nil
+  "If nil agenda is not sorted. A list of strategies to sort the agenda."
+  :type '(repeat (choice (const time-up) (const time-down)
+                         (const todo-state-up) (const todo-state-down)))
   :group 'dashboard)
 
 (defun dashboard-agenda-entry-time (entry-time)
@@ -1127,15 +1137,6 @@ if returns a point."
 (defun dashboard-no-filter-agenda ()
   "No filter agenda entries."
   (when (org-entry-is-done-p) (point)))
-
-(defcustom dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-time
-  "Function to filter `org-agenda' entries."
-  :type '(choice
-          (const :tag "No filter" dashboard-no-filter-agenda)
-          (const :tag "Filter by time" dashboard-filter-agenda-by-time)
-          (const :tag "Filter by todo" dashboard-filter-agenda-by-todo)
-          (function :tag "Custom function"))
-  :group 'dashboard)
 
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
