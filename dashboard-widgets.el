@@ -1167,18 +1167,19 @@ This is similar as `org-entries-lessp' but with a different aproach."
   (dashboard-agenda--build-sort-function dashboard-agenda-sort-strategy))
 
 (defun dashboard-agenda--build-sort-function (strategies)
-  "Build a function to sort the dashboard agenda.
-If `STRATEGIES' is nil then sort by the constant nil and don't do anything. Look for the strategy comparator
-and the attributes of the entry and compare entries. If no comparator is found then sort by constant nil."
+  "Build a predicate to sort the dashboard agenda.
+If `STRATEGIES' is nil then sort using the nil predicate. Looks for the strategy
+predicate, the attributes of the entry and compare entries. If no predicate is
+found for the strategy it uses nil predicate."
   (if (null strategies) (lambda (dont care) nil)
-    (let ((comparator (dashboard-agenda--build-sort-function-comparator (car strategies)))
+    (let ((predicate (dashboard-agenda--build-sort-function-predicate (car strategies)))
           (attribute (dashboard-agenda--build-sort-function-attribute (car strategies))))
-      (if (null comparator) (lambda (dont care) nil)
+      (if (null predicate) (lambda (dont care) nil)
         (lambda (entry1 entry2)
           (dashboard-agenda--compare-entries entry1 entry2 (cdr strategies)
-                                             :with comparator :by attribute))))))
+                                             :with predicate :by attribute))))))
 
-(defun dashboard-agenda--build-sort-function-comparator (strategy)
+(defun dashboard-agenda--build-sort-function-predicate (strategy)
   "Depends on the `STRATEGY' it returns a function to compare two dashboard-agenda entries."
   (cond
    ((eq 'time-up strategy) 'org-time-less-p)
@@ -1194,8 +1195,10 @@ and the attributes of the entry and compare entries. If no comparator is found t
    ((memq strategy '(todo-state-up todo-state-down)) 'todo-index)
    (t nil)))
 
-(defun dashboard-agenda--compare-entries (entry1 entry2 strategies :with comparator :by attribute)
-  "Compare entries using comparator as a function and getting attributes form list."
+(defun dashboard-agenda--compare-entries (entry1 entry2 strategies :with predicate :by attribute)
+  "Compare entries using predicate which has to return non-nil if the first element should sort
+before the second. It get the `ATTRIBUTE' from entry1 and entry2, if both attributes are nil or equals then
+the next strategy in `STRATEGIES' is used as a predicate."
   (let ((arg1 (alist-get attribute (nth 3 entry1)))
         (arg2 (alist-get attribute (nth 3 entry2))))
     (cond
@@ -1204,7 +1207,7 @@ and the attributes of the entry and compare entries. If no comparator is found t
       (apply (dashboard-agenda--build-sort-function strategies) (list entry1 entry2)))
      ((null arg1) nil)
      ((null arg2) t)
-     (t (apply comparator (list arg1 arg2))))))
+     (t (apply predicate (list arg1 arg2))))))
 
 (defun dashboard-insert-agenda (list-size)
   "Add the list of LIST-SIZE items of agenda."
