@@ -58,6 +58,7 @@
 (defalias 'org-time-less-p 'time-less-p)
 (defvar org-level-faces)
 (defvar org-agenda-new-buffers)
+(defvar org-todo-keywords-1)
 (defvar all-the-icons-dir-icon-alist)
 (defvar package-activated-list)
 
@@ -1051,7 +1052,7 @@ It is the MATCH attribute for `org-map-entries'"
   :group 'dashboard)
 
 (defcustom dashboard-agenda-sort-strategy nil
-  "If nil agenda is not sorted. A list of strategies to sort the agenda."
+  "A list of strategies to sort the agenda.  If nil agenda is not sorted."
   :type '(repeat (choice (const time-up) (const time-down)
                          (const todo-state-up) (const todo-state-down)))
   :group 'dashboard)
@@ -1080,12 +1081,14 @@ is todays date format."
                 (org-get-tags)
                 t))
          (loc (point))
-         (file (buffer-file-name)))
+         (file (buffer-file-name))
+         (todo-state (org-get-todo-state))
+         (todo-index (and todo-state
+                          (length (member todo-state org-todo-keywords-1))))
+         (entry-data (list (cons 'time entry-time)
+                           (cons 'todo-index todo-index))))
     (dashboard-agenda--set-agenda-headline-face item)
-    (list item loc file (list (cons 'time entry-time)
-                              (cons 'todo-index (and (org-get-todo-state)
-                                                     (length (member (org-get-todo-state)
-                                                                     org-todo-keywords-1))))))))
+    (list item loc file entry-data)))
 
 (defun dashboard-agenda--set-agenda-headline-face (headline)
   "Set agenda faces to `HEADLINE' when face text property is nil."
@@ -1155,7 +1158,7 @@ This is what `org-agenda-exit' do."
     (setq org-agenda-new-buffers nil)))
 
 (defun dashboard-agenda--sorted-agenda ()
-  "Returns agenda sorted by time.
+  "Return agenda sorted by time.
 For now, it only works when dashboard-agenda has been filter by time
 and dashboard-agenda-sort is not nil."
   (let ((agenda (dashboard-get-agenda))
@@ -1163,25 +1166,29 @@ and dashboard-agenda-sort is not nil."
     (sort agenda sort-function)))
 
 (defun dashboard-agenda--sort-function ()
-  "Get the function use to sorted the agenda depending on `dashboard-agenda-sorting-strategy'.
+  "Get the function use to sorted the agenda.
+Depending on the list `dashboard-agenda-sorting-strategy' use this strategies to
+build a predicate to compare each enty.
 This is similar as `org-entries-lessp' but with a different aproach."
   (dashboard-agenda--build-sort-function dashboard-agenda-sort-strategy))
 
 (defun dashboard-agenda--build-sort-function (strategies)
   "Build a predicate to sort the dashboard agenda.
-If `STRATEGIES' is nil then sort using the nil predicate. Looks for the strategy
-predicate, the attributes of the entry and compare entries. If no predicate is
+If `STRATEGIES' is nil then sort using the nil predicate.  Look for the strategy
+predicate, the attributes of the entry and compare entries.  If no predicate is
 found for the strategy it uses nil predicate."
-  (if (null strategies) (lambda (dont care) nil)
-    (let ((predicate (dashboard-agenda--build-sort-function-predicate (car strategies)))
-          (attribute (dashboard-agenda--build-sort-function-attribute (car strategies))))
-      (if (null predicate) (lambda (dont care) nil)
+  (if (null strategies) (lambda (_dont _care) nil)
+    (let ((predicate (dashboard-agenda--build-sort-function-predicate
+                      (car strategies)))
+          (attribute (dashboard-agenda--build-sort-function-attribute
+                      (car strategies))))
+      (if (null predicate) (lambda (_dont _care) nil)
         (lambda (entry1 entry2)
           (dashboard-agenda--compare-entries entry1 entry2 (cdr strategies)
-                                             :with predicate :by attribute))))))
+                                             predicate attribute))))))
 
 (defun dashboard-agenda--build-sort-function-predicate (strategy)
-  "Depends on the `STRATEGY' it returns a function to compare two dashboard-agenda entries."
+  "Return the predicate to compare two entryes depending on the `STRATEGY'."
   (cond
    ((eq 'time-up strategy) 'org-time-less-p)
    ((eq 'time-down strategy) (lambda (a b) (org-time-less-p b a)))
@@ -1190,16 +1197,15 @@ found for the strategy it uses nil predicate."
    (t nil)))
 
 (defun dashboard-agenda--build-sort-function-attribute (strategy)
-  "Depends on the `STRATEGY' it returns a function to compare two dashboard-agenda entries."
+  "Return the argument to compare two entries depending to the `STRATEGY'."
   (cond
    ((memq strategy '(time-up time-down)) 'time)
    ((memq strategy '(todo-state-up todo-state-down)) 'todo-index)
    (t nil)))
 
-(defun dashboard-agenda--compare-entries (entry1 entry2 strategies :with predicate :by attribute)
-  "Compare entries using predicate which has to return non-nil if the first element should sort
-before the second. It get the `ATTRIBUTE' from entry1 and entry2, if both attributes are nil or equals then
-the next strategy in `STRATEGIES' is used as a predicate."
+(defun dashboard-agenda--compare-entries (entry1 entry2 strategies predicate attribute)
+  "Compare `ENTRY1' and `ENTRY2' by `ATTRIBUTE' using `PREDICATE'.
+If both attributes are nil or equals the next strategy in `STRATEGIES' is used to compare."
   (let ((arg1 (alist-get attribute (nth 3 entry1)))
         (arg2 (alist-get attribute (nth 3 entry2))))
     (cond
@@ -1214,18 +1220,18 @@ the next strategy in `STRATEGIES' is used as a predicate."
   "Add the list of LIST-SIZE items of agenda."
   (require 'org-agenda)
   (dashboard-insert-section
-     (if dashboard-week-agenda
-         "Agenda for the coming week:"
-       "Agenda for today:")
-     (dashboard-agenda--sorted-agenda)
-     list-size
-     (dashboard-get-shortcut 'agenda)
-     `(lambda (&rest ignore)
-        (let ((buffer (find-file-other-window (nth 2 ',el))))
-          (with-current-buffer buffer
-            (goto-char (nth 1 ',el))
-            (switch-to-buffer buffer))))
-     (format "%s" (nth 0 el))))
+   (if dashboard-week-agenda
+       "Agenda for the coming week:"
+     "Agenda for today:")
+   (dashboard-agenda--sorted-agenda)
+   list-size
+   (dashboard-get-shortcut 'agenda)
+   `(lambda (&rest ignore)
+      (let ((buffer (find-file-other-window (nth 2 ',el))))
+        (with-current-buffer buffer
+          (goto-char (nth 1 ',el))
+          (switch-to-buffer buffer))))
+   (format "%s" (nth 0 el))))
 
 ;;
 ;; Registers
