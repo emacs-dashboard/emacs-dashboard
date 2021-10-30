@@ -211,7 +211,7 @@ To have an extra filter, ~MATCH~ parameter is exposed as
 headlines. Org iterates over all headlines when MATCH is nil or t.
 #+end_quote
 
-See [[https://www.gnu.org/software/emacs/manual/html_node/org/Using-the-mapping-API.html][Org Manual]] for more information.
+See [[https://orgmode.org/manual/Using-the-Mapping-API.html][Org Manual]] for more information.
 
 Once the agenda appears in the dashboard, ~org-agenda-files~ stay
 open. With ~(setq dashboard-agenda-release-buffers t)~ the org files
