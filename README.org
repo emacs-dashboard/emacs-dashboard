@@ -194,8 +194,6 @@ To show agenda for the upcoming seven days set the variable ~dashboard-week-agen
 (setq dashboard-week-agenda t)
 #+END_SRC
 
-Note that setting list-size for the agenda list is intentionally ignored; all agenda items for the current day will be displayed.
-
 By default org-agenda entries are filter by time, only showing those
 task with ~DEADLINE~ or ~SCHEDULE-TIME~. To show all agenda entries
 (except ~DONE~)
@@ -222,6 +220,21 @@ are close. Note that this could slow down the dashboard buffer refreshment.
 Agenda is now sorted with ~dashboard-agenda-sort-strategy~ following
 the idea of [[https://orgmode.org/worg/doc.html#org-agenda-sorting-strategy][org-agenda-sorting-strategy]]. Suported strategies are
 ~time-up~, ~time-down~, ~todo-state-up~ and ~todo-state-down~
+
+*** Agenda format
+
+To personalize the aspect of each entry, there is
+~dashboard-agenda-prefix-format~ which initial value is
+~" %i %-12:c %-10s "~ where ~%i~ is the icon category of the item (see
+[[https://orgmode.org/worg/doc.html#org-agenda-category-icon-alist][org-agenda-category-icon-alist]]), ~%-12:c~ gives the category a 12
+chars wide field and append a colon to the category. A similar padding
+but for a 10 wide field is ~%-10s~ that is for the scheduling or
+deadline information. For more information see [[https://orgmode.org/worg/doc.html#org-agenda-prefix-format][org-agenda-prefix-format]].
+
+Deadline or Scheduling time will be formatted using
+~dashboard-agenda-time-string-format~ and the keywords (TODO, DONE)
+respect [[https://orgmode.org/worg/doc.html#org-agenda-todo-keyword-format][org-agenda-todo-keyword-format]].
+
 
 ** Faces
 

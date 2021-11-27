@@ -60,6 +60,8 @@
 (defalias 'org-time-less-p 'time-less-p)
 (defvar org-level-faces)
 (defvar org-agenda-new-buffers)
+(defvar org-agenda-prefix-format)
+(defvar org-agenda-todo-keyword-format)
 (defvar org-todo-keywords-1)
 (defvar all-the-icons-dir-icon-alist)
 (defvar package-activated-list)
@@ -1060,16 +1062,14 @@ It is the MATCH attribute for `org-map-entries'"
                          (const todo-state-up) (const todo-state-down)))
   :group 'dashboard)
 
-(defun dashboard-agenda-entry-time (entry-time)
-  "Format ENTRY-TIME with custom format.
-If ENTRY-TIME is nil returns a blank string which length
-is todays date format."
-  (let* ((time (or entry-time (org-today)))
-         (formated-time (format-time-string
-                         dashboard-agenda-time-string-format time)))
-    (if entry-time
-        formated-time
-      (replace-regexp-in-string "." " " formated-time))))
+(defcustom dashboard-agenda-prefix-format " %i %-12:c %s "
+  "Format for each entry in the agenda.
+When the dashboard-agenda is created this format is inserted into
+`org-agenda-prefix-format' as `dashboard-agenda' and compiled with
+`org-compile-prefix-format' previous calling `dashboard-agenda-entry-format' for
+ each agenda entry."
+  :type 'string
+  :group 'dashboard)
 
 (defun dashboard-agenda-entry-format ()
   "Format agenda entry to show it on dashboard."
@@ -1077,12 +1077,11 @@ is todays date format."
          (deadline-time (org-get-deadline-time (point)))
          (entry-time (or scheduled-time deadline-time))
          (item (org-agenda-format-item
-                (dashboard-agenda-entry-time entry-time)
-                (org-get-heading)
+                (dashboard-agenda--formatted-time)
+                (dashboard-agenda--formatted-headline)
                 (org-outline-level)
                 (org-get-category)
-                (org-get-tags)
-                t))
+                (org-get-tags)))
          (loc (point))
          (file (buffer-file-name))
          (todo-state (org-get-todo-state))
@@ -1090,27 +1089,27 @@ is todays date format."
                           (length (member todo-state org-todo-keywords-1))))
          (entry-data (list (cons 'time entry-time)
                            (cons 'todo-index todo-index))))
-    (dashboard-agenda--set-agenda-headline-face item)
     (list item loc file entry-data)))
 
-(defun dashboard-agenda--set-agenda-headline-face (headline)
+(defun dashboard-agenda--formatted-headline ()
   "Set agenda faces to `HEADLINE' when face text property is nil."
-  (let ((todo (org-get-todo-state))
-        (org-level-face (nth (- (org-outline-level) 1) org-level-faces)))
-    (dashboard-agenda--set-face-when-match org-level-face
-                                           (org-get-heading t t t t)
-                                           headline)
-    (dashboard-agenda--set-face-when-match (org-get-todo-face todo)
-                                           todo
-                                           headline)))
+  (let* ((headline (org-get-heading t t t t))
+         (todo (or (org-get-todo-state) ""))
+         (org-level-face (nth (- (org-outline-level) 1) org-level-faces))
+         (todo-state (format org-agenda-todo-keyword-format todo)))
+    (when (null (get-text-property 0 'face headline))
+      (add-face-text-property 0 (length headline) org-level-face t headline))
+    (when (null (get-text-property 0 'face todo-state))
+      (add-face-text-property 0 (length todo-state) (org-get-todo-face todo) t todo-state))
+    (concat todo-state headline)))
 
-(defun dashboard-agenda--set-face-when-match (face text entry)
-  "Set `FACE' to match text between `TEXT' and `ENTRY'.
-Do nothing if `TEXT' has already a face property or is nil."
-  (let ((match-part (and text (string-match text entry))))
-    (when (and match-part (null (get-text-property 0 'face text)))
-      (add-face-text-property (match-beginning 0) (match-end 0)
-                              face t entry))))
+(defun dashboard-agenda--formatted-time ()
+  "Get the scheduled or dead time of an entry.
+If no time is found return an empty string to be formatted."
+  (let* ((schedule-time (org-get-scheduled-time (point)))
+         (deadline-time (org-get-deadline-time (point)))
+         (time (or schedule-time deadline-time)))
+    (if time (format-time-string dashboard-agenda-time-string-format time) " ")))
 
 (defun dashboard-due-date-for-agenda ()
   "Return due-date for agenda period."
@@ -1148,7 +1147,8 @@ if returns a point."
 
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
-  (org-compile-prefix-format 'agenda)
+  (add-to-list 'org-agenda-prefix-format (cons 'dashboard-agenda dashboard-agenda-prefix-format))
+  (org-compile-prefix-format 'dashboard-agenda)
   (prog1 (org-map-entries 'dashboard-agenda-entry-format
                           dashboard-match-agenda-entry
                           'agenda
