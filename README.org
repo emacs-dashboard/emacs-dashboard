@@ -217,6 +217,12 @@ Once the agenda appears in the dashboard, ~org-agenda-files~ stay
 open. With ~(setq dashboard-agenda-release-buffers t)~ the org files
 are close. Note that this could slow down the dashboard buffer refreshment.
 
+*** Agenda sort
+
+Agenda is now sorted with ~dashboard-agenda-sort-strategy~ following
+the idea of [[https://orgmode.org/worg/doc.html#org-agenda-sorting-strategy][org-agenda-sorting-strategy]]. Suported strategies are
+~time-up~, ~time-down~, ~todo-state-up~ and ~todo-state-down~
+
 ** Faces
 
 It is possible to customize Dashboard's appearance using the following faces:
@@ -284,4 +290,3 @@ make install
 ** Prerequisites
 
   * [[https://github.com/cask/cask][Cask]]
-    
