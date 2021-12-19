@@ -43,6 +43,7 @@
 (declare-function org-agenda-format-item "ext:org-agenda.el")
 (declare-function org-compile-prefix-format "ext:org-agenda.el")
 (declare-function org-entry-is-done-p "ext:org.el")
+(declare-function org-in-archived-heading-p "ext:org.el")
 (declare-function org-get-category "ext:org.el")
 (declare-function org-get-deadline-time "ext:org.el")
 (declare-function org-get-heading "ext:org.el")
@@ -1124,6 +1125,7 @@ if returns a point."
         (deadline-time (org-get-deadline-time (point)))
         (due-date (dashboard-due-date-for-agenda)))
     (unless (and (not (org-entry-is-done-p))
+                 (not (org-in-archived-heading-p))
                  (or (and scheduled-time
                           (org-time-less-p scheduled-time due-date))
                      (and deadline-time
@@ -1135,7 +1137,8 @@ if returns a point."
 An entry is included if this function returns nil and excluded
 if returns a point."
   (unless (and (org-entry-is-todo-p)
-               (not (org-entry-is-done-p)))
+               (not (org-entry-is-done-p))
+               (not (org-in-archived-heading-p)))
     (point)))
 
 (defun dashboard-no-filter-agenda ()
