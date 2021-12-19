@@ -26,6 +26,8 @@
 (require 'recentf)
 (require 'dashboard-widgets)
 
+(declare-function page-break-lines-mode "ext:page-break-lines.el")
+
 ;; Custom splash screen
 (defvar dashboard-mode-map
   (let ((map (make-sparse-keymap)))
