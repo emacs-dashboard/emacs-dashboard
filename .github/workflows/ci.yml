@@ -24,9 +24,20 @@ jobs:
           - 27.2
           - snapshot
     steps:
+    - uses: actions/checkout@v2
+
     - uses: purcell/setup-emacs@master
       with:
         version: ${{ matrix.emacs-version }}
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: "3.6"
+        architecture: "x64"
+
+    - uses: conao3/setup-cask@master
+      with:
+        version: 0.8.4
 
     - uses: actions/checkout@v2
     - name: Test package
@@ -45,9 +56,20 @@ jobs:
           - 27.2
           - snapshot
     steps:
+    - uses: actions/checkout@v2
+
     - uses: jcs090218/setup-emacs-windows@master
       with:
         version: ${{ matrix.emacs-version }}
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: "3.6"
+        architecture: "x64"
+
+    - uses: conao3/setup-cask@master
+      with:
+        version: 0.8.4
 
     - uses: actions/checkout@v2
     - name: Test package
