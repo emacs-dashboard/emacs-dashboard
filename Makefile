@@ -1,4 +1,3 @@
-export EMACS ?= emacs
 export BATCH = --batch -q -l .emacs/init.el
 
 EMACS ?= emacs
@@ -9,16 +8,13 @@ ELS = $(filter-out emacs-dashboard-autoloads.el,$(wildcard *.el))
 OBJECTS = $(ELS:.el=.elc)
 BACKUPS = $(ELS:.el=.el~)
 
-.PHONY: version lint clean cleanelpa
+.PHONY: lint clean compile
 
 lint:
 	$(EMACS) $(BATCH) -l $(ELLP)/elisp-lint.el -f elisp-lint-files-batch --no-package-lint $(ELS)
 
 clean:
-	rm -f $(OBJECTS) $(BACKUPS) emacs-dashboard-autoloads.el*
-
-cleanelpa: clean
-	rm -rf .emacs/elpa .emacs/quelpa .emacs/.emacs-custom.el* .elpa
+	rm -rf .cask *.elc
 
 compile:
 	@echo "Compiling..."
