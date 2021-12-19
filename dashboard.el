@@ -26,6 +26,12 @@
 (require 'recentf)
 (require 'dashboard-widgets)
 
+(declare-function page-break-lines-mode "ext:page-break-lines.el")
+
+(defgroup dashboard nil
+  "Extensible startup screen."
+  :group 'applications)
+
 ;; Custom splash screen
 (defvar dashboard-mode-map
   (let ((map (make-sparse-keymap)))
@@ -66,10 +72,6 @@
   (setq inhibit-startup-screen t
         buffer-read-only t
         truncate-lines t))
-
-(defgroup dashboard nil
-  "Extensible startup screen."
-  :group 'applications)
 
 (defcustom dashboard-center-content nil
   "Whether to center content within the window."

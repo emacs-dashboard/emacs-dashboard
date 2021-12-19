@@ -55,6 +55,7 @@
 (declare-function org-get-todo-state "ext:org.el")
 (declare-function org-entry-is-todo-p "ext:org.el")
 (declare-function org-release-buffers "ext:org.el")
+(declare-function recentf-cleanup "ext:recentf.el")
 (defalias 'org-time-less-p 'time-less-p)
 (defvar org-level-faces)
 (defvar org-agenda-new-buffers)
