@@ -23,6 +23,6 @@ cleanelpa: clean
 compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
-		-L .
+		-L . \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		-f batch-byte-compile $(ELS)
