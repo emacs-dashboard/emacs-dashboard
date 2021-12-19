@@ -41,7 +41,7 @@ jobs:
 
     - name: Run tests
       run:
-        make lint
+        make compile
 
   test-windows:
     runs-on: ${{ matrix.os }}
@@ -71,6 +71,6 @@ jobs:
       with:
         version: 0.8.4
 
-    - name: Test package
+    - name: Run tests
       run:
-        make lint
+        make compile
