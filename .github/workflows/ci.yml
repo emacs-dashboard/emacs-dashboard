@@ -41,7 +41,7 @@ jobs:
 
     - name: Run tests
       run:
-        make unix-ci
+        make lint
 
   test-windows:
     runs-on: ${{ matrix.os }}
@@ -73,4 +73,4 @@ jobs:
 
     - name: Test package
       run:
-        make windows-ci
+        make lint
