@@ -8,7 +8,29 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## 1.8.0 (Unreleased)
 > Released N/A
 
-*
+* Disable display-line-numbers-mode (#182)
+* Mute no project removed message (#212)
+* Align the file icons horizontally (#221)
+* Fix package count when using package.el and straight.el simultaneously (#233)
+* Fix fitler agenda by time (#232)
+* Respect to custom items face instead of widget-button face (#273)
+* Support for image transforms (#278)
+* Allow moving point during `dashboard-mode-hook` (#227)
+* Add truncate style for path (#279)
+* Add agenda highlight headlines (#281)
+* Fix mosue click error (#285)
+* Add flag to refresh instead to kill the dashboard buffer (#290)
+* Fix wrong recent files when first starting the dashboard buffer (#294)
+* Add license file (#296)
+* Fix icon for week agenda items (#300)
+* Make `page-break-lines` as optional dependency (#315)
+* Add feature to customize section headings (#316)
+* Add gif support (#327)
+* Fix init info reporting with wrong time (#330)
+* Add new ASCII GNU Emacs logo, `banners/4.txt`. (#337)
+* Add feature to sort agenda (#335)
+* Update the CI process uasing Cask (#341)
+* Add a changelog (#342)
 
 ## 1.7.0
 > Released Feb 21, 2020
