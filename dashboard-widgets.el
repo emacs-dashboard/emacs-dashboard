@@ -362,9 +362,7 @@ If nil it is disabled.  Possible values for list-type are:
 ;; Generic widget helpers
 ;;
 (defun dashboard-subseq (seq end)
-  "Return the subsequence of SEQ from 0 to END..
-Uses `cl-subseq`, but accounts for end points greater than the size of the list.
-Return entire list if `END' is omitted."
+  "Return the subsequence of SEQ from 0 to END."
   (let ((len (length seq)))
     (butlast seq (- len (min len end)))))
 
@@ -406,7 +404,7 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
 If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (with-current-buffer (get-buffer-create dashboard-buffer-name)
     (goto-char (point-max))
-    (let ((buffer-read-only nil)) (insert msg))))
+    (let (buffer-read-only) (insert msg))))
 
 (defun dashboard-modify-heading-icons (alist)
   "Append ALIST items to `dashboard-heading-icons' to modify icons."
@@ -570,8 +568,7 @@ Argument IMAGE-PATH path to the image."
 (defun dashboard-insert-banner ()
   "Insert Banner at the top of the dashboard."
   (goto-char (point-max))
-  (let ((banner (dashboard-choose-banner))
-        (buffer-read-only nil))
+  (let ((banner (dashboard-choose-banner)) buffer-read-only)
     (when banner
       (if (image-type-available-p (intern (file-name-extension banner)))
           (dashboard-insert-image-banner banner)
@@ -861,7 +858,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   "Add the list of LIST-SIZE items from recently edited files."
   (setq dashboard--recentf-cache-item-format nil)
   (recentf-mode)
-  (let ((inhibit-message t) (message-log-max nil)) (recentf-cleanup))
+  (let ((inhibit-message t) message-log-max) (recentf-cleanup))
   (dashboard-insert-section
    "Recent Files:"
    (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist 'recents)
@@ -990,7 +987,7 @@ Return function that returns a list of projects."
   (cl-case dashboard-projects-backend
     (`projectile
      (require 'projectile)
-     (let ((inhibit-message t) (message-log-max nil))
+     (let ((inhibit-message t) message-log-max)
        (projectile-cleanup-known-projects))
      (projectile-load-known-projects))
     (`project-el
