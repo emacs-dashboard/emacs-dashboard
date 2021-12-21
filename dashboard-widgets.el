@@ -361,13 +361,10 @@ If nil it is disabled.  Possible values for list-type are:
 ;;
 ;; Generic widget helpers
 ;;
-(defun dashboard-subseq (seq start end)
-  "Return the subsequence of SEQ from START to END..
-Uses `cl-subseq`, but accounts for end points greater than the size of the list.
-Return entire list if `END' is omitted."
+(defun dashboard-subseq (seq end)
+  "Return the subsequence of SEQ from 0 to END."
   (let ((len (length seq)))
-    (cl-subseq seq start (and (number-or-marker-p end)
-                              (min len end)))))
+    (butlast seq (- len (min len end)))))
 
 (defun dashboard-get-shortcut (item)
   "Get the shortcut to be used for ITEM."
@@ -407,7 +404,7 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
 If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (with-current-buffer (get-buffer-create dashboard-buffer-name)
     (goto-char (point-max))
-    (let ((buffer-read-only nil)) (insert msg))))
+    (let (buffer-read-only) (insert msg))))
 
 (defun dashboard-modify-heading-icons (alist)
   "Append ALIST items to `dashboard-heading-icons' to modify icons."
@@ -420,8 +417,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 
 (defun dashboard-insert-heading (heading &optional shortcut)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT if provided."
-  (when (and (display-graphic-p)
-             dashboard-set-heading-icons)
+  (when (and (display-graphic-p) dashboard-set-heading-icons)
     ;; Try loading `all-the-icons'
     (unless (or (fboundp 'all-the-icons-octicon)
                 (require 'all-the-icons nil 'noerror))
@@ -572,8 +568,7 @@ Argument IMAGE-PATH path to the image."
 (defun dashboard-insert-banner ()
   "Insert Banner at the top of the dashboard."
   (goto-char (point-max))
-  (let ((banner (dashboard-choose-banner))
-        (buffer-read-only nil))
+  (let ((banner (dashboard-choose-banner)) buffer-read-only)
     (when banner
       (if (image-type-available-p (intern (file-name-extension banner)))
           (dashboard-insert-image-banner banner)
@@ -632,7 +627,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
      (if ,list
          (when (and (dashboard-insert-section-list
                      ,section-name
-                     (dashboard-subseq ,list 0 ,list-size)
+                     (dashboard-subseq ,list ,list-size)
                      ,action
                      ,@widget-params)
                     ,shortcut)
@@ -863,7 +858,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   "Add the list of LIST-SIZE items from recently edited files."
   (setq dashboard--recentf-cache-item-format nil)
   (recentf-mode)
-  (let ((inhibit-message t) (message-log-max nil)) (recentf-cleanup))
+  (let ((inhibit-message t) message-log-max) (recentf-cleanup))
   (dashboard-insert-section
    "Recent Files:"
    (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist 'recents)
@@ -909,7 +904,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   (require 'bookmark)
   (dashboard-insert-section
    "Bookmarks:"
-   (dashboard-subseq (bookmark-all-names) 0 list-size)
+   (dashboard-subseq (bookmark-all-names) list-size)
    list-size
    (dashboard-get-shortcut 'bookmarks)
    `(lambda (&rest ignore) (bookmark-jump ,el))
@@ -965,7 +960,7 @@ switch to."
   (dashboard-insert-section
    "Projects:"
    (dashboard-shorten-paths
-    (dashboard-subseq (dashboard-projects-backend-load-projects) 0 list-size)
+    (dashboard-subseq (dashboard-projects-backend-load-projects) list-size)
     'dashboard-projects-alist 'projects)
    list-size
    (dashboard-get-shortcut 'projects)
@@ -992,7 +987,7 @@ Return function that returns a list of projects."
   (cl-case dashboard-projects-backend
     (`projectile
      (require 'projectile)
-     (let ((inhibit-message t) (message-log-max nil))
+     (let ((inhibit-message t) message-log-max)
        (projectile-cleanup-known-projects))
      (projectile-load-known-projects))
     (`project-el
