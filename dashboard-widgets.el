@@ -757,10 +757,10 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                    (projects 'dashboard-projects-show-base)))
          (option-val (symbol-value option))
          base-len)
-    (cond ((eq option-val 'align)
-           (setq base-len (dashboard--align-length-by-type type)))
-          ((null option-val) (setq base-len 0))
-          (t (setq base-len (length base))))
+    (cl-case option-val
+      (`align (setq base-len (dashboard--align-length-by-type type)))
+      (`nil (setq base-len 0))
+      (t (setq base-len (length base))))
     base-len))
 
 (defun dashboard-shorten-path (path type)
@@ -874,16 +874,16 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    (let* ((file (dashboard-expand-path-alist el dashboard-recentf-alist))
           (filename (dashboard-f-filename file))
           (path (dashboard-extract-key-path-alist el dashboard-recentf-alist)))
-     (cond
-      ((eq dashboard-recentf-show-base 'align)
-       (unless dashboard--recentf-cache-item-format
-         (let* ((len-align (dashboard--align-length-by-type 'recents))
-                (new-fmt (dashboard--generate-align-format
-                          dashboard-recentf-item-format len-align)))
-           (setq dashboard--recentf-cache-item-format new-fmt)))
-       (format dashboard--recentf-cache-item-format filename path))
-      ((null dashboard-recentf-show-base) path)
-      (t (format dashboard-recentf-item-format filename path))))))
+     (cl-case dashboard-recentf-show-base
+       (`align
+        (unless dashboard--recentf-cache-item-format
+          (let* ((len-align (dashboard--align-length-by-type 'recents))
+                 (new-fmt (dashboard--generate-align-format
+                           dashboard-recentf-item-format len-align)))
+            (setq dashboard--recentf-cache-item-format new-fmt)))
+        (format dashboard--recentf-cache-item-format filename path))
+       (`nil path)
+       (t (format dashboard-recentf-item-format filename path))))))
 
 ;;
 ;; Bookmarks
@@ -916,16 +916,16 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    (if-let* ((filename el)
              (path (bookmark-get-filename el))
              (path-shorten (dashboard-shorten-path path 'bookmarks)))
-       (cond
-        ((eq dashboard-bookmarks-show-base 'align)
-         (unless dashboard--bookmarks-cache-item-format
-           (let* ((len-align (dashboard--align-length-by-type 'bookmarks))
-                  (new-fmt (dashboard--generate-align-format
-                            dashboard-bookmarks-item-format len-align)))
-             (setq dashboard--bookmarks-cache-item-format new-fmt)))
-         (format dashboard--bookmarks-cache-item-format filename path-shorten))
-        ((null dashboard-bookmarks-show-base) path-shorten)
-        (t (format dashboard-bookmarks-item-format filename path-shorten)))
+       (cl-case dashboard-bookmarks-show-base
+         (`align
+          (unless dashboard--bookmarks-cache-item-format
+            (let* ((len-align (dashboard--align-length-by-type 'bookmarks))
+                   (new-fmt (dashboard--generate-align-format
+                             dashboard-bookmarks-item-format len-align)))
+              (setq dashboard--bookmarks-cache-item-format new-fmt)))
+          (format dashboard--bookmarks-cache-item-format filename path-shorten))
+         (`nil path-shorten)
+         (t (format dashboard-bookmarks-item-format filename path-shorten)))
      el)))
 
 ;;
@@ -975,51 +975,51 @@ switch to."
    (let* ((file (dashboard-expand-path-alist el dashboard-projects-alist))
           (filename (dashboard-f-base file))
           (path (dashboard-extract-key-path-alist el dashboard-projects-alist)))
-     (cond
-      ((eq dashboard-projects-show-base 'align)
-       (unless dashboard--projects-cache-item-format
-         (let* ((len-align (dashboard--align-length-by-type 'projects))
-                (new-fmt (dashboard--generate-align-format
-                          dashboard-projects-item-format len-align)))
-           (setq dashboard--projects-cache-item-format new-fmt)))
-       (format dashboard--projects-cache-item-format filename path))
-      ((null dashboard-projects-show-base) path)
-      (t (format dashboard-projects-item-format filename path))))))
+     (cl-case dashboard-projects-show-base
+       (`align
+        (unless dashboard--projects-cache-item-format
+          (let* ((len-align (dashboard--align-length-by-type 'projects))
+                 (new-fmt (dashboard--generate-align-format
+                           dashboard-projects-item-format len-align)))
+            (setq dashboard--projects-cache-item-format new-fmt)))
+        (format dashboard--projects-cache-item-format filename path))
+       (`nil path)
+       (t (format dashboard-projects-item-format filename path))))))
 
 (defun dashboard-projects-backend-load-projects ()
   "Depending on `dashboard-projects-backend' load corresponding backend.
 Return function that returns a list of projects."
-  (cond
-   ((eq dashboard-projects-backend 'projectile)
-    (require 'projectile)
-    (let ((inhibit-message t) (message-log-max nil))
-      (projectile-cleanup-known-projects))
-    (projectile-load-known-projects))
-   ((eq dashboard-projects-backend 'project-el)
-    (require 'project)
-    (project-known-project-roots))
-   (t
-    (display-warning '(dashboard)
-                     "Invalid value for `dashboard-projects-backend'"
-                     :error))))
+  (cl-case dashboard-projects-backend
+    (`projectile
+     (require 'projectile)
+     (let ((inhibit-message t) (message-log-max nil))
+       (projectile-cleanup-known-projects))
+     (projectile-load-known-projects))
+    (`project-el
+     (require 'project)
+     (project-known-project-roots))
+    (t
+     (display-warning '(dashboard)
+                      "Invalid value for `dashboard-projects-backend'"
+                      :error))))
 
 (defun dashboard-projects-backend-switch-function ()
   "Return the function to switch to a project.
 Custom variable `dashboard-projects-switch-function' variable takes preference
 over custom backends."
   (or dashboard-projects-switch-function
-      (cond
-       ((eq dashboard-projects-backend 'projectile)
-        'projectile-switch-project-by-name)
-       ((eq dashboard-projects-backend 'project-el)
-        (lambda (project)
-          "This function is used to switch to `PROJECT'."
-          (let ((default-directory project))
-            (project-find-file))))
-       (t
-        (display-warning '(dashboard)
-                         "Invalid value for `dashboard-projects-backend'"
-                         :error)))))
+      (cl-case dashboard-projects-backend
+        (`projectile 'projectile-switch-project-by-name)
+        (`project-el
+         (lambda (project)
+           "This function is used to switch to `PROJECT'."
+           (let ((default-directory project))
+             (project-find-file))))
+        (t
+         (display-warning '(dashboard)
+                          "Invalid value for `dashboard-projects-backend'"
+                          :error)))))
+
 ;;
 ;; Org Agenda
 ;;
@@ -1193,12 +1193,11 @@ found for the strategy it uses nil predicate."
 
 (defun dashboard-agenda--build-sort-function-predicate (strategy)
   "Return the predicate to compare two entryes depending on the `STRATEGY'."
-  (cond
-   ((eq 'time-up strategy) 'org-time-less-p)
-   ((eq 'time-down strategy) (lambda (a b) (org-time-less-p b a)))
-   ((eq 'todo-state-up strategy) '>)
-   ((eq 'todo-state-down strategy) '<)
-   (t nil)))
+  (cl-case strategy
+    (`time-up 'org-time-less-p)
+    (`time-down (lambda (a b) (org-time-less-p b a)))
+    (`todo-state-up '>)
+    (`todo-state-down '<)))
 
 (defun dashboard-agenda--build-sort-function-attribute (strategy)
   "Return the argument to compare two entries depending to the `STRATEGY'."
@@ -1213,8 +1212,7 @@ If both attributes are nil or equals the next strategy in `STRATEGIES' is used t
   (let ((arg1 (alist-get attribute (nth 3 entry1)))
         (arg2 (alist-get attribute (nth 3 entry2))))
     (cond
-     ((or (and (null arg1) (null arg2))
-          (equal arg1 arg2))
+     ((or (and (null arg1) (null arg2)) (equal arg1 arg2))
       (apply (dashboard-agenda--build-sort-function strategies) (list entry1 entry2)))
      ((null arg1) nil)
      ((null arg2) t)
