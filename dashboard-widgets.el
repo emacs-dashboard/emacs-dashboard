@@ -362,7 +362,7 @@ If nil it is disabled.  Possible values for list-type are:
 ;; Generic widget helpers
 ;;
 (defun dashboard-subseq (seq end)
-  "Return the subsequence of SEQ from START to END..
+  "Return the subsequence of SEQ from 0 to END..
 Uses `cl-subseq`, but accounts for end points greater than the size of the list.
 Return entire list if `END' is omitted."
   (let ((len (length seq)))
