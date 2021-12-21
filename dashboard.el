@@ -22,7 +22,6 @@
 
 ;;; Code:
 
-(require 'seq)
 (require 'recentf)
 (require 'dashboard-widgets)
 
@@ -197,7 +196,7 @@ Optional prefix ARG says how many lines to move; default is one line."
     ;; (this avoids many saves/loads that would result from
     ;; disabling/enabling recentf-mode)
     (when recentf-is-on
-      (setq recentf-list (seq-take recentf-list dashboard-num-recents)))
+      (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
     (when (or dashboard-force-refresh
               (not (eq dashboard-buffer-last-width (window-width)))
               (not buffer-exists))
