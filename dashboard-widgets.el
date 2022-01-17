@@ -389,7 +389,7 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
          ;; used to construct the `defun'
          (name (downcase (replace-regexp-in-string "[[:punct:]]+" "" (format "%s" search-label))))
          ;; Ensure whitespace in e.g. "recent files" is replaced with dashes.
-         (sym (intern (format "dashboard-jump-to-%s" ,shortcut-id))))
+         (sym (intern (format "dashboard-jump-to-%s" shortcut-id))))
     `(progn
        (eval-when-compile (defvar dashboard-mode-map))
        (defun ,sym nil
@@ -633,7 +633,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                      (dashboard-subseq ,list ,list-size)
                      ,action
                      ,@widget-params)
-                    ,shortcut-char)
+                    ,shortcut-id ,shortcut-char)
            (dashboard-insert-shortcut ,shortcut-id ,shortcut-char ,section-name))
        (insert (propertize "\n    --- No items ---" 'face 'dashboard-no-items-face)))))
 
