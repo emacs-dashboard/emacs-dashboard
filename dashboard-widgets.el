@@ -386,7 +386,7 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
   (let* (;; Ensure punctuation and upper case in search string is not used to
          ;; construct the `defun'
          (name (downcase (replace-regexp-in-string "[[:punct:]]+" "" (format "%s" search-label))))
-         (id (dashboard-get-shortcut-name (eval shortcut-char)))
+         (id (dashboard-get-shortcut-name shortcut-char))
          (sym (intern (format "dashboard-jump-to-%s" id))))
     `(progn
        (eval-when-compile (defvar dashboard-mode-map))
