@@ -379,17 +379,17 @@ If nil it is disabled.  Possible values for list-type are:
   (let ((elem (assq item dashboard-item-shortcuts)))
     (and elem (cdr elem))))
 
-(defmacro dashboard-insert-shortcut (shortcut-char
+(defmacro dashboard-insert-shortcut (shortcut-id
+                                     shortcut-char
                                      search-label
                                      &optional no-next-line)
   "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
 Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
   (let* (;; Ensure punctuation and upper case in search string is not
          ;; used to construct the `defun'
-         (name (downcase (replace-regexp-in-string
-                          "[[:punct:]]+" "" (format "%s" search-label))))
+         (name (downcase (replace-regexp-in-string "[[:punct:]]+" "" (format "%s" search-label))))
          ;; Ensure whitespace in e.g. "recent files" is replaced with dashes.
-         (sym (intern (format "dashboard-jump-to-%s" (car (rassoc shortcut-char dashboard-item-shortcuts))))))
+         (sym (intern (format "dashboard-jump-to-%s" ,shortcut-id))))
     `(progn
        (eval-when-compile (defvar dashboard-mode-map))
        (defun ,sym nil
@@ -619,22 +619,22 @@ Argument IMAGE-PATH path to the image."
       (insert "\n"))
     (insert "\n")))
 
-(defmacro dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
+(defmacro dashboard-insert-section (section-name list list-size shortcut-id shortcut-char action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
-SHORTCUT is the keyboard shortcut used to access the section.
+SHORTCUT-CHAR is the keyboard shortcut used to access the section.
 ACTION is theaction taken when the user activates the widget button.
 WIDGET-PARAMS are passed to the \"widget-create\" function."
   `(progn
      (dashboard-insert-heading ,section-name
-                               (if (and ,list ,shortcut dashboard-show-shortcuts) ,shortcut))
+                               (if (and ,list ,shortcut-char dashboard-show-shortcuts) ,shortcut-char))
      (if ,list
          (when (and (dashboard-insert-section-list
                      ,section-name
                      (dashboard-subseq ,list ,list-size)
                      ,action
                      ,@widget-params)
-                    ,shortcut)
-           (dashboard-insert-shortcut ,shortcut ,section-name))
+                    ,shortcut-char)
+           (dashboard-insert-shortcut ,shortcut-id ,shortcut-char ,section-name))
        (insert (propertize "\n    --- No items ---" 'face 'dashboard-no-items-face)))))
 
 ;;
@@ -866,6 +866,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    "Recent Files:"
    (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist 'recents)
    list-size
+   'recents
    (dashboard-get-shortcut 'recents)
    `(lambda (&rest _)
       (find-file-existing (dashboard-expand-path-alist ,el dashboard-recentf-alist)))
@@ -909,6 +910,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    "Bookmarks:"
    (dashboard-subseq (bookmark-all-names) list-size)
    list-size
+   'bookmarks
    (dashboard-get-shortcut 'bookmarks)
    `(lambda (&rest _) (bookmark-jump ,el))
    (if-let* ((filename el)
@@ -966,6 +968,7 @@ switch to."
     (dashboard-subseq (dashboard-projects-backend-load-projects) list-size)
     'dashboard-projects-alist 'projects)
    list-size
+   'projects
    (dashboard-get-shortcut 'projects)
    `(lambda (&rest _)
       (funcall (dashboard-projects-backend-switch-function)
@@ -1225,6 +1228,7 @@ If both attributes are nil or equals the next strategy in `STRATEGIES' is used t
      "Agenda for today:")
    (dashboard-agenda--sorted-agenda)
    list-size
+   'agenda
    (dashboard-get-shortcut 'agenda)
    `(lambda (&rest _)
       (let ((buffer (find-file-other-window (nth 2 ',el))))
@@ -1243,6 +1247,7 @@ If both attributes are nil or equals the next strategy in `STRATEGIES' is used t
    "Registers:"
    register-alist
    list-size
+   'registers
    (dashboard-get-shortcut 'registers)
    (lambda (&rest _) (jump-to-register (car el)))
    (format "%c - %s" (car el) (register-describe-oneline (car el)))))
