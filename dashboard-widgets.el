@@ -389,8 +389,7 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
          (name (downcase (replace-regexp-in-string
                           "[[:punct:]]+" "" (format "%s" search-label))))
          ;; Ensure whitespace in e.g. "recent files" is replaced with dashes.
-         (sym (intern (format "dashboard-jump-to-%s" (replace-regexp-in-string
-                                                      "[[:blank:]]+" "-" name)))))
+         (sym (intern (format "dashboard-jump-to-%s" (dashboard-get-shortcut-name shortcut-char)))))
     `(progn
        (eval-when-compile (defvar dashboard-mode-map))
        (defun ,sym nil
