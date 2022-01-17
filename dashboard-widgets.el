@@ -383,11 +383,11 @@ If nil it is disabled.  Possible values for list-type are:
                                      &optional no-next-line)
   "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
 Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
-  (let* (;; Ensure punctuation and upper case in search string is not used to
-         ;; construct the `defun'
-         (name (downcase (replace-regexp-in-string "[[:punct:]]+" "" (format "%s" search-label))))
-         (id (dashboard-get-shortcut-name shortcut-char))
-         (sym (intern (format "dashboard-jump-to-%s" id))))
+  (when-let* (;; Ensure punctuation and upper case in search string is not used to
+              ;; construct the `defun'
+              (name (downcase (replace-regexp-in-string "[[:punct:]]+" "" (format "%s" search-label))))
+              (id (car (rassoc shortcut-char dashboard-item-shortcuts)))
+              (sym (intern (format "dashboard-jump-to-%s" id))))
     `(progn
        (eval-when-compile (defvar dashboard-mode-map))
        (defun ,sym nil
