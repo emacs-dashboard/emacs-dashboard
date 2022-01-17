@@ -388,8 +388,8 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
   (let* (;; Ensure punctuation and upper case in search string is not
          ;; used to construct the `defun'
          (name (downcase (replace-regexp-in-string "[[:punct:]]+" "" (format "%s" search-label))))
-         ;; Ensure whitespace in e.g. "recent files" is replaced with dashes.
-         (sym (intern (format "dashboard-jump-to-%s" shortcut-id))))
+         ;; remove symbol quote
+         (sym (intern (replace-regexp-in-string "'" "" (format "dashboard-jump-to-%s" shortcut-id)))))
     `(progn
        (eval-when-compile (defvar dashboard-mode-map))
        (defun ,sym nil
