@@ -31,7 +31,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Add feature to sort agenda (#335)
 * Update the CI process uasing Cask (#341)
 * Add a changelog (#342)
-* Make shortcut function name respect to shortcut id (#348)
 
 ## 1.7.0
 > Released Feb 21, 2020
