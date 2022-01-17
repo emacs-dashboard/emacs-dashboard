@@ -369,6 +369,11 @@ If nil it is disabled.  Possible values for list-type are:
   (let ((len (length seq)))
     (butlast seq (- len (min len end)))))
 
+(defun dashboard-get-shortcut-name (item)
+  "Get the shortcut name to be used for ITEM."
+  (let ((elem (rassoc item dashboard-item-shortcuts)))
+    (and elem (car elem))))
+
 (defun dashboard-get-shortcut (item)
   "Get the shortcut to be used for ITEM."
   (let ((elem (assq item dashboard-item-shortcuts)))
@@ -379,11 +384,13 @@ If nil it is disabled.  Possible values for list-type are:
                                      &optional no-next-line)
   "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
 Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
-  (when-let* (;; Ensure punctuation and upper case in search string is not used to
-              ;; construct the `defun'
-              (name (downcase (replace-regexp-in-string "[[:punct:]]+" "" (format "%s" search-label))))
-              (id (car (rassoc (eval shortcut-char) dashboard-item-shortcuts)))
-              (sym (intern (format "dashboard-jump-to-%s" id))))
+  (let* (;; Ensure punctuation and upper case in search string is not
+         ;; used to construct the `defun'
+         (name (downcase (replace-regexp-in-string
+                          "[[:punct:]]+" "" (format "%s" search-label) nil nil nil)))
+         ;; Ensure whitespace in e.g. "recent files" is replaced with dashes.
+         (sym (intern (format "dashboard-jump-to-%s" (replace-regexp-in-string
+                                                      "[[:blank:]]+" "-" name nil nil nil)))))
     `(progn
        (eval-when-compile (defvar dashboard-mode-map))
        (defun ,sym nil
