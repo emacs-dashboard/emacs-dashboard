@@ -280,11 +280,12 @@ Set to nil for unbounded."
   :type  'integer
   :group 'dashboard)
 
-(defcustom dashboard-heading-icons '((recents   . "history")
-                                     (bookmarks . "bookmark")
-                                     (agenda    . "calendar")
-                                     (projects . "rocket")
-                                     (registers . "database"))
+(defcustom dashboard-heading-icons
+  '((recents   . "history")
+    (bookmarks . "bookmark")
+    (agenda    . "calendar")
+    (projects  . "rocket")
+    (registers . "database"))
   "Association list for the icons of the heading sections.
 Will be of the form `(list-type . icon-name-string)`.
 If nil it is disabled.  Possible values for list-type are:
@@ -367,11 +368,6 @@ If nil it is disabled.  Possible values for list-type are:
   "Return the subsequence of SEQ from 0 to END."
   (let ((len (length seq)))
     (butlast seq (- len (min len end)))))
-
-(defun dashboard-get-shortcut-name (item)
-  "Get the shortcut name to be used for ITEM."
-  (let ((elem (rassoc item dashboard-item-shortcuts)))
-    (and elem (car elem))))
 
 (defun dashboard-get-shortcut (item)
   "Get the shortcut to be used for ITEM."
@@ -809,21 +805,21 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   (let ((len-item (cdr (assoc type dashboard-items))) (count 0) (align-length -1)
         len-list base)
     (cl-case type
-      (recents
+      (`recents
        (require 'recentf)
        (setq len-list (length recentf-list))
        (while (and (< count len-item) (< count len-list))
          (setq base (nth count recentf-list)
                align-length (max align-length (length (dashboard-f-filename base))))
          (cl-incf count)))
-      (bookmarks
+      (`bookmarks
        (let ((bookmarks-lst (bookmark-all-names)))
          (setq len-list (length bookmarks-lst))
          (while (and (< count len-item) (< count len-list))
            (setq base (nth count bookmarks-lst)
                  align-length (max align-length (length base)))
            (cl-incf count))))
-      (projects
+      (`projects
        (let ((projects-lst (dashboard-projects-backend-load-projects)))
          (setq len-list (length projects-lst))
          (while (and (< count len-item) (< count len-list))
@@ -865,7 +861,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist 'recents)
    list-size
    (dashboard-get-shortcut 'recents)
-   `(lambda (&rest ignore)
+   `(lambda (&rest _)
       (find-file-existing (dashboard-expand-path-alist ,el dashboard-recentf-alist)))
    (let* ((file (dashboard-expand-path-alist el dashboard-recentf-alist))
           (filename (dashboard-f-filename file))
@@ -908,7 +904,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
    (dashboard-subseq (bookmark-all-names) list-size)
    list-size
    (dashboard-get-shortcut 'bookmarks)
-   `(lambda (&rest ignore) (bookmark-jump ,el))
+   `(lambda (&rest _) (bookmark-jump ,el))
    (if-let* ((filename el)
              (path (bookmark-get-filename el))
              (path-shorten (dashboard-shorten-path path 'bookmarks)))
@@ -965,7 +961,7 @@ switch to."
     'dashboard-projects-alist 'projects)
    list-size
    (dashboard-get-shortcut 'projects)
-   `(lambda (&rest ignore)
+   `(lambda (&rest _)
       (funcall (dashboard-projects-backend-switch-function)
                (dashboard-expand-path-alist ,el dashboard-projects-alist)))
    (let* ((file (dashboard-expand-path-alist el dashboard-projects-alist))
