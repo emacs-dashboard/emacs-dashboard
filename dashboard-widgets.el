@@ -237,9 +237,10 @@ installed."
                  (const :tag "Use project.el" project-el))
   :group 'dashboard)
 
-(defcustom dashboard-items '((recents   . 5)
-                             (bookmarks . 5)
-                             (agenda    . 5))
+(defcustom dashboard-items
+  '((recents   . 5)
+    (bookmarks . 5)
+    (agenda    . 5))
   "Association list of items to show in the startup buffer.
 Will be of the form `(list-type . list-size)'.
 If nil it is disabled.  Possible values for list-type are:
@@ -247,11 +248,12 @@ If nil it is disabled.  Possible values for list-type are:
   :type  '(repeat (alist :key-type symbol :value-type integer))
   :group 'dashboard)
 
-(defcustom dashboard-item-shortcuts '((recents . "r")
-                                      (bookmarks . "m")
-                                      (projects . "p")
-                                      (agenda . "a")
-                                      (registers . "e"))
+(defcustom dashboard-item-shortcuts
+  '((recents   . "r")
+    (bookmarks . "m")
+    (projects  . "p")
+    (agenda    . "a")
+    (registers . "e"))
   "Association list of items and their corresponding shortcuts.
 Will be of the form `(list-type . keys)' as understood by
 `(kbd keys)'.  If nil, shortcuts are disabled.  If an entry's
@@ -366,6 +368,11 @@ If nil it is disabled.  Possible values for list-type are:
   (let ((len (length seq)))
     (butlast seq (- len (min len end)))))
 
+(defun dashboard-get-shortcut-name (item)
+  "Get the shortcut name to be used for ITEM."
+  (let ((elem (rassoc item dashboard-item-shortcuts)))
+    (and elem (car elem))))
+
 (defun dashboard-get-shortcut (item)
   "Get the shortcut to be used for ITEM."
   (let ((elem (assq item dashboard-item-shortcuts)))
@@ -376,25 +383,19 @@ If nil it is disabled.  Possible values for list-type are:
                                      &optional no-next-line)
   "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
 Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
-  (let* (;; Ensure punctuation and upper case in search string is not
-         ;; used to construct the `defun'
-         (name (downcase (replace-regexp-in-string
-                          "[[:punct:]]+" "" (format "%s" search-label) nil nil nil)))
-         ;; Ensure whitespace in e.g. "recent files" is replaced with dashes.
-         (sym (intern (format "dashboard-jump-to-%s" (replace-regexp-in-string
-                                                      "[[:blank:]]+" "-" name nil nil nil)))))
+  (let* (;; Ensure punctuation and upper case in search string is not used to
+         ;; construct the `defun'
+         (name (downcase (replace-regexp-in-string "[[:punct:]]+" "" (format "%s" search-label))))
+         (id (dashboard-get-shortcut-name (eval shortcut-char)))
+         (sym (intern (format "dashboard-jump-to-%s" id))))
     `(progn
        (eval-when-compile (defvar dashboard-mode-map))
        (defun ,sym nil
-         ,(concat
-           "Jump to "
-           name
-           ".  This code is dynamically generated in `dashboard-insert-shortcut'.")
+         ,(concat "Jump to " name ".  This code is dynamically generated in `dashboard-insert-shortcut'.")
          (interactive)
          (unless (search-forward ,search-label (point-max) t)
            (search-backward ,search-label (point-min) t))
-         ,@(unless no-next-line
-             '((forward-line 1)))
+         ,@(unless no-next-line '((forward-line 1)))
          (back-to-indentation))
        (eval-after-load 'dashboard
          (define-key dashboard-mode-map ,shortcut-char ',sym)))))
@@ -1223,7 +1224,7 @@ If both attributes are nil or equals the next strategy in `STRATEGIES' is used t
    (dashboard-agenda--sorted-agenda)
    list-size
    (dashboard-get-shortcut 'agenda)
-   `(lambda (&rest ignore)
+   `(lambda (&rest _)
       (let ((buffer (find-file-other-window (nth 2 ',el))))
         (with-current-buffer buffer
           (goto-char (nth 1 ',el))
@@ -1241,7 +1242,7 @@ If both attributes are nil or equals the next strategy in `STRATEGIES' is used t
    register-alist
    list-size
    (dashboard-get-shortcut 'registers)
-   (lambda (&rest _ignore) (jump-to-register (car el)))
+   (lambda (&rest _) (jump-to-register (car el)))
    (format "%c - %s" (car el) (register-describe-oneline (car el)))))
 
 (provide 'dashboard-widgets)
