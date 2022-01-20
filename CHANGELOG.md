@@ -32,6 +32,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Update the CI process uasing Cask (#341)
 * Add a changelog (#342)
 * Make shortcut function name respect to shortcut id (#348)
+* Add capability to custom align agenda widget (#350)
 
 ## 1.7.0
 > Released Feb 21, 2020
