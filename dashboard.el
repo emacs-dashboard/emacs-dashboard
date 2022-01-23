@@ -45,7 +45,6 @@
     (define-key map [backtab] 'widget-backward)
     (define-key map (kbd "RET") 'dashboard-return)
     (define-key map [mouse-1] 'dashboard-mouse-1)
-    (define-key map (kbd "g") #'dashboard-refresh-buffer)
     (define-key map (kbd "}") #'dashboard-next-section)
     (define-key map (kbd "{") #'dashboard-previous-section)
     map)
@@ -68,6 +67,7 @@
     (display-line-numbers-mode -1))
   (when (require 'page-break-lines nil t)
     (page-break-lines-mode 1))
+  (setq-local revert-buffer-function #'dashboard-refresh-buffer)
   (setq inhibit-startup-screen t
         buffer-read-only t
         truncate-lines t))
@@ -233,7 +233,7 @@ Optional prefix ARG says how many lines to move; default is one line."
             (add-hook 'window-size-change-functions 'dashboard-resize-on-hook)
             (dashboard-resize-on-hook)))
 
-(defun dashboard-refresh-buffer ()
+(defun dashboard-refresh-buffer (&rest _)
   "Refresh buffer."
   (interactive)
   (let ((dashboard-force-refresh t)) (dashboard-insert-startupify-lists))
