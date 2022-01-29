@@ -1101,15 +1101,12 @@ When the dashboard-agenda is created this format is inserted into
       (add-face-text-property 0 (length headline) org-level-face t headline))
     (when (null (get-text-property 0 'face todo-state))
       (add-face-text-property 0 (length todo-state) (org-get-todo-face todo) t todo-state))
-    (concat todo-state headline)))
+    (concat todo-state " " headline)))
 
 (defun dashboard-agenda--formatted-time ()
-  "Get the scheduled or dead time of an entry.
-If no time is found return an empty string to be formatted."
-  (let* ((schedule-time (org-get-scheduled-time (point)))
-         (deadline-time (org-get-deadline-time (point)))
-         (time (or schedule-time deadline-time)))
-    (if time (format-time-string dashboard-agenda-time-string-format time) " ")))
+  "Get the scheduled or dead time of an entry.  If no time is found return nil."
+  (if-let ((time (or (org-get-scheduled-time (point)) (org-get-deadline-time (point)))))
+      (format-time-string dashboard-agenda-time-string-format time)))
 
 (defun dashboard-due-date-for-agenda ()
   "Return due-date for agenda period."
@@ -1147,7 +1144,9 @@ if returns a point."
 
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
-  (add-to-list 'org-agenda-prefix-format (cons 'dashboard-agenda dashboard-agenda-prefix-format))
+  (if-let ((prefix-format (assoc 'dashboard-agenda org-agenda-prefix-format)))
+      (setcdr prefix-format dashboard-agenda-prefix-format)
+    (push (cons 'dashboard-agenda dashboard-agenda-prefix-format) org-agenda-prefix-format))
   (org-compile-prefix-format 'dashboard-agenda)
   (prog1 (org-map-entries 'dashboard-agenda-entry-format
                           dashboard-match-agenda-entry
