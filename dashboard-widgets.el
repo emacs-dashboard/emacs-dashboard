@@ -1105,8 +1105,8 @@ When the dashboard-agenda is created this format is inserted into
 
 (defun dashboard-agenda--formatted-time ()
   "Get the scheduled or dead time of an entry.  If no time is found return nil."
-  (if-let ((time (or (org-get-scheduled-time (point)) (org-get-deadline-time (point)))))
-      (format-time-string dashboard-agenda-time-string-format time)))
+  (when-let ((time (or (org-get-scheduled-time (point)) (org-get-deadline-time (point)))))
+    (format-time-string dashboard-agenda-time-string-format time)))
 
 (defun dashboard-due-date-for-agenda ()
   "Return due-date for agenda period."
