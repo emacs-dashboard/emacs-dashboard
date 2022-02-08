@@ -214,15 +214,16 @@ If the value is nil then no banner is displayed."
   :group 'dashboard)
 
 (defcustom dashboard-item-generators
-  '((recents   . dashboard-insert-recents)
-    (bookmarks . dashboard-insert-bookmarks)
-    (projects  . dashboard-insert-projects)
-    (agenda    . dashboard-insert-agenda)
-    (registers . dashboard-insert-registers))
+  '((recents     . dashboard-insert-recents)
+    (bookmarks   . dashboard-insert-bookmarks)
+    (projects    . dashboard-insert-projects)
+    (agenda      . dashboard-insert-agenda)
+    (registers   . dashboard-insert-registers)
+    (lsp-folders . dashboard-insert-lsp-folders))
   "Association list of items to how to generate in the startup buffer.
 Will be of the form `(list-type . list-function)'.
 Possible values for list-type are: `recents', `bookmarks', `projects',
-`agenda' ,`registers'."
+`agenda' ,`registers', `lsp-folders'."
   :type  '(repeat (alist :key-type symbol :value-type function))
   :group 'dashboard)
 
@@ -246,16 +247,17 @@ installed."
   "Association list of items to show in the startup buffer.
 Will be of the form `(list-type . list-size)'.
 If nil it is disabled.  Possible values for list-type are:
-`recents' `bookmarks' `projects' `agenda' `registers'."
+`recents' `bookmarks' `projects' `agenda' `registers', `lsp-folders'."
   :type  '(repeat (alist :key-type symbol :value-type integer))
   :group 'dashboard)
 
 (defcustom dashboard-item-shortcuts
-  '((recents   . "r")
-    (bookmarks . "m")
-    (projects  . "p")
-    (agenda    . "a")
-    (registers . "e"))
+  '((recents     . "r")
+    (bookmarks   . "m")
+    (projects    . "p")
+    (agenda      . "a")
+    (registers   . "e")
+    (lsp-folders . "l"))
   "Association list of items and their corresponding shortcuts.
 Will be of the form `(list-type . keys)' as understood by
 `(kbd keys)'.  If nil, shortcuts are disabled.  If an entry's
@@ -273,7 +275,7 @@ Possible values for default-name are:
 \"Agenda for the coming week:\" \"Registers:\" \"Projects:\"."
   :type '(alist :key-type string :value-type string)
   :options '("Recent Files:" "Bookmarks:" "Agenda for today:"
-             "Agenda for the coming week:" "Registers:" "Projects:")
+             "Agenda for the coming week:" "Registers:" "Projects:" "Lsp Session folders:")
   :group 'dashboard)
 
 (defcustom dashboard-items-default-length 20
@@ -283,15 +285,16 @@ Set to nil for unbounded."
   :group 'dashboard)
 
 (defcustom dashboard-heading-icons
-  '((recents   . "history")
-    (bookmarks . "bookmark")
-    (agenda    . "calendar")
-    (projects  . "rocket")
-    (registers . "database"))
+  '((recents     . "history")
+    (bookmarks   . "bookmark")
+    (agenda      . "calendar")
+    (projects    . "rocket")
+    (registers   . "database")
+    (lsp-folders . "rocket"))
   "Association list for the icons of the heading sections.
 Will be of the form `(list-type . icon-name-string)`.
 If nil it is disabled.  Possible values for list-type are:
-`recents' `bookmarks' `projects' `agenda' `registers'"
+`recents' `bookmarks' `projects' `agenda' `registers' `lsp-folders'"
   :type  '(repeat (alist :key-type symbol :value-type string))
   :group 'dashboard)
 
@@ -444,6 +447,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                                      :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
              ((string-equal heading "Projects:")
               (all-the-icons-octicon (cdr (assoc 'projects dashboard-heading-icons))
+                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+             ((string-equal heading "Lsp Session folders:")
+              (all-the-icons-octicon (cdr (assoc 'lsp-folders dashboard-heading-icons))
                                      :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
              (t " ")))
     (insert " "))
@@ -885,6 +891,25 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
         (format dashboard--recentf-cache-item-format filename path))
        (`nil path)
        (t (format dashboard-recentf-item-format filename path))))))
+
+;;
+;; Lsp Session folders
+;;
+(defvar dashboard-lsp-folders-alist nil
+  "Alist records shorten's LSP Workspace folders and it's full paths.")
+
+(defun dashboard-insert-lsp-folders (list-size)
+  "Add the list of LIST-SIZE items of lsp session folders."
+  (require 'lsp-mode)
+  (dashboard-insert-section
+   "Lsp Session folders:"
+   (dashboard-shorten-paths (lsp-session-folders (lsp-session)) 'dashboard-lsp-folders-alist 'lsp-folders)
+   list-size
+   'lsp-folders
+   (dashboard-get-shortcut 'lsp-folders)
+   `(lambda (&rest _)
+      (find-file-existing (dashboard-expand-path-alist ,el dashboard-lsp-folders-alist)))
+   (dashboard-extract-key-path-alist el dashboard-lsp-folders-alist)))
 
 ;;
 ;; Bookmarks
