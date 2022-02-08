@@ -34,6 +34,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Make shortcut function name respect to shortcut id (#348)
 * Add capability to custom align agenda widget (#350)
 * Correct straight.el package count (#354)
+* Lazy load modules specify in dashboard buffer (#359)
 
 ## 1.7.0
 > Released Feb 21, 2020
