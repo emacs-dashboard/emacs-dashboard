@@ -61,12 +61,10 @@
   :syntax-table nil
   :abbrev-table nil
   (buffer-disable-undo)
-  (whitespace-mode -1)
-  (linum-mode -1)
-  (when (>= emacs-major-version 26)
-    (display-line-numbers-mode -1))
-  (when (require 'page-break-lines nil t)
-    (page-break-lines-mode 1))
+  (when (featurep 'whitespace) (whitespace-mode -1))
+  (when (featurep 'linum) (linum-mode -1))
+  (when (featurep 'display-line-numbers) (display-line-numbers-mode -1))
+  (when (featurep 'page-break-lines) (page-break-lines-mode 1))
   (setq-local revert-buffer-function #'dashboard-refresh-buffer)
   (setq inhibit-startup-screen t
         buffer-read-only t
