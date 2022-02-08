@@ -253,21 +253,22 @@ It is possible to customize Dashboard's appearance using the following faces:
 
 You can use any of the following shortcuts inside Dashboard
 
-|----------------------------+------------------|
-| Shortcut                   | Function         |
-|----------------------------+------------------|
-| Tab Or C-i                 | Next Item        |
-| Shift-Tab                  | Previous Item    |
-| Return / Mouse Click / C-m | Open             |
-| r                          | Recent files     |
-| m                          | Bookmarks        |
-| p                          | Projects         |
-| a                          | Org-Mode Agenda  |
-| e                          | Registers        |
-| g                          | Refresh contents |
-| {                          | Previous section |
-| }                          | Next section     |
-|----------------------------+------------------|
+|----------------------------+---------------------|
+| Shortcut                   | Function            |
+|----------------------------+---------------------|
+| Tab Or C-i                 | Next Item           |
+| Shift-Tab                  | Previous Item       |
+| Return / Mouse Click / C-m | Open                |
+| r                          | Recent files        |
+| m                          | Bookmarks           |
+| p                          | Projects            |
+| a                          | Org-Mode Agenda     |
+| e                          | Registers           |
+| l                          | Lsp Session folders |
+| g                          | Refresh contents    |
+| {                          | Previous section    |
+| }                          | Next section        |
+|----------------------------+---------------------|
 
 * Wish List
   1. [X] Center content
