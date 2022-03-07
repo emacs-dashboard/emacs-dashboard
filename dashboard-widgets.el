@@ -157,10 +157,7 @@ preserved."
 
 (defcustom dashboard-navigator-buttons nil
   "Specify the navigator buttons.
-The format is: 'icon title help action face prefix suffix'.
-
-Example:
-'((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _) (show-stars)) 'warning \"[\" \"]\"))"
+The format is: 'icon title help action face prefix suffix'."
   :type '(repeat (repeat (list string string string function symbol string string)))
   :group 'dashboard)
 
@@ -199,11 +196,10 @@ Example:
 
 (defcustom dashboard-startup-banner 'official
   "Specify the startup banner.
-Default value is `official', it displays
-the Emacs logo.  `logo' displays Emacs alternative logo.
-An integer value is the index of text
-banner.  A string value must be a path to a .PNG or .TXT file.
-If the value is nil then no banner is displayed."
+Default value is `official', it displays the Emacs logo.  `logo' displays Emacs
+alternative logo.  An integer value is the index of text banner.  A string
+value must be a path to a .PNG or .TXT file.  If the value is nil then no banner
+is displayed."
   :type '(choice (const  :tag "offical"   official)
                  (const  :tag "logo"      logo)
                  (string :tag "a png or txt path"))
