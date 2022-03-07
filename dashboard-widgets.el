@@ -157,7 +157,10 @@ preserved."
 
 (defcustom dashboard-navigator-buttons nil
   "Specify the navigator buttons.
-The format is: 'icon title help action face prefix suffix'."
+The format is: 'icon title help action face prefix suffix'.
+
+Example:
+'((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _) (show-stars)) 'warning \"[\" \"]\"))"
   :type '(repeat (repeat (list string string string function symbol string string)))
   :group 'dashboard)
 
@@ -1213,9 +1216,7 @@ found for the strategy it uses nil predicate."
    (t nil)))
 
 (defun dashboard-agenda--compare-entries (entry1 entry2 strategies predicate attribute)
-  "Compare `ENTRY1' and `ENTRY2' by `ATTRIBUTE' using `PREDICATE'.
-If both attributes are nil or equals the next strategy in `STRATEGIES' is used
-to compare."
+  "Compare `ENTRY1' and `ENTRY2' by `ATTRIBUTE' using `PREDICATE'."
   (let ((arg1 (alist-get attribute (nth 3 entry1)))
         (arg2 (alist-get attribute (nth 3 entry2))))
     (cond
