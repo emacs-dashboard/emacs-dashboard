@@ -1215,6 +1215,37 @@ found for the strategy it uses nil predicate."
    ((memq strategy '(todo-state-up todo-state-down)) 'todo-index)
    (t nil)))
 
+(defun dashboard-agenda--compare-entries (entry1 entry2 strategies predicate attribute)
+  "Compare `ENTRY1' and `ENTRY2' by `ATTRIBUTE' using `PREDICATE'.
+If both attributes are nil or equals the next strategy in `STRATEGIES' is used
+to compare."
+  (let ((arg1 (alist-get attribute (nth 3 entry1)))
+        (arg2 (alist-get attribute (nth 3 entry2))))
+    (cond
+     ((or (and (null arg1) (null arg2)) (equal arg1 arg2))
+      (apply (dashboard-agenda--build-sort-function strategies) (list entry1 entry2)))
+     ((null arg1) nil)
+     ((null arg2) t)
+     (t (apply predicate (list arg1 arg2))))))
+
+(defun dashboard-insert-agenda (list-size)
+  "Add the list of LIST-SIZE items of agenda."
+  (require 'org-agenda)
+  (dashboard-insert-section
+   (if dashboard-week-agenda
+       "Agenda for the coming week:"
+     "Agenda for today:")
+   (dashboard-agenda--sorted-agenda)
+   list-size
+   'agenda
+   (dashboard-get-shortcut 'agenda)
+   `(lambda (&rest _)
+      (let ((buffer (find-file-other-window (nth 2 ',el))))
+        (with-current-buffer buffer
+          (goto-char (nth 1 ',el))
+          (switch-to-buffer buffer))))
+   (format "%s" (nth 0 el))))
+
 ;;
 ;; Registers
 ;;
