@@ -374,6 +374,10 @@ If nil it is disabled.  Possible values for list-type are:
      (with-temp-message (or (current-message) nil)
        (let ((inhibit-message t)) ,@body))))
 
+(defun dashboard-funcall-fboundp (fnc &rest args)
+  "Call FNC with ARGS if exists."
+  (when (fboundp fnc) (if args (funcall fnc args) (funcall fnc))))
+
 ;;
 ;; Generic widget helpers
 ;;
@@ -1010,7 +1014,7 @@ Return function that returns a list of projects."
      (projectile-load-known-projects))
     (`project-el
      (require 'project)
-     (dashboard-mute-apply (project-forget-zombie-projects))
+     (dashboard-mute-apply (dashboard-funcall-fboundp #'project-forget-zombie-projects))
      (project-known-project-roots))
     (t
      (display-warning '(dashboard)
@@ -1219,7 +1223,8 @@ found for the strategy it uses nil predicate."
 
 (defun dashboard-agenda--compare-entries (entry1 entry2 strategies predicate attribute)
   "Compare `ENTRY1' and `ENTRY2' by `ATTRIBUTE' using `PREDICATE'.
-If both attributes are nil or equals the next strategy in `STRATEGIES' is used to compare."
+If both attributes are nil or equals the next strategy in `STRATEGIES' is used
+to compare."
   (let ((arg1 (alist-get attribute (nth 3 entry1)))
         (arg2 (alist-get attribute (nth 3 entry2))))
     (cond
