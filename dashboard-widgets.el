@@ -258,20 +258,16 @@ If nil it is disabled.  Possible values for list-type are:
     (agenda    . "a")
     (registers . "e"))
   "Association list of items and their corresponding shortcuts.
-Will be of the form `(list-type . keys)' as understood by
-`(kbd keys)'.  If nil, shortcuts are disabled.  If an entry's
-value is nil, that item's shortcut is disbaled.  See
-`dashboard-items' for possible values of list-type.'"
+Will be of the form `(list-type . keys)' as understood by `(kbd keys)'.
+If nil, shortcuts are disabled.  If an entry's value is nil, that item's
+shortcut is disbaled.  See `dashboard-items' for possible values of list-type.'"
   :type '(repeat (alist :key-type symbol :value-type string))
   :group 'dashboard)
 
 (defcustom dashboard-item-names nil
   "Association list of item heading names.
 When an item is nil or not present, the default name is used.
-Will be of the form `(default-name . new-name)'.
-Possible values for default-name are:
-\"Recent Files:\" \"Bookmarks:\" \"Agenda for today:\",
-\"Agenda for the coming week:\" \"Registers:\" \"Projects:\"."
+Will be of the form `(default-name . new-name)'."
   :type '(alist :key-type string :value-type string)
   :options '("Recent Files:" "Bookmarks:" "Agenda for today:"
              "Agenda for the coming week:" "Registers:" "Projects:")
@@ -701,14 +697,13 @@ to widget creation."
 
 (defun dashboard-insert-footer ()
   "Insert footer of dashboard."
-  (let ((footer (and dashboard-set-footer (dashboard-random-footer))))
-    (when footer
-      (insert "\n")
-      (dashboard-center-line footer)
-      (insert dashboard-footer-icon)
-      (insert " ")
-      (insert (propertize footer 'face 'dashboard-footer))
-      (insert "\n"))))
+  (when-let ((footer (and dashboard-set-footer (dashboard-random-footer))))
+    (insert "\n")
+    (dashboard-center-line footer)
+    (insert dashboard-footer-icon)
+    (insert " ")
+    (insert (propertize footer 'face 'dashboard-footer))
+    (insert "\n")))
 
 ;;
 ;; Truncate
