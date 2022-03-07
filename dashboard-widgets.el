@@ -1216,7 +1216,9 @@ found for the strategy it uses nil predicate."
    (t nil)))
 
 (defun dashboard-agenda--compare-entries (entry1 entry2 strategies predicate attribute)
-  "Compare `ENTRY1' and `ENTRY2' by `ATTRIBUTE' using `PREDICATE'."
+  "Compare `ENTRY1' and `ENTRY2' by `ATTRIBUTE' using `PREDICATE'.
+If both attributes are nil or equals the next strategy in `STRATEGIES' is used
+to compare."
   (let ((arg1 (alist-get attribute (nth 3 entry1)))
         (arg2 (alist-get attribute (nth 3 entry2))))
     (cond
@@ -1227,7 +1229,6 @@ found for the strategy it uses nil predicate."
      (t (apply predicate (list arg1 arg2))))))
 
 (defun dashboard-insert-agenda (list-size)
-  "Add the list of LIST-SIZE items of agenda."
   (require 'org-agenda)
   (dashboard-insert-section
    (if dashboard-week-agenda
