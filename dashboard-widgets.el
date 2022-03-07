@@ -658,7 +658,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;; Section list
 ;;
 (defmacro dashboard-insert-section-list (section-name list action &rest rest)
-  "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
+  "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST
+to widget creation."
   `(when (car ,list)
      (mapc
       (lambda (el)
@@ -951,9 +952,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 (defcustom dashboard-projects-switch-function
   nil
   "Custom function to switch to projects from dashboard.
-If non-NIL, should be bound to a function with one argument.  The
-function will be called with the root directory of the project to
-switch to."
+If non-NIL, should be bound to a function with one argument.  The function will
+be called with the root directory of the project to switch to."
   :type '(choice (const :tag "Default" nil) function)
   :group 'dashboard)
 
@@ -1131,8 +1131,8 @@ When the dashboard-agenda is created this format is inserted into
 
 (defun dashboard-filter-agenda-by-time ()
   "Include entry if it has a scheduled-time or deadline-time in the future.
-An entry is included if this function returns nil and excluded
-if returns a point."
+An entry is included if this function returns nil and excluded if returns a
+point."
   (let ((scheduled-time (org-get-scheduled-time (point)))
         (deadline-time (org-get-deadline-time (point)))
         (due-date (dashboard-due-date-for-agenda)))
