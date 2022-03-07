@@ -35,6 +35,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Add capability to custom align agenda widget (#350)
 * Correct straight.el package count (#354)
 * Lazy load modules specify in dashboard buffer (#359)
+* Clean up zombie project for project.el (#363)
 
 ## 1.7.0
 > Released Feb 21, 2020

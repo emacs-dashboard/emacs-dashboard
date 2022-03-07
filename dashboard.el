@@ -177,13 +177,11 @@ Optional prefix ARG says how many lines to move; default is one line."
         (origial-recentf-list recentf-list)
         (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
         (max-line-length 0))
-    ;; disable recentf mode,
-    ;; so we don't flood the recent files list with org mode files
-    ;; do this by making a copy of the part of the list we'll use
-    ;; let dashboard widgets change that
-    ;; then restore the orginal list afterwards
-    ;; (this avoids many saves/loads that would result from
-    ;; disabling/enabling recentf-mode)
+    ;; disable recentf mode, so we don't flood the recent files list with org
+    ;; mode files do this by making a copy of the part of the list we'll use
+    ;; let dashboard widgets change that then restore the orginal list afterwards
+    ;; (this avoids many saves/loads that would result from disabling/enabling
+    ;; recentf-mode)
     (when recentf-is-on
       (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
     (when (or dashboard-force-refresh
@@ -249,8 +247,8 @@ Optional prefix ARG says how many lines to move; default is one line."
 ;;;###autoload
 (defun dashboard-setup-startup-hook ()
   "Setup post initialization hooks.
-If a command line argument is provided,
-assume a filename and skip displaying Dashboard."
+If a command line argument is provided, assume a filename and skip displaying
+Dashboard."
   (when (< (length command-line-args) 2)
     (add-hook 'after-init-hook (lambda ()
                                  ;; Display useful lists of items

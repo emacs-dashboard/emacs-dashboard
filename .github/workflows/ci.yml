@@ -37,7 +37,7 @@ jobs:
 
     - uses: conao3/setup-cask@master
       with:
-        version: 0.8.4
+        version: 'snapshot'
 
     - name: Run tests
       run:
@@ -69,7 +69,7 @@ jobs:
 
     - uses: conao3/setup-cask@master
       with:
-        version: 0.8.4
+        version: 'snapshot'
 
     - name: Run tests
       run:

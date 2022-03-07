@@ -40,6 +40,7 @@
 (declare-function projectile-relevant-known-projects "ext:projectile.el")
 ;;; project.el in Emacs 26 does not contain this function
 (declare-function project-known-project-roots "ext:project.el" nil t)
+(declare-function project-forget-zombie-projects "ext:project.el" nil t)
 (declare-function org-agenda-format-item "ext:org-agenda.el")
 (declare-function org-compile-prefix-format "ext:org-agenda.el")
 (declare-function org-entry-is-done-p "ext:org.el")
@@ -198,11 +199,10 @@ Example:
 
 (defcustom dashboard-startup-banner 'official
   "Specify the startup banner.
-Default value is `official', it displays
-the Emacs logo.  `logo' displays Emacs alternative logo.
-An integer value is the index of text
-banner.  A string value must be a path to a .PNG or .TXT file.
-If the value is nil then no banner is displayed."
+Default value is `official', it displays the Emacs logo.  `logo' displays Emacs
+alternative logo.  An integer value is the index of text banner.  A string
+value must be a path to a .PNG or .TXT file.  If the value is nil then no banner
+is displayed."
   :type '(choice (const  :tag "offical"   official)
                  (const  :tag "logo"      logo)
                  (string :tag "a png or txt path"))
@@ -257,20 +257,16 @@ If nil it is disabled.  Possible values for list-type are:
     (agenda    . "a")
     (registers . "e"))
   "Association list of items and their corresponding shortcuts.
-Will be of the form `(list-type . keys)' as understood by
-`(kbd keys)'.  If nil, shortcuts are disabled.  If an entry's
-value is nil, that item's shortcut is disbaled.  See
-`dashboard-items' for possible values of list-type.'"
+Will be of the form `(list-type . keys)' as understood by `(kbd keys)'.
+If nil, shortcuts are disabled.  If an entry's value is nil, that item's
+shortcut is disbaled.  See `dashboard-items' for possible values of list-type.'"
   :type '(repeat (alist :key-type symbol :value-type string))
   :group 'dashboard)
 
 (defcustom dashboard-item-names nil
   "Association list of item heading names.
 When an item is nil or not present, the default name is used.
-Will be of the form `(default-name . new-name)'.
-Possible values for default-name are:
-\"Recent Files:\" \"Bookmarks:\" \"Agenda for today:\",
-\"Agenda for the coming week:\" \"Registers:\" \"Projects:\"."
+Will be of the form `(default-name . new-name)'."
   :type '(alist :key-type string :value-type string)
   :options '("Recent Files:" "Bookmarks:" "Agenda for today:"
              "Agenda for the coming week:" "Registers:" "Projects:")
@@ -357,11 +353,25 @@ If nil it is disabled.  Possible values for list-type are:
   :group 'dashboard)
 
 (define-obsolete-face-alias
-  'dashboard-text-banner-face 'dashboard-text-banner "1.2.6")
+ 'dashboard-text-banner-face 'dashboard-text-banner "1.2.6")
 (define-obsolete-face-alias
-  'dashboard-banner-logo-title-face 'dashboard-banner-logo-title "1.2.6")
+ 'dashboard-banner-logo-title-face 'dashboard-banner-logo-title "1.2.6")
 (define-obsolete-face-alias
-  'dashboard-heading-face 'dashboard-heading "1.2.6")
+ 'dashboard-heading-face 'dashboard-heading "1.2.6")
+
+;;
+;; Util
+;;
+(defmacro dashboard-mute-apply (&rest body)
+  "Execute BODY without message."
+  (declare (indent 0) (debug t))
+  `(let (message-log-max)
+     (with-temp-message (or (current-message) nil)
+       (let ((inhibit-message t)) ,@body))))
+
+(defun dashboard-funcall-fboundp (fnc &rest args)
+  "Call FNC with ARGS if exists."
+  (when (fboundp fnc) (if args (funcall fnc args) (funcall fnc))))
 
 ;;
 ;; Generic widget helpers
@@ -643,7 +653,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 ;; Section list
 ;;
 (defmacro dashboard-insert-section-list (section-name list action &rest rest)
-  "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
+  "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST
+to widget creation."
   `(when (car ,list)
      (mapc
       (lambda (el)
@@ -685,14 +696,13 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 
 (defun dashboard-insert-footer ()
   "Insert footer of dashboard."
-  (let ((footer (and dashboard-set-footer (dashboard-random-footer))))
-    (when footer
-      (insert "\n")
-      (dashboard-center-line footer)
-      (insert dashboard-footer-icon)
-      (insert " ")
-      (insert (propertize footer 'face 'dashboard-footer))
-      (insert "\n"))))
+  (when-let ((footer (and dashboard-set-footer (dashboard-random-footer))))
+    (insert "\n")
+    (dashboard-center-line footer)
+    (insert dashboard-footer-icon)
+    (insert " ")
+    (insert (propertize footer 'face 'dashboard-footer))
+    (insert "\n")))
 
 ;;
 ;; Truncate
@@ -863,7 +873,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   "Add the list of LIST-SIZE items from recently edited files."
   (setq dashboard--recentf-cache-item-format nil)
   (recentf-mode)
-  (let ((inhibit-message t) message-log-max) (recentf-cleanup))
+  (dashboard-mute-apply (recentf-cleanup))
   (dashboard-insert-section
    "Recent Files:"
    (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist 'recents)
@@ -936,9 +946,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 (defcustom dashboard-projects-switch-function
   nil
   "Custom function to switch to projects from dashboard.
-If non-NIL, should be bound to a function with one argument.  The
-function will be called with the root directory of the project to
-switch to."
+If non-NIL, should be bound to a function with one argument.  The function will
+be called with the root directory of the project to switch to."
   :type '(choice (const :tag "Default" nil) function)
   :group 'dashboard)
 
@@ -995,11 +1004,11 @@ Return function that returns a list of projects."
   (cl-case dashboard-projects-backend
     (`projectile
      (require 'projectile)
-     (let ((inhibit-message t) message-log-max)
-       (projectile-cleanup-known-projects))
+     (dashboard-mute-apply (projectile-cleanup-known-projects))
      (projectile-load-known-projects))
     (`project-el
      (require 'project)
+     (dashboard-mute-apply (dashboard-funcall-fboundp #'project-forget-zombie-projects))
      (project-known-project-roots))
     (t
      (display-warning '(dashboard)
@@ -1116,8 +1125,8 @@ When the dashboard-agenda is created this format is inserted into
 
 (defun dashboard-filter-agenda-by-time ()
   "Include entry if it has a scheduled-time or deadline-time in the future.
-An entry is included if this function returns nil and excluded
-if returns a point."
+An entry is included if this function returns nil and excluded if returns a
+point."
   (let ((scheduled-time (org-get-scheduled-time (point)))
         (deadline-time (org-get-deadline-time (point)))
         (due-date (dashboard-due-date-for-agenda)))
@@ -1208,7 +1217,8 @@ found for the strategy it uses nil predicate."
 
 (defun dashboard-agenda--compare-entries (entry1 entry2 strategies predicate attribute)
   "Compare `ENTRY1' and `ENTRY2' by `ATTRIBUTE' using `PREDICATE'.
-If both attributes are nil or equals the next strategy in `STRATEGIES' is used to compare."
+If both attributes are nil or equals the next strategy in `STRATEGIES' is used
+to compare."
   (let ((arg1 (alist-get attribute (nth 3 entry1)))
         (arg2 (alist-get attribute (nth 3 entry2))))
     (cond
