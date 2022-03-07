@@ -40,6 +40,7 @@
 (declare-function projectile-relevant-known-projects "ext:projectile.el")
 ;;; project.el in Emacs 26 does not contain this function
 (declare-function project-known-project-roots "ext:project.el" nil t)
+(declare-function project-forget-zombie-projects "ext:project.el" nil t)
 (declare-function org-agenda-format-item "ext:org-agenda.el")
 (declare-function org-compile-prefix-format "ext:org-agenda.el")
 (declare-function org-entry-is-done-p "ext:org.el")
@@ -357,11 +358,21 @@ If nil it is disabled.  Possible values for list-type are:
   :group 'dashboard)
 
 (define-obsolete-face-alias
-  'dashboard-text-banner-face 'dashboard-text-banner "1.2.6")
+ 'dashboard-text-banner-face 'dashboard-text-banner "1.2.6")
 (define-obsolete-face-alias
-  'dashboard-banner-logo-title-face 'dashboard-banner-logo-title "1.2.6")
+ 'dashboard-banner-logo-title-face 'dashboard-banner-logo-title "1.2.6")
 (define-obsolete-face-alias
-  'dashboard-heading-face 'dashboard-heading "1.2.6")
+ 'dashboard-heading-face 'dashboard-heading "1.2.6")
+
+;;
+;; Util
+;;
+(defmacro dashboard-mute-apply (&rest body)
+  "Execute BODY without message."
+  (declare (indent 0) (debug t))
+  `(let (message-log-max)
+     (with-temp-message (or (current-message) nil)
+       (let ((inhibit-message t)) ,@body))))
 
 ;;
 ;; Generic widget helpers
@@ -863,7 +874,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   "Add the list of LIST-SIZE items from recently edited files."
   (setq dashboard--recentf-cache-item-format nil)
   (recentf-mode)
-  (let ((inhibit-message t) message-log-max) (recentf-cleanup))
+  (dashboard-mute-apply (recentf-cleanup))
   (dashboard-insert-section
    "Recent Files:"
    (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist 'recents)
@@ -995,11 +1006,11 @@ Return function that returns a list of projects."
   (cl-case dashboard-projects-backend
     (`projectile
      (require 'projectile)
-     (let ((inhibit-message t) message-log-max)
-       (projectile-cleanup-known-projects))
+     (dashboard-mute-apply (projectile-cleanup-known-projects))
      (projectile-load-known-projects))
     (`project-el
      (require 'project)
+     (dashboard-mute-apply (project-forget-zombie-projects))
      (project-known-project-roots))
     (t
      (display-warning '(dashboard)
