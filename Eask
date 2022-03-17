@@ -5,9 +5,8 @@
 
 (files 
  "dashboard[^.]+.el$" 
- ;;"\\.org$" 
- ;;"banners"
- )
+ "\\.org$" 
+ "banners")
 
 (development
  (depends-on "elisp-lint")
