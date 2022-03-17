@@ -5,72 +5,38 @@ on:
     branches:
       - master
   pull_request:
-    branches:
-      - master
-    paths-ignore:
-    - '**.md'
 
 jobs:
-  test-unix:
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         emacs-version:
-          - 26.1
-          - 26.2
-          - 26.3
-          - 27.1
           - 27.2
           - snapshot
+
     steps:
     - uses: actions/checkout@v2
 
     - uses: purcell/setup-emacs@master
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       with:
         version: ${{ matrix.emacs-version }}
-
-    - uses: actions/setup-python@v2
-      with:
-        python-version: "3.6"
-        architecture: "x64"
-
-    - uses: conao3/setup-cask@master
-      with:
-        version: 'snapshot'
-
-    - name: Run tests
-      run:
-        make compile
-
-  test-windows:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest]
-        emacs-version:
-          - 26.1
-          - 26.2
-          - 26.3
-          - 27.1
-          - 27.2
-          - snapshot
-    steps:
-    - uses: actions/checkout@v2
 
     - uses: jcs090218/setup-emacs-windows@master
+      if: matrix.os == 'windows-latest'
       with:
         version: ${{ matrix.emacs-version }}
 
-    - uses: actions/setup-python@v2
+    - uses: actions/setup-node@v2
       with:
-        python-version: "3.6"
-        architecture: "x64"
+        node-version: '14'
 
-    - uses: conao3/setup-cask@master
+    - uses: emacs-eask/setup-eask@master
       with:
         version: 'snapshot'
 
     - name: Run tests
       run:
-        make compile
+        make ci
