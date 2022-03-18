@@ -13,6 +13,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         emacs-version:
+          - 26.3
           - 27.2
           - snapshot
 
