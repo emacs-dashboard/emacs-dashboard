@@ -2,8 +2,6 @@
 *.elc
 *.el~
 
-emacs-dashboard-autoloads.el
-
 # Packaging
 .cask
 /build
