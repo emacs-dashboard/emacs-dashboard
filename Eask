@@ -3,10 +3,7 @@
 
 (package-file "dashboard.el")
 
-(files 
- "dashboard[^.]+.el$" 
- "\\.org$" 
- "banners")
+(files "*.el" "*.org" "banners")
 
 (development
  (depends-on "elisp-lint")
