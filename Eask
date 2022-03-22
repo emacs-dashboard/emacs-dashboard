@@ -3,7 +3,11 @@
 
 (package-file "dashboard.el")
 
-(files "*.el" "*.org" "banners")
+(files
+ "dashboard.el"
+ "dashboard-widgets.el"
+ "*.org" 
+ "banners")
 
 (development
  (depends-on "elisp-lint")
