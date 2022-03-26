@@ -47,6 +47,16 @@
     (define-key map [mouse-1] 'dashboard-mouse-1)
     (define-key map (kbd "}") #'dashboard-next-section)
     (define-key map (kbd "{") #'dashboard-previous-section)
+
+    (define-key map (kbd "1") #'dashboard-section-1)
+    (define-key map (kbd "2") #'dashboard-section-2)
+    (define-key map (kbd "3") #'dashboard-section-3)
+    (define-key map (kbd "4") #'dashboard-section-4)
+    (define-key map (kbd "5") #'dashboard-section-5)
+    (define-key map (kbd "6") #'dashboard-section-6)
+    (define-key map (kbd "7") #'dashboard-section-7)
+    (define-key map (kbd "8") #'dashboard-section-8)
+    (define-key map (kbd "9") #'dashboard-section-9)
     map)
   "Keymap for dashboard mode.")
 
@@ -78,11 +88,11 @@
 (defconst dashboard-buffer-name "*dashboard*"
   "Dashboard's buffer name.")
 
-(defvar dashboard--section-starts nil
-  "List of section starting positions.")
-
 (defvar dashboard-force-refresh nil
   "If non-nil, force refresh dashboard buffer.")
+
+(defvar dashboard--section-starts nil
+  "List of section starting positions.")
 
 (defun dashboard-previous-section ()
   "Navigate back to previous section."
@@ -108,6 +118,65 @@
         (setq next-section-start elt)))
     (when next-section-start
       (goto-char next-section-start))))
+
+(defun dashboard--goto-line (ln)
+  "Goto LN."
+  (goto-char (point-min)) (forward-line (1- ln)))
+
+(defun dashboard--current-section ()
+  "Return section symbol in dashboard."
+  (save-excursion
+    (if (and (search-backward dashboard-page-separator nil t)
+             (search-forward dashboard-page-separator nil t))
+        (let ((ln (thing-at-point 'line)))
+          (cond ((string-match-p "Recent Files:" ln)     'recents)
+                ((string-match-p "Bookmarks:" ln)        'bookmarks)
+                ((string-match-p "Projects:" ln)         'projects)
+                ((string-match-p "Agenda for " ln)       'agenda)
+                ((string-match-p "Registers:" ln)        'registers)
+                ((string-match-p "List Directories:" ln) 'ls-directories)
+                ((string-match-p "List Files:" ln)       'ls-files)
+                (t (user-error "Unknown section from dashboard"))))
+      (user-error "Failed searching dashboard section"))))
+
+(defun dashboard--section-lines ()
+  "Return a list of integer represent the starting line number of each section."
+  (let (pb-lst)
+    (save-excursion
+      (goto-char (point-min))
+      (while (search-forward dashboard-page-separator nil t)
+        (when (ignore-errors (dashboard--current-section))
+          (push (line-number-at-pos) pb-lst))))
+    (setq pb-lst (reverse pb-lst))
+    pb-lst))
+
+(defun dashboard--goto-section (index)
+  "Navigate to item section by INDEX."
+  (let* ((pg-lst (dashboard--section-lines))
+         (items-id (1- index))
+         (items-pg (nth items-id pg-lst))
+         (items-len (length pg-lst)))
+    (when (and items-pg (< items-id items-len))
+      (dashboard--goto-line items-pg))))
+
+(defun dashboard-section-1 ()
+  "Navigate to section 1." (interactive) (dashboard--goto-section 1))
+(defun dashboard-section-2 ()
+  "Navigate to section 2." (interactive) (dashboard--goto-section 2))
+(defun dashboard-section-3 ()
+  "Navigate to section 3." (interactive) (dashboard--goto-section 3))
+(defun dashboard-section-4 ()
+  "Navigate to section 4." (interactive) (dashboard--goto-section 4))
+(defun dashboard-section-5 ()
+  "Navigate to section 5." (interactive) (dashboard--goto-section 5))
+(defun dashboard-section-6 ()
+  "Navigate to section 6." (interactive) (dashboard--goto-section 6))
+(defun dashboard-section-7 ()
+  "Navigate to section 7." (interactive) (dashboard--goto-section 7))
+(defun dashboard-section-8 ()
+  "Navigate to section 8." (interactive) (dashboard--goto-section 8))
+(defun dashboard-section-9 ()
+  "Navigate to section 9." (interactive) (dashboard--goto-section 9))
 
 (defun dashboard-previous-line (arg)
   "Move point up and position it at that line’s item.
