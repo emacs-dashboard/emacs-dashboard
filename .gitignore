@@ -1,8 +1,15 @@
-# Compiled
-*.elc
-*.el~
+# ignore these directories
+/.git
+/recipes
+/test
 
-# Packaging
-.cask
-/build
-/.eask
+# ignore generated files
+*.elc
+
+# eask packages
+.eask/
+dist/
+
+# packaging
+*-autoloads.el
+*-pkg.el

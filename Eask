@@ -1,13 +1,10 @@
 (source "gnu")
 (source "melpa")
 
-(package-file "dashboard.el")
+(package "dashboard" "1.8.0-SNAPSHOT" "A startup screen extracted from Spacemacs")
 
-(files
- "dashboard.el"
- "dashboard-widgets.el"
- "*.org"
- "banners")
+(package-file "dashboard.el")
+(files "*.el" "*.org" "banners")
 
 (depends-on "emacs" "26.1")
 

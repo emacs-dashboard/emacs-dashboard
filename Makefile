@@ -8,9 +8,15 @@ ELS = $(filter-out emacs-dashboard-autoloads.el,$(wildcard *.el))
 OBJECTS = $(ELS:.el=.elc)
 BACKUPS = $(ELS:.el=.el~)
 
-.PHONY: lint clean install compile
+.PHONY: clean package install compile lint
 
-ci: install compile
+ci: package install compile
+
+package:
+	@echo "Packaging..."
+	$(EASK) autoloads
+	$(EASK) pkg-file
+	$(EASK) package
 
 lint:
 	$(EMACS) $(BATCH) -l $(ELLP)/elisp-lint.el -f elisp-lint-files-batch --no-package-lint $(ELS)
