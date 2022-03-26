@@ -30,8 +30,8 @@
 (declare-function page-break-lines-mode "ext:page-break-lines.el")
 (declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
-
-(defvar dashboard-ls--record-path)
+(declare-function dashboard-ls--dirs "ext:dashboard-ls.el")
+(declare-function dashboard-ls--files "ext:dashboard-ls.el")
 
 (defgroup dashboard nil
   "Extensible startup screen."
@@ -249,8 +249,8 @@ Optional prefix ARG says how many lines to move; default is one line."
     (`recents recentf-list)
     (`bookmarks (bookmark-all-names))
     (`projects (dashboard-projects-backend-load-projects))
-    (`ls-directories (mapcar #'f-slash (f-directories dashboard-ls--record-path)))
-    (`ls-files (f-files dashboard-ls--record-path))
+    (`ls-directories (dashboard-ls--dirs))
+    (`ls-files (dashboard-ls--files))
     (t (user-error "Unknown section for search: %s" section))))
 
 (defun dashboard--current-item-in-path ()
