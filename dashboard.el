@@ -94,6 +94,9 @@
 (defvar dashboard--section-starts nil
   "List of section starting positions.")
 
+;;
+;; Navigation
+;;
 (defun dashboard-previous-section ()
   "Navigate back to previous section."
   (interactive)
@@ -198,6 +201,9 @@ Optional prefix ARG says how many lines to move; default is one line."
     (forward-char (if (and arg (< arg 0)) -1 1)))
   (beginning-of-line-text))
 
+;;
+;; Confirmation
+;;
 (defun dashboard-return ()
   "Hit return key in dashboard buffer."
   (interactive)
@@ -226,6 +232,9 @@ Optional prefix ARG says how many lines to move; default is one line."
     (when (call-interactively #'widget-button-click)
       (setq track-mouse old-track-mouse))))
 
+;;
+;; Insertion
+;;
 (defun dashboard-maximum-section-length ()
   "For the just-inserted section, calculate the length of the longest line."
   (let ((max-line-length 0))
