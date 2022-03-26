@@ -27,11 +27,12 @@
 
 (require 'dashboard-widgets)
 
-(declare-function page-break-lines-mode "ext:page-break-lines.el")
 (declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
 (declare-function dashboard-ls--dirs "ext:dashboard-ls.el")
 (declare-function dashboard-ls--files "ext:dashboard-ls.el")
+(declare-function page-break-lines-mode "ext:page-break-lines.el")
+(declare-function project-forget-projects-under "ext:project.el")
 
 (defgroup dashboard nil
   "Extensible startup screen."
