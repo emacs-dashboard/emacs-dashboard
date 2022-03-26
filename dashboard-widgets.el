@@ -160,7 +160,8 @@ preserved."
 The format is: 'icon title help action face prefix suffix'.
 
 Example:
-'((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _) (show-stars)) 'warning \"[\" \"]\"))"
+'((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _)
+                                    (show-stars)) 'warning \"[\" \"]\"))"
   :type '(repeat (repeat (list string string string function symbol string string)))
   :group 'dashboard)
 
