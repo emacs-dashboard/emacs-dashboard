@@ -22,12 +22,16 @@
 
 ;;; Code:
 
+(require 'ffap)
 (require 'recentf)
+
 (require 'dashboard-widgets)
 
 (declare-function page-break-lines-mode "ext:page-break-lines.el")
 (declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
+
+(defvar dashboard-ls--record-path)
 
 (defgroup dashboard nil
   "Extensible startup screen."
