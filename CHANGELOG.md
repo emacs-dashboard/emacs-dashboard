@@ -37,6 +37,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Lazy load modules specify in dashboard buffer (#359)
 * Clean up zombie project for project.el (#363)
 * Add capability to navigate each section (#365)
+* Add functionality to delete items (#366)
 
 ## 1.7.0
 > Released Feb 21, 2020

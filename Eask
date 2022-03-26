@@ -6,8 +6,10 @@
 (files
  "dashboard.el"
  "dashboard-widgets.el"
- "*.org" 
+ "*.org"
  "banners")
+
+(depends-on "emacs" "26.1")
 
 (development
  (depends-on "elisp-lint")
