@@ -224,7 +224,6 @@ Optional prefix ARG says how many lines to move; default is one line."
 ;;
 ;; ffap
 ;;
-
 (defun dashboard--goto-section (section)
   "Move to SECTION declares in variable `dashboard-item-shortcuts'."
   (let ((fnc (intern (format "dashboard-jump-to-%s" section))))
