@@ -1077,7 +1077,7 @@ It is the MATCH attribute for `org-map-entries'"
 When the dashboard-agenda is created this format is inserted into
 `org-agenda-prefix-format' as `dashboard-agenda' and compiled with
 `org-compile-prefix-format' previous calling `dashboard-agenda-entry-format' for
- each agenda entry."
+each agenda entry."
   :type 'string
   :group 'dashboard)
 
