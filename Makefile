@@ -1,27 +1,17 @@
-export BATCH = --batch -q -l .emacs/init.el
+SHELL := /usr/bin/env bash
 
 EMACS ?= emacs
 EASK ?= eask
 
-ELLP := $(shell find . -regex '.*elisp-lint-[0-9]+\.[0-9]+')
-ELS = $(filter-out emacs-dashboard-autoloads.el,$(wildcard *.el))
-OBJECTS = $(ELS:.el=.elc)
-BACKUPS = $(ELS:.el=.el~)
+TEST-FILES := $(shell ls test/dashboard-*.el)
 
-.PHONY: clean package install compile lint
+.PHONY: clean checkdoc lint package install compile test
 
-ci: package install compile
+ci: clean package install compile
 
 package:
 	@echo "Packaging..."
 	$(EASK) package
-
-lint:
-	$(EMACS) $(BATCH) -l $(ELLP)/elisp-lint.el -f elisp-lint-files-batch --no-package-lint $(ELS)
-
-clean:
-	$(EASK) clean
-	$(EASK) clean-elc
 
 install:
 	@echo "Installing..."
@@ -30,3 +20,10 @@ install:
 compile:
 	@echo "Compiling..."
 	$(EASK) compile
+
+test:
+	@echo "Testing..."
+	$(EASK) exec ert-runner -L . $(LOAD-TEST-FILES) -t '!no-win' -t '!org'
+
+clean:
+	rm -rf .cask *.elc
