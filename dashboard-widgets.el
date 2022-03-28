@@ -1092,14 +1092,15 @@ each agenda entry."
                 (org-outline-level)
                 (org-get-category)
                 (org-get-tags)))
-         (loc (point))
-         (file (buffer-file-name))
          (todo-state (org-get-todo-state))
          (todo-index (and todo-state
                           (length (member todo-state org-todo-keywords-1))))
-         (entry-data (list (cons 'time entry-time)
-                           (cons 'todo-index todo-index))))
-    (list item loc file entry-data)))
+         (entry-data (list 'dashboard-agenda-time entry-time
+                           'dashboard-agenda-todo-index todo-index
+                           'dashboard-agenda-file (buffer-file-name)
+                           'dashboard-agenda-loc (point))))
+    (add-text-properties 0 (length item) entry-data item)
+    item))
 
 (defun dashboard-agenda--formatted-headline ()
   "Set agenda faces to `HEADLINE' when face text property is nil."
@@ -1212,16 +1213,16 @@ found for the strategy it uses nil predicate."
 (defun dashboard-agenda--build-sort-function-attribute (strategy)
   "Return the argument to compare two entries depending to the `STRATEGY'."
   (cond
-   ((memq strategy '(time-up time-down)) 'time)
-   ((memq strategy '(todo-state-up todo-state-down)) 'todo-index)
+   ((memq strategy '(time-up time-down)) 'dashboard-agenda-time)
+   ((memq strategy '(todo-state-up todo-state-down)) 'dashboard-agenda-todo-index)
    (t nil)))
 
 (defun dashboard-agenda--compare-entries (entry1 entry2 strategies predicate attribute)
   "Compare `ENTRY1' and `ENTRY2' by `ATTRIBUTE' using `PREDICATE'.
 If both attributes are nil or equals the next strategy in `STRATEGIES' is used
 to compare."
-  (let ((arg1 (alist-get attribute (nth 3 entry1)))
-        (arg2 (alist-get attribute (nth 3 entry2))))
+  (let ((arg1 (get-text-property 0 attribute entry1))
+        (arg2 (get-text-property 0 attribute entry2)))
     (cond
      ((or (and (null arg1) (null arg2)) (equal arg1 arg2))
       (apply (dashboard-agenda--build-sort-function strategies) (list entry1 entry2)))
@@ -1241,11 +1242,11 @@ to compare."
    'agenda
    (dashboard-get-shortcut 'agenda)
    `(lambda (&rest _)
-      (let ((buffer (find-file-other-window (nth 2 ',el))))
+      (let ((buffer (find-file-other-window (get-text-property 0 'dashboard-agenda-file ,el))))
         (with-current-buffer buffer
-          (goto-char (nth 1 ',el))
+          (goto-char (get-text-property 0 'dashboard-agenda-loc ,el))
           (switch-to-buffer buffer))))
-   (format "%s" (nth 0 el))))
+   (format "%s" el)))
 
 ;;
 ;; Registers
