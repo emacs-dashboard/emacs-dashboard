@@ -57,6 +57,7 @@
 
     (define-key map (kbd "<backspace>") #'dashboard-remove-item-under)
     (define-key map (kbd "<delete>") #'dashboard-remove-item-under)
+    (define-key map (kbd "DEL") #'dashboard-remove-item-under)
 
     (define-key map (kbd "1") #'dashboard-section-1)
     (define-key map (kbd "2") #'dashboard-section-2)
@@ -320,7 +321,12 @@ Optional argument ARGS adviced function arguments."
 
 (defun dashboard-remove-item-agenda ()
   "Remove an agenda from `org-agenda-files'."
-  (interactive))  ; TODO: ..
+  (interactive "P")
+  (let ((agenda-file (get-text-property (point) 'dashboard-agenda-file))
+        (agenda-loc (get-text-property (point) 'dashboard-agenda-loc)))
+    (with-current-buffer (find-file-noselect agenda-file)
+      (goto-char agenda-loc)
+      (call-interactively 'org-todo))))
 
 (defun dashboard-remove-item-registers ()
   "Remove a registers from `register-alist'."
