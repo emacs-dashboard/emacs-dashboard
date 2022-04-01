@@ -136,15 +136,15 @@ preserved."
   :group 'dashboard)
 
 (defconst dashboard-banners-directory
-  (concat (file-name-directory (locate-library "dashboard")) "/banners/")
+  (concat (file-name-directory (locate-library "dashboard")) "banners/")
   "Default banner directory.")
 
 (defconst dashboard-banner-official-png
-  (expand-file-name (concat dashboard-banners-directory "emacs.png"))
+  (concat dashboard-banners-directory "emacs.png")
   "Emacs banner image.")
 
 (defconst dashboard-banner-logo-png
-  (expand-file-name (concat dashboard-banners-directory "logo.png"))
+  (concat dashboard-banners-directory "logo.png")
   "Emacs banner image.")
 
 (defconst dashboard-banner-length 75
