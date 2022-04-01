@@ -38,6 +38,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Clean up zombie project for project.el (#363)
 * Add capability to navigate each section (#365)
 * Add functionality to delete items (#366)
+* Fix issue dashboard-banners-directory resolves with two slashes ("dashboard//banners") (GNU only?) (#367)
 
 ## 1.7.0
 > Released Feb 21, 2020
