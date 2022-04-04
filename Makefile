@@ -26,4 +26,4 @@ test:
 	$(EASK) exec ert-runner -L . $(LOAD-TEST-FILES) -t '!no-win' -t '!org'
 
 clean:
-	rm -rf .cask *.elc
+	rm -rf .eask *.elc
