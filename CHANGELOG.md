@@ -39,6 +39,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Add capability to navigate each section (#365)
 * Add functionality to delete items (#366)
 * Fix issue dashboard-banners-directory resolves with two slashes ("dashboard//banners") (GNU only?) (#367)
+* Add capability to remove item for agenda (#372)
 
 ## 1.7.0
 > Released Feb 21, 2020
