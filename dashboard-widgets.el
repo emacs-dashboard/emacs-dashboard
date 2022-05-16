@@ -873,8 +873,7 @@ to widget creation."
 (defun dashboard-insert-recents (list-size)
   "Add the list of LIST-SIZE items from recently edited files."
   (setq dashboard--recentf-cache-item-format nil)
-  (recentf-mode)
-  (dashboard-mute-apply (recentf-cleanup))
+  (dashboard-mute-apply (recentf-mode 1) (recentf-cleanup))
   (dashboard-insert-section
    "Recent Files:"
    (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist 'recents)
