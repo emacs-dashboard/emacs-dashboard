@@ -386,11 +386,6 @@ Optional argument ARGS adviced function arguments."
         (origial-recentf-list recentf-list)
         (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
         (max-line-length 0))
-    ;; disable recentf mode, so we don't flood the recent files list with org
-    ;; mode files do this by making a copy of the part of the list we'll use
-    ;; let dashboard widgets change that then restore the orginal list afterwards
-    ;; (this avoids many saves/loads that would result from disabling/enabling
-    ;; recentf-mode)
     (when recentf-is-on
       (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
     (when (or dashboard-force-refresh
