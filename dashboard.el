@@ -430,7 +430,8 @@ Optional argument ARGS adviced function arguments."
 
 (add-hook 'window-setup-hook
           (lambda ()
-            (add-hook 'window-size-change-functions 'dashboard-resize-on-hook)
+            ;; 100 means `dashboard-resize-on-hook' will run last
+            (add-hook 'window-size-change-functions 'dashboard-resize-on-hook 100)
             (dashboard-resize-on-hook)))
 
 (defun dashboard-refresh-buffer (&rest _)
