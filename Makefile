@@ -21,15 +21,15 @@ compile:
 
 test:
 	@echo "Testing..."
-	$(EASK) ert ./test/*.el
+	$(EASK) test ert ./test/*.el
 
 checkdoc:
 	@echo "Run checkdoc..."
-	$(EASK) checkdoc
+	$(EASK) lint checkdoc
 
 lint:
 	@echo "Run package-lint..."
-	$(EASK) lint
+	$(EASK) lint package
 
 clean:
 	$(EASK) clean-all
