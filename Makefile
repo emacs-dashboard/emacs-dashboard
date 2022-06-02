@@ -1,5 +1,3 @@
-SHELL := /usr/bin/env bash
-
 EMACS ?= emacs
 EASK ?= eask
 
