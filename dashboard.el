@@ -86,6 +86,7 @@
   (when (featurep 'linum) (linum-mode -1))
   (when (featurep 'display-line-numbers) (display-line-numbers-mode -1))
   (when (featurep 'page-break-lines) (page-break-lines-mode 1))
+  (when (featurep 'avy) (require 'ace-link-dashboard))
   (setq-local revert-buffer-function #'dashboard-refresh-buffer)
   (setq inhibit-startup-screen t
         buffer-read-only t
