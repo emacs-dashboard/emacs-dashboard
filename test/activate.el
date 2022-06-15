@@ -25,4 +25,6 @@
 (dashboard-setup-startup-hook)
 (switch-to-buffer dashboard-buffer-name)
 
+(message "Done activation test.")
+
 ;;; activate.el ends here
