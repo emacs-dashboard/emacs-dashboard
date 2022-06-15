@@ -21,6 +21,9 @@ test:
 	@echo "Testing..."
 	$(EASK) test ert ./test/*.el
 
+test-activate: package install
+	$(EASK) emacs --batch -l ./test/activate.el
+
 checkdoc:
 	@echo "Run checkdoc..."
 	$(EASK) lint checkdoc
