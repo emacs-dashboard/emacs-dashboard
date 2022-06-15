@@ -59,7 +59,7 @@ In addition to the above, configure =initial-buffer-choice= to show
 Dashboard in frames created with =emacsclient -c= as follows:
 
 #+BEGIN_SRC elisp
-(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
 #+END_SRC
 
 * Configuration

@@ -381,16 +381,14 @@ Optional argument ARGS adviced function arguments."
 (defun dashboard-insert-startupify-lists ()
   "Insert the list of widgets into the buffer."
   (interactive)
-  (let ((buffer-exists (buffer-live-p (get-buffer dashboard-buffer-name)))
-        (recentf-is-on (recentf-enabled-p))
+  (let ((recentf-is-on (recentf-enabled-p))
         (origial-recentf-list recentf-list)
         (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
         (max-line-length 0))
     (when recentf-is-on
       (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
     (when (or dashboard-force-refresh
-              (not (eq dashboard-buffer-last-width (window-width)))
-              (not buffer-exists))
+              (not (eq dashboard-buffer-last-width (window-width))))
       (setq dashboard-banner-length (window-width)
             dashboard-buffer-last-width dashboard-banner-length)
       (with-current-buffer (get-buffer-create dashboard-buffer-name)

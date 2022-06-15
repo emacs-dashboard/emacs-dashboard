@@ -23,7 +23,8 @@
 ;;; Code:
 
 (dashboard-setup-startup-hook)
-(switch-to-buffer dashboard-buffer-name)
+
+(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
 
 (message "Done activation test.")
 
