@@ -297,10 +297,10 @@ M-x package-delete dashboard-<version> RET
 #+END_SRC
 
 #+BEGIN_SRC shell
-make build
+make package
 make install
 #+END_SRC
 
 ** Prerequisites
 
-  * [[https://github.com/cask/cask][Cask]]
+  * [[https://github.com/emacs-eask/eask][Eask]]
