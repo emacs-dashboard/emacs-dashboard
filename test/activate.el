@@ -25,5 +25,4 @@
 (dashboard-setup-startup-hook)
 (switch-to-buffer dashboard-buffer-name)
 
-(provide 'activate)
 ;;; activate.el ends here
