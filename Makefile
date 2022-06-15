@@ -22,7 +22,7 @@ test:
 	$(EASK) test ert ./test/*.el
 
 test-activate: package install
-	$(EASK) emacs -l ./test/activate.el
+	$(EASK) emacs --batch -l ./test/activate.el
 
 checkdoc:
 	@echo "Run checkdoc..."
