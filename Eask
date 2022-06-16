@@ -2,6 +2,9 @@
          "1.8.0"
          "A startup screen extracted from Spacemacs")
 
+(website-url "https://github.com/emacs-dashboard/emacs-dashboard")
+(keywords "startup" "screen" "tools" "dashboard")
+
 (package-file "dashboard.el")
 (files "*.el" "*.org" "banners")
 
