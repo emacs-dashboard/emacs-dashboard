@@ -458,7 +458,8 @@ Dashboard."
                                  (dashboard-insert-startupify-lists)))
     (add-hook 'emacs-startup-hook (lambda ()
                                     (switch-to-buffer dashboard-buffer-name)
-                                    (goto-char (point-min))
+                                    (dashboard--goto-section-by-index 1)
+                                    (next-line)
                                     (redisplay)
                                     (run-hooks 'dashboard-after-initialize-hook)))))
 
