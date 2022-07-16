@@ -32,6 +32,7 @@
 (declare-function dashboard-ls--dirs "ext:dashboard-ls.el")
 (declare-function dashboard-ls--files "ext:dashboard-ls.el")
 (declare-function page-break-lines-mode "ext:page-break-lines.el")
+(declare-function projectile-remove-known-project "ext:projectile.el")
 (declare-function project-forget-projects-under "ext:project.el")
 
 (defgroup dashboard nil
@@ -312,7 +313,7 @@ Optional argument ARGS adviced function arguments."
   (let ((path (save-excursion (end-of-line) (ffap-guesser))))
     (dashboard-mute-apply
       (cl-case dashboard-projects-backend
-        (`projectile (projectile-remove-known-project path ))
+        (`projectile (projectile-remove-known-project path))
         (`project-el (project-forget-projects-under path))))))
 
 (defun dashboard-remove-item-bookmarks ()
