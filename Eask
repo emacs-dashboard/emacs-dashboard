@@ -6,7 +6,7 @@
 (keywords "startup" "screen" "tools" "dashboard")
 
 (package-file "dashboard.el")
-(files "*.el" "*.org" "banners")
+(files "dashboard-widgets.el" "*.org" "banners")
 
 (source "gnu")
 (source "melpa")
