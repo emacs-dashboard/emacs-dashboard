@@ -312,7 +312,7 @@ Optional argument ARGS adviced function arguments."
   (let ((path (save-excursion (end-of-line) (ffap-guesser))))
     (dashboard-mute-apply
       (cl-case dashboard-projects-backend
-        (`projectile )  ; TODO: ..
+        (`projectile (projectile-remove-known-project path ))
         (`project-el (project-forget-projects-under path))))))
 
 (defun dashboard-remove-item-bookmarks ()
