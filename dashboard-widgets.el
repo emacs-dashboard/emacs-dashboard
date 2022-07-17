@@ -475,7 +475,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-center-line (string)
   "Center a STRING accoring to it's size."
   (insert (make-string (max 0 (floor (/ (- dashboard-banner-length
-                                           (+ (length string) 1)) 2))) ?\ )))
+                                           (+ (string-width string) 1)) 2))) ?\ )))
 
 ;;
 ;; BANNER
