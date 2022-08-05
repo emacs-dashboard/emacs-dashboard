@@ -196,7 +196,7 @@ To show agenda for the upcoming seven days set the variable ~dashboard-week-agen
 #+END_SRC
 
 By default org-agenda entries are filter by time, only showing those
-task with ~DEADLINE~ or ~SCHEDULE-TIME~. To show all agenda entries
+task with ~DEADLINE~, ~SCHEDULE-TIME~ or ~TIMESTAMP~ . To show all agenda entries
 (except ~DONE~)
 
 #+begin_src elisp

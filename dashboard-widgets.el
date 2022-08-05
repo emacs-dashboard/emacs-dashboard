@@ -1084,7 +1084,8 @@ each agenda entry."
   "Format agenda entry to show it on dashboard."
   (let* ((scheduled-time (org-get-scheduled-time (point)))
          (deadline-time (org-get-deadline-time (point)))
-         (entry-time (or scheduled-time deadline-time))
+         (entry-timestamp (dashboard-agenda--entry-timestamp (point)))
+         (entry-time (or scheduled-time deadline-time entry-timestamp))
          (item (org-agenda-format-item
                 (dashboard-agenda--formatted-time)
                 (dashboard-agenda--formatted-headline)
@@ -1101,6 +1102,12 @@ each agenda entry."
     (add-text-properties 0 (length item) entry-data item)
     item))
 
+(defun dashboard-agenda--entry-timestamp (point)
+  "Get the timestamp from an entry at POINT."
+  (let ((timestamp (org-entry-get point "TIMESTAMP")))
+    (when timestamp
+      (org-time-string-to-time timestamp))))
+
 (defun dashboard-agenda--formatted-headline ()
   "Set agenda faces to `HEADLINE' when face text property is nil."
   (let* ((headline (org-get-heading t t t t))
@@ -1115,7 +1122,8 @@ each agenda entry."
 
 (defun dashboard-agenda--formatted-time ()
   "Get the scheduled or dead time of an entry.  If no time is found return nil."
-  (when-let ((time (or (org-get-scheduled-time (point)) (org-get-deadline-time (point)))))
+  (when-let ((time (or (org-get-scheduled-time (point)) (org-get-deadline-time (point))
+                       (dashboard-agenda--entry-timestamp (point)))))
     (format-time-string dashboard-agenda-time-string-format time)))
 
 (defun dashboard-due-date-for-agenda ()
@@ -1130,13 +1138,16 @@ An entry is included if this function returns nil and excluded if returns a
 point."
   (let ((scheduled-time (org-get-scheduled-time (point)))
         (deadline-time (org-get-deadline-time (point)))
+        (entry-timestamp (dashboard-agenda--entry-timestamp (point)))
         (due-date (dashboard-due-date-for-agenda)))
     (unless (and (not (org-entry-is-done-p))
                  (not (org-in-archived-heading-p))
                  (or (and scheduled-time
                           (org-time-less-p scheduled-time due-date))
                      (and deadline-time
-                          (org-time-less-p deadline-time due-date))))
+                          (org-time-less-p deadline-time due-date))
+                     (and entry-timestamp
+                          (org-time-less-p entry-timestamp due-date))))
       (point))))
 
 (defun dashboard-filter-agenda-by-todo ()
