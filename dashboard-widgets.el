@@ -1204,7 +1204,8 @@ point."
   (let ((scheduled-time (org-get-scheduled-time (point)))
         (deadline-time (org-get-deadline-time (point)))
         (entry-timestamp (dashboard-agenda--entry-timestamp (point)))
-        (due-date (dashboard-due-date-for-agenda)))
+        (due-date (dashboard-due-date-for-agenda))
+        (now (current-time)))
     (unless (and (not (org-entry-is-done-p))
                  (not (org-in-archived-heading-p))
                  (or (and scheduled-time
@@ -1212,7 +1213,15 @@ point."
                      (and deadline-time
                           (org-time-less-p deadline-time due-date))
                      (and entry-timestamp
-                          (org-time-less-p entry-timestamp due-date))))
+                          (org-time-less-p entry-timestamp due-date)))
+                 (or
+                    (org-entry-is-todo-p)
+                    (and scheduled-time
+                          (org-time-less-p now scheduled-time))
+                    (and deadline-time
+                          (org-time-less-p now deadline-time))
+                    (and entry-timestamp
+                          (org-time-less-p now entry-timestamp))))
       (point))))
 
 (defun dashboard-filter-agenda-by-todo ()
