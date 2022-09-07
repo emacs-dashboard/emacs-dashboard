@@ -174,6 +174,8 @@ Example:
         (setq package-count (length package-activated-list)))
       (when (boundp 'straight--profile-cache)
         (setq package-count (+ (hash-table-count straight--profile-cache) package-count)))
+      (when (fboundp 'elpaca--queued)
+        (setq package-count (length (elpaca--queued))))
       (if (zerop package-count)
           (format "Emacs started in %s" time)
         (format "%d packages loaded in %s" package-count time))))
