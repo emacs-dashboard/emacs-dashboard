@@ -49,6 +49,7 @@
 (declare-function org-get-category "ext:org.el")
 (declare-function org-get-deadline-time "ext:org.el")
 (declare-function org-get-heading "ext:org.el")
+(declare-function org-get-priority "ext:org.el")
 (declare-function org-get-scheduled-time "ext:org.el")
 (declare-function org-get-tags "ext:org.el")
 (declare-function org-get-todo-face "ext:org.el")
@@ -1071,7 +1072,8 @@ It is the MATCH attribute for `org-map-entries'"
 
 (defcustom dashboard-agenda-sort-strategy nil
   "A list of strategies to sort the agenda.  If nil agenda is not sorted."
-  :type '(repeat (choice (const time-up) (const time-down)
+  :type '(repeat (choice (const priority-up) (const priority-down)
+                         (const time-up) (const time-down)
                          (const todo-state-up) (const todo-state-down)))
   :group 'dashboard)
 
@@ -1085,7 +1087,8 @@ each agenda entry."
   :group 'dashboard)
 
 (defun dashboard-agenda-entry-format ()
-  "Format agenda entry to show it on dashboard."
+  "Format agenda entry to show it on dashboard.
+Also,it set text properties that latter are used to sort entries and perform different actions."
   (let* ((scheduled-time (org-get-scheduled-time (point)))
          (deadline-time (org-get-deadline-time (point)))
          (entry-timestamp (dashboard-agenda--entry-timestamp (point)))
@@ -1097,12 +1100,14 @@ each agenda entry."
                 (org-get-category)
                 (org-get-tags)))
          (todo-state (org-get-todo-state))
+         (item-priority (org-get-priority (org-get-heading t t t t)))
          (todo-index (and todo-state
                           (length (member todo-state org-todo-keywords-1))))
-         (entry-data (list 'dashboard-agenda-time entry-time
+         (entry-data (list 'dashboard-agenda-file (buffer-file-name)
+                           'dashboard-agenda-loc (point)
+                           'dashboard-agenda-priority item-priority
                            'dashboard-agenda-todo-index todo-index
-                           'dashboard-agenda-file (buffer-file-name)
-                           'dashboard-agenda-loc (point))))
+                           'dashboard-agenda-time entry-time)))
     (add-text-properties 0 (length item) entry-data item)
     item))
 
@@ -1218,6 +1223,8 @@ found for the strategy it uses nil predicate."
 (defun dashboard-agenda--build-sort-function-predicate (strategy)
   "Return the predicate to compare two entryes depending on the `STRATEGY'."
   (cl-case strategy
+    (`priority-up '>)
+    (`priority-down '<)
     (`time-up 'org-time-less-p)
     (`time-down (lambda (a b) (org-time-less-p b a)))
     (`todo-state-up '>)
@@ -1226,6 +1233,7 @@ found for the strategy it uses nil predicate."
 (defun dashboard-agenda--build-sort-function-attribute (strategy)
   "Return the argument to compare two entries depending to the `STRATEGY'."
   (cond
+   ((memq strategy '(priority-up priority-down)) 'dashboard-agenda-priority)
    ((memq strategy '(time-up time-down)) 'dashboard-agenda-time)
    ((memq strategy '(todo-state-up todo-state-down)) 'dashboard-agenda-todo-index)
    (t nil)))
