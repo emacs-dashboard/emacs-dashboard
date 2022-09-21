@@ -23,8 +23,9 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'subr-x)
 (require 'image)
+(require 'shr)
+(require 'subr-x)
 
 ;; Compiler pacifier
 (declare-function all-the-icons-icon-for-dir "ext:all-the-icons.el")
@@ -379,13 +380,21 @@ If nil it is disabled.  Possible values for list-type are:
   "Call FNC with ARGS if exists."
   (when (fboundp fnc) (if args (funcall fnc args) (funcall fnc))))
 
+(defun dashboard-str-len (str)
+  "Calculate STR in pixel width."
+  (let ((width (window-font-width))
+        (len (if (fboundp #'string-pixel-width)
+                 (string-pixel-width str)
+               (shr-string-pixel-width str))))
+    (+ (/ len width)
+       (if (zerop (% len width)) 0 1))))  ; add one if exceeed
+
 ;;
 ;; Generic widget helpers
 ;;
 (defun dashboard-subseq (seq end)
   "Return the subsequence of SEQ from 0 to END."
-  (let ((len (length seq)))
-    (butlast seq (- len (min len end)))))
+  (let ((len (length seq))) (butlast seq (- len (min len end)))))
 
 (defun dashboard-get-shortcut-name (item)
   "Get the shortcut name to be used for ITEM."
@@ -733,32 +742,39 @@ to widget creation."
 
 (defun dashboard-shorten-path-beginning (path)
   "Shorten PATH from beginning if exceeding maximum length."
-  (let* ((len-path (length path)) (len-rep (length dashboard-path-shorten-string))
+  (let* ((len-path (length path))
+         (slen-path (dashboard-str-len path))
+         (len-rep (dashboard-str-len dashboard-path-shorten-string))
          (len-total (- dashboard-path-max-length len-rep))
          front)
-    (if (<= len-path dashboard-path-max-length) path
-      (setq front (ignore-errors (substring path (- len-path len-total) len-path)))
+    (if (<= slen-path dashboard-path-max-length) path
+      (setq front (ignore-errors (substring path (- slen-path len-total) len-path)))
       (if front (concat dashboard-path-shorten-string front) ""))))
 
 (defun dashboard-shorten-path-middle (path)
   "Shorten PATH from middle if exceeding maximum length."
-  (let* ((len-path (length path)) (len-rep (length dashboard-path-shorten-string))
+  (let* ((len-path (length path))
+         (slen-path (dashboard-str-len path))
+         (len-rep (dashboard-str-len dashboard-path-shorten-string))
          (len-total (- dashboard-path-max-length len-rep))
          (center (/ len-total 2))
          (end-back center)
-         (start-front (- len-path center))
+         (start-front (- slen-path center))
          back front)
-    (if (<= len-path dashboard-path-max-length) path
+    (if (<= slen-path dashboard-path-max-length) path
       (setq back (substring path 0 end-back)
             front (ignore-errors (substring path start-front len-path)))
       (if front (concat back dashboard-path-shorten-string front) ""))))
 
 (defun dashboard-shorten-path-end (path)
   "Shorten PATH from end if exceeding maximum length."
-  (let* ((len-path (length path)) (len-rep (length dashboard-path-shorten-string))
-         (len-total (- dashboard-path-max-length len-rep))
+  (let* ((len-path (length path))
+         (slen-path (dashboard-str-len path))
+         (len-rep (dashboard-str-len dashboard-path-shorten-string))
+         (diff (- slen-path len-path))
+         (len-total (- dashboard-path-max-length len-rep diff))
          back)
-    (if (<= len-path dashboard-path-max-length) path
+    (if (<= slen-path dashboard-path-max-length) path
       (setq back (ignore-errors (substring path 0 len-total)))
       (if (and back (< 0 dashboard-path-max-length))
           (concat back dashboard-path-shorten-string) ""))))
@@ -834,21 +850,21 @@ to widget creation."
        (setq len-list (length recentf-list))
        (while (and (< count len-item) (< count len-list))
          (setq base (nth count recentf-list)
-               align-length (max align-length (length (dashboard-f-filename base))))
+               align-length (max align-length (dashboard-str-len (dashboard-f-filename base))))
          (cl-incf count)))
       (`bookmarks
        (let ((bookmarks-lst (bookmark-all-names)))
          (setq len-list (length bookmarks-lst))
          (while (and (< count len-item) (< count len-list))
            (setq base (nth count bookmarks-lst)
-                 align-length (max align-length (length base)))
+                 align-length (max align-length (dashboard-str-len base)))
            (cl-incf count))))
       (`projects
        (let ((projects-lst (dashboard-projects-backend-load-projects)))
          (setq len-list (length projects-lst))
          (while (and (< count len-item) (< count len-list))
            (setq base (nth count projects-lst)
-                 align-length (max align-length (length (dashboard-f-base base))))
+                 align-length (max align-length (dashboard-str-len (dashboard-f-base base))))
            (cl-incf count))))
       (t (error "Unknown type for align length: %s" type)))
     align-length))
