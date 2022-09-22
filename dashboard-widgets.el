@@ -69,6 +69,8 @@
 (defvar org-todo-keywords-1)
 (defvar all-the-icons-dir-icon-alist)
 (defvar package-activated-list)
+(declare-function string-pixel-width "subr-x.el")   ; TODO: remove this after 29.1
+(declare-function shr-string-pixel-width "shr.el")  ; TODO: remove this after 29.1
 
 (defcustom dashboard-page-separator "\n\n"
   "Separator to use between the different pages."
