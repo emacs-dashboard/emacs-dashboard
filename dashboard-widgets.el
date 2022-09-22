@@ -24,7 +24,6 @@
 
 (require 'cl-lib)
 (require 'image)
-(require 'shr)
 (require 'subr-x)
 
 ;; Compiler pacifier
@@ -70,6 +69,8 @@
 (defvar org-todo-keywords-1)
 (defvar all-the-icons-dir-icon-alist)
 (defvar package-activated-list)
+(declare-function string-pixel-width "subr-x.el")   ; TODO: remove this after 29.1
+(declare-function shr-string-pixel-width "shr.el")  ; TODO: remove this after 29.1
 
 (defcustom dashboard-page-separator "\n\n"
   "Separator to use between the different pages."
@@ -380,12 +381,18 @@ If nil it is disabled.  Possible values for list-type are:
   "Call FNC with ARGS if exists."
   (when (fboundp fnc) (if args (funcall fnc args) (funcall fnc))))
 
+;; TODO: Use function `string-pixel-width' after 29.1
+(defun dashboard-string-pixel-width (str)
+  "Return the width of STR in pixels."
+  (if (fboundp #'string-pixel-width)
+      (string-pixel-width str)
+    (require 'shr)
+    (shr-string-pixel-width str)))
+
 (defun dashboard-str-len (str)
   "Calculate STR in pixel width."
   (let ((width (window-font-width))
-        (len (if (fboundp #'string-pixel-width)
-                 (string-pixel-width str)
-               (shr-string-pixel-width str))))
+        (len (dashboard-string-pixel-width str)))
     (+ (/ len width)
        (if (zerop (% len width)) 0 1))))  ; add one if exceeed
 
