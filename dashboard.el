@@ -388,65 +388,51 @@ Optional argument ARGS adviced function arguments."
         (max-line-length 0))
     (when recentf-is-on
       (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
-    (when (or dashboard-force-refresh
-              (not (eq dashboard-buffer-last-width (window-width))))
-      (setq dashboard-banner-length (window-width)
-            dashboard-buffer-last-width dashboard-banner-length)
-      (with-current-buffer (get-buffer-create dashboard-buffer-name)
-        (let (buffer-read-only)
-          (erase-buffer)
-          (dashboard-insert-banner)
-          (dashboard-insert-page-break)
-          (setq dashboard--section-starts nil)
-          (mapc (lambda (els)
-                  (let* ((el (or (car-safe els) els))
-                         (list-size
-                          (or (cdr-safe els)
-                              dashboard-items-default-length))
-                         (item-generator
-                          (cdr-safe (assoc el dashboard-item-generators))))
-                    (add-to-list 'dashboard--section-starts (point))
-                    (funcall item-generator list-size)
-                    (when recentf-is-on
-                      (setq recentf-list origial-recentf-list))
-                    (setq max-line-length
-                          (max max-line-length (dashboard-maximum-section-length)))
-                    (dashboard-insert-page-break)))
-                dashboard-items)
-          (when dashboard-center-content
-            (when dashboard--section-starts
-              (goto-char (car (last dashboard--section-starts))))
-            (let ((margin (floor (/ (max (- (window-width) max-line-length) 0) 2))))
-              (while (not (eobp))
-                (unless (string-suffix-p (thing-at-point 'line) dashboard-page-separator)
-                  (insert (make-string margin ?\ )))
-                (forward-line 1))))
-          (dashboard-insert-footer))
-        (goto-char (point-min))
-        (dashboard-mode)))
-    (when recentf-is-on
-      (setq recentf-list origial-recentf-list))))
-
-(add-hook 'window-setup-hook
-          (lambda ()
-            ;; 100 means `dashboard-resize-on-hook' will run last
-            (add-hook 'window-size-change-functions 'dashboard-resize-on-hook 100)
-            (dashboard-resize-on-hook)))
+    (prog1
+        (with-current-buffer (get-buffer-create dashboard-buffer-name)
+          (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
+            (let (buffer-read-only)
+              (erase-buffer)
+              (dashboard-insert-banner)
+              (setq dashboard--section-starts nil)
+              (mapc (lambda (els)
+                      (let* ((el (or (car-safe els) els))
+                             (list-size
+                              (or (cdr-safe els)
+                                  dashboard-items-default-length))
+                             (item-generator
+                              (cdr-safe (assoc el dashboard-item-generators))))
+                        (push (point) dashboard--section-starts)
+                        (funcall item-generator list-size)
+                        (goto-char (point-max))
+                        (when recentf-is-on
+                          (setq recentf-list origial-recentf-list))
+                        (setq max-line-length
+                              (max max-line-length (dashboard-maximum-section-length)))))
+                    dashboard-items)
+              (when dashboard-center-content
+                (dashboard-center-text
+                 (if dashboard--section-starts
+                     (car (last dashboard--section-starts))
+                   (point))
+                 (point-max)))
+              (insert dashboard-page-separator)
+              (save-excursion
+                (dolist (start dashboard--section-starts)
+                  (goto-char start)
+                  (insert dashboard-page-separator)))
+              (dashboard-insert-footer))
+            (goto-char (point-min))
+            (dashboard-mode))
+          (current-buffer))
+      (when recentf-is-on
+        (setq recentf-list origial-recentf-list)))))
 
 (defun dashboard-refresh-buffer (&rest _)
   "Refresh buffer."
   (interactive)
   (let ((dashboard-force-refresh t)) (dashboard-insert-startupify-lists))
   (switch-to-buffer dashboard-buffer-name))
-
-(defun dashboard-resize-on-hook (&optional _)
-  "Re-render dashboard on window size change."
-  (let ((space-win (get-buffer-window dashboard-buffer-name))
-        (frame-win (frame-selected-window)))
-    (when (and space-win
-               (not (window-minibuffer-p frame-win)))
-      (with-selected-window space-win
-        (dashboard-insert-startupify-lists)))))
 
 ;;;###autoload
 (defun dashboard-setup-startup-hook ()

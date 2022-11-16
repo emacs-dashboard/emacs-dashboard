@@ -152,9 +152,6 @@ preserved."
   (concat dashboard-banners-directory "logo.png")
   "Emacs banner image.")
 
-(defconst dashboard-banner-length 75
-  "Width of a banner.")
-
 (defcustom dashboard-banner-logo-title "Welcome to Emacs!"
   "Specify the startup banner."
   :type 'string
@@ -211,14 +208,14 @@ Default value is `official', it displays the Emacs logo.  `logo' displays Emacs
 alternative logo.  An integer value is the index of text banner.  A string
 value must be a path to a .PNG or .TXT file.  If the value is nil then no banner
 is displayed."
-  :type '(choice (const  :tag "offical"   official)
-                 (const  :tag "logo"      logo)
-                 (string :tag "a png or txt path"))
-  :group 'dashboard)
-
-(defcustom dashboard-buffer-last-width nil
-  "Previous width of dashboard-buffer."
-  :type  'integer
+  :type '(choice (const   :tag "no banner" nil)
+                 (const   :tag "offical"   official)
+                 (const   :tag "logo"      logo)
+                 (integer :tag "index of a text banner")
+                 (string  :tag "a path to an image or text banner")
+                 (cons    :tag "an image and text banner"
+                   (string :tag "image banner path")
+                   (string :tag "text banner path")))
   :group 'dashboard)
 
 (defcustom dashboard-item-generators
@@ -493,34 +490,72 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (overlay-put ov 'face 'dashboard-heading))
   (when shortcut (insert (format " (%s)" shortcut))))
 
-(defun dashboard-center-line (string)
-  "Center a STRING accoring to it's size."
-  (insert (make-string (max 0 (floor (/ (- dashboard-banner-length
-                                           (+ (string-width string) 1)) 2))) ?\ )))
+(defun dashboard-center-text (start end)
+  "Center the text between START and END."
+  (save-excursion
+    (goto-char start)
+    (let ((width 0))
+      (while (< (point) end)
+        (let ((line-length (- (line-end-position) (line-beginning-position))))
+          (if (< width line-length)
+              (setq width line-length)))
+        (forward-line 1))
+      (let ((prefix (propertize " " 'display `(space . (:align-to (- center ,(/ width 2)))))))
+        (add-text-properties start end `(line-prefix ,prefix indent-prefix ,prefix))))))
+
+(defun dashboard-insert-center (&rest strings)
+  "Insert STRINGS in the center of the buffer."
+  (let ((start (point)))
+    (apply #'insert strings)
+    (dashboard-center-text start (point))))
 
 ;;
 ;; BANNER
 ;;
-(defun dashboard-insert-ascii-banner-centered (file)
-  "Insert banner from FILE."
-  (let ((ascii-banner
-         (with-temp-buffer
-           (insert-file-contents file)
-           (let ((banner-width 0))
-             (while (not (eobp))
-               (let ((line-length (- (line-end-position) (line-beginning-position))))
-                 (if (< banner-width line-length)
-                     (setq banner-width line-length)))
-               (forward-line 1))
-             (goto-char 0)
-             (let ((margin
-                    (max 0 (floor (/ (- dashboard-banner-length banner-width) 2)))))
-               (while (not (eobp))
-                 (insert (make-string margin ?\ ))
-                 (forward-line 1))))
-           (buffer-string))))
-    (put-text-property 0 (length ascii-banner) 'face 'dashboard-text-banner ascii-banner)
-    (insert ascii-banner)))
+
+(defun dashboard-get-banner-path (index)
+  "Return the full path to banner with index INDEX."
+  (concat dashboard-banners-directory (format "%d.txt" index)))
+
+(defun dashboard-choose-banner ()
+  "Return a plist specifying the chosen banner based on `dashboard-startup-banner'."
+    (pcase dashboard-startup-banner
+      ('nil nil)
+      ('official
+       (list :image dashboard-banner-official-png
+             :text (dashboard-get-banner-path 1)))
+      ('logo
+       (list :image dashboard-banner-logo-png
+             :text (dashboard-get-banner-path 1)))
+      ((pred integerp)
+       (list :text (dashboard-get-banner-path dashboard-startup-banner)))
+      ((pred stringp)
+       (pcase dashboard-startup-banner
+        ((pred (not file-exists-p))
+         (message "could not find banner %s, use default instead" dashboard-startup-banner)
+         (list :text (dashboard-get-banner-path 1)))
+        ((pred (string-suffix-p ".txt"))
+         (list :text (if (file-exists-p dashboard-startup-banner)
+                         dashboard-startup-banner
+                       (message "could not find banner %s, use default instead" dashboard-startup-banner)
+                       (dashboard-get-banner-path 1))))
+        ((pred image-supported-file-p)
+         (list :image dashboard-startup-banner
+               :text (dashboard-get-banner-path 1)))
+        (_
+         (message "unsupported file type %s" (file-name-nondirectory dashboard-startup-banner))
+         (list :text (dashboard-get-banner-path 1)))))
+      (`(,img . ,txt)
+       (list :image (if (and (file-exists-p img) (image-supported-file-p img))
+                        img
+                      (message "could not find banner %s, use default instead" img)
+                      dashboard-banner-official-png)
+             :text (if (and (file-exists-p txt) (string-suffix-p ".txt" txt))
+                       txt
+                     (message "could not find banner %s, use default instead" txt)
+                     (dashboard-get-banner-path 1))))
+      (_
+       (message "unsupported banner config %s" dashboard-startup-banner))))
 
 (defun dashboard--type-is-gif-p (image-path)
   "Return if image is a gif.
@@ -528,39 +563,69 @@ String -> bool.
 Argument IMAGE-PATH path to the image."
   (eq 'gif (image-type image-path)))
 
-(defun dashboard-insert-image-banner (banner)
-  "Display an image BANNER."
-  (when (file-exists-p banner)
-    (let* ((title dashboard-banner-logo-title)
-           (size-props
-            (append (when (> dashboard-image-banner-max-width 0)
-                      (list :max-width dashboard-image-banner-max-width))
-                    (when (> dashboard-image-banner-max-height 0)
-                      (list :max-height dashboard-image-banner-max-height))))
-           (spec
-            (cond ((dashboard--type-is-gif-p banner)
-                   (create-image banner))
-                  ((image-type-available-p 'imagemagick)
-                   (apply 'create-image banner 'imagemagick nil size-props))
-                  (t
-                   (apply 'create-image banner nil nil
-                          (when (and (fboundp 'image-transforms-p)
-                                     (memq 'scale (funcall 'image-transforms-p)))
-                            size-props)))))
-           ;; TODO: For some reason, `elisp-lint' is reporting error void
-           ;; function `image-size'.
-           (size (when (fboundp 'image-size) (image-size spec)))
-           (width (car size))
-           (left-margin (max 0 (floor (- dashboard-banner-length width) 2))))
-      (goto-char (point-min))
+(defun dashboard-insert-banner ()
+  "Insert the banner at the top of the dashboard."
+  (goto-char (point-max))
+  (when-let (banner (dashboard-choose-banner))
+    (insert "\n")
+    (let ((start (point))
+          buffer-read-only
+          text-width
+          image-spec)
       (insert "\n")
-      (insert (make-string left-margin ?\ ))
-      (insert-image spec)
-      (when (dashboard--type-is-gif-p banner) (image-animate spec 0 t))
+      ;; If specified, insert a text banner.
+      (when-let (txt (plist-get banner :text))
+        (insert-file-contents txt)
+        (setq text-width 0)
+        (while (not (eobp))
+          (let ((line-length (- (line-end-position) (line-beginning-position))))
+            (if (< text-width line-length)
+                (setq text-width line-length)))
+          (forward-line 1)))
+      ;; If specified, insert an image banner. When displayed in a graphical frame, this will
+      ;; replace the text banner.
+      (when-let (img (plist-get banner :image))
+        (let ((size-props
+               (append (when (> dashboard-image-banner-max-width 0)
+                         (list :max-width dashboard-image-banner-max-width))
+                       (when (> dashboard-image-banner-max-height 0)
+                         (list :max-height dashboard-image-banner-max-height)))))
+          (setq image-spec
+                (cond ((dashboard--type-is-gif-p img)
+                       (create-image img))
+                      ((image-type-available-p 'imagemagick)
+                       (apply 'create-image img 'imagemagick nil size-props))
+                      (t
+                       (apply 'create-image img nil nil
+                              (when (and (fboundp 'image-transforms-p)
+                                         (memq 'scale (funcall 'image-transforms-p)))
+                                size-props))))))
+        (add-text-properties start (point) `(display ,image-spec))
+        (when (dashboard--type-is-gif-p img) (image-animate image-spec 0 t)))
+      ;; Finally, center the banner (if any).
+      (when-let* ((text-align-spec `(space . (:align-to (- center ,(/ text-width 2)))))
+                  (image-align-spec `(space . (:align-to (- center (0.5 . ,image-spec)))))
+                  (prop
+                   (cond
+                    ;; Both an image & text banner.
+                    ((and image-spec text-width)
+                     ;; The quoting is intentional. This is a conditional display spec that will
+                     ;; align the banner at redisplay time.
+                     `((when (display-graphic-p) . ,image-align-spec)
+                       (when (not (display-graphic-p)) ,text-align-spec)))
+                    ;; One or the other.
+                    (text-width text-align-spec)
+                    (image-spec image-align-spec)
+                    ;; No banner.
+                    (t nil)))
+                  (prefix (propertize " " 'display prop)))
+        (add-text-properties start (point) `(line-prefix ,prefix wrap-prefix ,prefix)))
       (insert "\n\n")
-      (when title
-        (dashboard-center-line title)
-        (insert (format "%s\n\n" (propertize title 'face 'dashboard-banner-logo-title)))))))
+      (add-text-properties start (point) '(cursor-intangible t inhibit-isearch t))))
+  (when dashboard-banner-logo-title
+    (dashboard-insert-center (propertize dashboard-banner-logo-title 'face 'dashboard-banner-logo-title) "\n\n"))
+  (dashboard-insert-navigator)
+  (dashboard-insert-init-info))
 
 ;;
 ;; INIT INFO
@@ -571,47 +636,7 @@ Argument IMAGE-PATH path to the image."
     (let ((init-info (if (functionp dashboard-init-info)
                          (funcall dashboard-init-info)
                        dashboard-init-info)))
-      (dashboard-center-line init-info)
-      (insert (propertize init-info 'face 'font-lock-comment-face)))))
-
-(defun dashboard-get-banner-path (index)
-  "Return the full path to banner with index INDEX."
-  (concat dashboard-banners-directory (format "%d.txt" index)))
-
-(defun dashboard-choose-banner ()
-  "Return the full path of a banner based on the dotfile value."
-  (when dashboard-startup-banner
-    (cond ((eq 'official dashboard-startup-banner)
-           (if (and (display-graphic-p) (image-type-available-p 'png))
-               dashboard-banner-official-png
-             (dashboard-get-banner-path 1)))
-          ((eq 'logo dashboard-startup-banner)
-           (if (and (display-graphic-p) (image-type-available-p 'png))
-               dashboard-banner-logo-png
-             (dashboard-get-banner-path 1)))
-          ((integerp dashboard-startup-banner)
-           (dashboard-get-banner-path dashboard-startup-banner))
-          ((stringp dashboard-startup-banner)
-           (if (and (file-exists-p dashboard-startup-banner)
-                    (or (string-suffix-p ".txt" dashboard-startup-banner)
-                        (and (display-graphic-p)
-                             (image-type-available-p (intern (file-name-extension
-                                                              dashboard-startup-banner))))))
-               dashboard-startup-banner
-             (message "could not find banner %s, use default instead" dashboard-startup-banner)
-             (dashboard-get-banner-path 1)))
-          (t (dashboard-get-banner-path 1)))))
-
-(defun dashboard-insert-banner ()
-  "Insert Banner at the top of the dashboard."
-  (goto-char (point-max))
-  (let ((banner (dashboard-choose-banner)) buffer-read-only)
-    (when banner
-      (if (image-type-available-p (intern (file-name-extension banner)))
-          (dashboard-insert-image-banner banner)
-        (dashboard-insert-ascii-banner-centered banner))
-      (dashboard-insert-navigator)
-      (dashboard-insert-init-info))))
+      (dashboard-insert-center (propertize init-info 'face 'font-lock-comment-face)))))
 
 (defun dashboard-insert-navigator ()
   "Insert Navigator of the dashboard."
@@ -646,10 +671,7 @@ Argument IMAGE-PATH path to the image."
                          :button-suffix suffix
                          :format "%[%t%]")
           (insert " ")))
-      (let* ((width (current-column)))
-        (beginning-of-line)
-        (dashboard-center-line (make-string width ?\s))
-        (end-of-line))
+      (dashboard-center-text (point-at-bol) (point-at-eol))
       (insert "\n"))
     (insert "\n")))
 
@@ -720,11 +742,11 @@ to widget creation."
   "Insert footer of dashboard."
   (when-let ((footer (and dashboard-set-footer (dashboard-random-footer))))
     (insert "\n")
-    (dashboard-center-line footer)
-    (insert dashboard-footer-icon)
-    (insert " ")
-    (insert (propertize footer 'face 'dashboard-footer))
-    (insert "\n")))
+    (dashboard-insert-center
+     dashboard-footer-icon
+     " "
+     (propertize footer 'face 'dashboard-footer)
+     "\n")))
 
 ;;
 ;; Truncate
