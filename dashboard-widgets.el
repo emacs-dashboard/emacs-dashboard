@@ -517,6 +517,13 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Return the full path to banner with index INDEX."
   (concat dashboard-banners-directory (format "%d.txt" index)))
 
+(defun dashboard--image-supported-p (img)
+  "Return non-nil if IMG exists and is a supported image type."
+  ;; In Emacs 29.1 we could use `image-supported-file-p'. However:
+  ;; - We need to support Emacs 26.
+  ;; - That function will only look at filenames, this one will inspect the file data itself.
+  (and (file-exists-p img) (ignore-errors (image-type-available-p (image-type img)))))
+
 (defun dashboard-choose-banner ()
   "Return a plist specifying the chosen banner based on `dashboard-startup-banner'."
     (pcase dashboard-startup-banner
@@ -539,14 +546,14 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                          dashboard-startup-banner
                        (message "could not find banner %s, use default instead" dashboard-startup-banner)
                        (dashboard-get-banner-path 1))))
-        ((pred image-supported-file-p)
+        ((pred dashboard--image-supported-p)
          (list :image dashboard-startup-banner
                :text (dashboard-get-banner-path 1)))
         (_
          (message "unsupported file type %s" (file-name-nondirectory dashboard-startup-banner))
          (list :text (dashboard-get-banner-path 1)))))
       (`(,img . ,txt)
-       (list :image (if (and (file-exists-p img) (image-supported-file-p img))
+       (list :image (if (dashboard--image-supported-p img)
                         img
                       (message "could not find banner %s, use default instead" img)
                       dashboard-banner-official-png)
