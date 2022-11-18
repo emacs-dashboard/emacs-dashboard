@@ -678,7 +678,7 @@ Argument IMAGE-PATH path to the image."
                          :button-suffix suffix
                          :format "%[%t%]")
           (insert " ")))
-      (dashboard-center-text (point-at-bol) (point-at-eol))
+      (dashboard-center-text (line-beginning-position) (line-end-position))
       (insert "\n"))
     (insert "\n")))
 
