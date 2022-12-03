@@ -620,7 +620,7 @@ Argument IMAGE-PATH path to the image."
                      ;; The quoting is intentional. This is a conditional display spec that will
                      ;; align the banner at redisplay time.
                      `((when (display-graphic-p) . ,image-align-spec)
-                       (when (not (display-graphic-p)) ,text-align-spec)))
+                       (when (not (display-graphic-p)) . ,text-align-spec)))
                     ;; One or the other.
                     (text-width text-align-spec)
                     (image-spec image-align-spec)
