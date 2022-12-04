@@ -538,7 +538,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
        (list :text (dashboard-get-banner-path dashboard-startup-banner)))
       ((pred stringp)
        (pcase dashboard-startup-banner
-        ((pred (not file-exists-p))
+        ((pred (lambda (f) (not (file-exists-p f))))
          (message "could not find banner %s, use default instead" dashboard-startup-banner)
          (list :text (dashboard-get-banner-path 1)))
         ((pred (string-suffix-p ".txt"))
