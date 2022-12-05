@@ -529,11 +529,13 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (pcase dashboard-startup-banner
       ('nil nil)
       ('official
-       (list :image dashboard-banner-official-png
-             :text (dashboard-get-banner-path 1)))
+       (append (when (image-type-available-p 'png)
+                 (list :image dashboard-banner-official-png))
+               (list :text (dashboard-get-banner-path 1))))
       ('logo
-       (list :image dashboard-banner-logo-png
-             :text (dashboard-get-banner-path 1)))
+       (append (when (image-type-available-p 'png)
+                 (list :image dashboard-banner-logo-png))
+               (list :text (dashboard-get-banner-path 1))))
       ((pred integerp)
        (list :text (dashboard-get-banner-path dashboard-startup-banner)))
       ((pred stringp)
