@@ -214,8 +214,8 @@ is displayed."
                  (integer :tag "index of a text banner")
                  (string  :tag "a path to an image or text banner")
                  (cons    :tag "an image and text banner"
-                   (string :tag "image banner path")
-                   (string :tag "text banner path")))
+                          (string :tag "image banner path")
+                          (string :tag "text banner path")))
   :group 'dashboard)
 
 (defcustom dashboard-item-generators
@@ -497,8 +497,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (let ((width 0))
       (while (< (point) end)
         (let ((line-length (- (line-end-position) (line-beginning-position))))
-          (if (< width line-length)
-              (setq width line-length)))
+          (setq width (max width line-length)))
         (forward-line 1))
       (let ((prefix (propertize " " 'display `(space . (:align-to (- center ,(/ width 2)))))))
         (add-text-properties start end `(line-prefix ,prefix indent-prefix ,prefix))))))
@@ -526,45 +525,45 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 
 (defun dashboard-choose-banner ()
   "Return a plist specifying the chosen banner based on `dashboard-startup-banner'."
-    (pcase dashboard-startup-banner
-      ('nil nil)
-      ('official
-       (append (when (image-type-available-p 'png)
-                 (list :image dashboard-banner-official-png))
-               (list :text (dashboard-get-banner-path 1))))
-      ('logo
-       (append (when (image-type-available-p 'png)
-                 (list :image dashboard-banner-logo-png))
-               (list :text (dashboard-get-banner-path 1))))
-      ((pred integerp)
-       (list :text (dashboard-get-banner-path dashboard-startup-banner)))
-      ((pred stringp)
-       (pcase dashboard-startup-banner
-        ((pred (lambda (f) (not (file-exists-p f))))
-         (message "could not find banner %s, use default instead" dashboard-startup-banner)
-         (list :text (dashboard-get-banner-path 1)))
-        ((pred (string-suffix-p ".txt"))
-         (list :text (if (file-exists-p dashboard-startup-banner)
-                         dashboard-startup-banner
-                       (message "could not find banner %s, use default instead" dashboard-startup-banner)
-                       (dashboard-get-banner-path 1))))
-        ((pred dashboard--image-supported-p)
-         (list :image dashboard-startup-banner
-               :text (dashboard-get-banner-path 1)))
-        (_
-         (message "unsupported file type %s" (file-name-nondirectory dashboard-startup-banner))
-         (list :text (dashboard-get-banner-path 1)))))
-      (`(,img . ,txt)
-       (list :image (if (dashboard--image-supported-p img)
-                        img
-                      (message "could not find banner %s, use default instead" img)
-                      dashboard-banner-official-png)
-             :text (if (and (file-exists-p txt) (string-suffix-p ".txt" txt))
-                       txt
-                     (message "could not find banner %s, use default instead" txt)
-                     (dashboard-get-banner-path 1))))
-      (_
-       (message "unsupported banner config %s" dashboard-startup-banner))))
+  (pcase dashboard-startup-banner
+    ('nil nil)
+    ('official
+     (append (when (image-type-available-p 'png)
+               (list :image dashboard-banner-official-png))
+             (list :text (dashboard-get-banner-path 1))))
+    ('logo
+     (append (when (image-type-available-p 'png)
+               (list :image dashboard-banner-logo-png))
+             (list :text (dashboard-get-banner-path 1))))
+    ((pred integerp)
+     (list :text (dashboard-get-banner-path dashboard-startup-banner)))
+    ((pred stringp)
+     (pcase dashboard-startup-banner
+       ((pred (lambda (f) (not (file-exists-p f))))
+        (message "could not find banner %s, use default instead" dashboard-startup-banner)
+        (list :text (dashboard-get-banner-path 1)))
+       ((pred (string-suffix-p ".txt"))
+        (list :text (if (file-exists-p dashboard-startup-banner)
+                        dashboard-startup-banner
+                      (message "could not find banner %s, use default instead" dashboard-startup-banner)
+                      (dashboard-get-banner-path 1))))
+       ((pred dashboard--image-supported-p)
+        (list :image dashboard-startup-banner
+              :text (dashboard-get-banner-path 1)))
+       (_
+        (message "unsupported file type %s" (file-name-nondirectory dashboard-startup-banner))
+        (list :text (dashboard-get-banner-path 1)))))
+    (`(,img . ,txt)
+     (list :image (if (dashboard--image-supported-p img)
+                      img
+                    (message "could not find banner %s, use default instead" img)
+                    dashboard-banner-official-png)
+           :text (if (and (file-exists-p txt) (string-suffix-p ".txt" txt))
+                     txt
+                   (message "could not find banner %s, use default instead" txt)
+                   (dashboard-get-banner-path 1))))
+    (_
+     (message "unsupported banner config %s" dashboard-startup-banner))))
 
 (defun dashboard--type-is-gif-p (image-path)
   "Return if image is a gif.
@@ -633,7 +632,8 @@ Argument IMAGE-PATH path to the image."
       (insert "\n\n")
       (add-text-properties start (point) '(cursor-intangible t inhibit-isearch t))))
   (when dashboard-banner-logo-title
-    (dashboard-insert-center (propertize dashboard-banner-logo-title 'face 'dashboard-banner-logo-title) "\n\n"))
+    (dashboard-insert-center (propertize dashboard-banner-logo-title 'face 'dashboard-banner-logo-title))
+    (insert "\n\n"))
   (dashboard-insert-navigator)
   (dashboard-insert-init-info))
 

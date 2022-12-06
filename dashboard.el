@@ -367,6 +367,13 @@ Optional argument ARGS adviced function arguments."
 ;;
 ;; Insertion
 ;;
+(defmacro dashboard--with-buffer (&rest body)
+  "With dashboard buffer."
+  (declare (indent 0))
+  `(with-current-buffer (get-buffer-create dashboard-buffer-name)
+     (let (buffer-read-only) ,@body)
+     (current-buffer)))
+
 (defun dashboard-maximum-section-length ()
   "For the just-inserted section, calculate the length of the longest line."
   (let ((max-line-length 0))
@@ -388,45 +395,42 @@ Optional argument ARGS adviced function arguments."
         (max-line-length 0))
     (when recentf-is-on
       (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
-    (prog1
-        (with-current-buffer (get-buffer-create dashboard-buffer-name)
-          (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
-            (let (buffer-read-only)
-              (erase-buffer)
-              (dashboard-insert-banner)
-              (setq dashboard--section-starts nil)
-              (mapc (lambda (els)
-                      (let* ((el (or (car-safe els) els))
-                             (list-size
-                              (or (cdr-safe els)
-                                  dashboard-items-default-length))
-                             (item-generator
-                              (cdr-safe (assoc el dashboard-item-generators))))
-                        (push (point) dashboard--section-starts)
-                        (funcall item-generator list-size)
-                        (goto-char (point-max))
-                        (when recentf-is-on
-                          (setq recentf-list origial-recentf-list))
-                        (setq max-line-length
-                              (max max-line-length (dashboard-maximum-section-length)))))
-                    dashboard-items)
-              (when dashboard-center-content
-                (dashboard-center-text
-                 (if dashboard--section-starts
-                     (car (last dashboard--section-starts))
-                   (point))
-                 (point-max)))
-              (insert dashboard-page-separator)
-              (save-excursion
-                (dolist (start dashboard--section-starts)
-                  (goto-char start)
-                  (insert dashboard-page-separator)))
-              (dashboard-insert-footer))
-            (goto-char (point-min))
-            (dashboard-mode))
-          (current-buffer))
-      (when recentf-is-on
-        (setq recentf-list origial-recentf-list)))))
+    (dashboard--with-buffer
+      (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
+        (erase-buffer)
+        (dashboard-insert-banner)
+        (setq dashboard--section-starts nil)
+        (mapc (lambda (els)
+                (let* ((el (or (car-safe els) els))
+                       (list-size
+                        (or (cdr-safe els)
+                            dashboard-items-default-length))
+                       (item-generator
+                        (cdr-safe (assoc el dashboard-item-generators))))
+                  (push (point) dashboard--section-starts)
+                  (funcall item-generator list-size)
+                  (goto-char (point-max))
+                  (when recentf-is-on
+                    (setq recentf-list origial-recentf-list))
+                  (setq max-line-length
+                        (max max-line-length (dashboard-maximum-section-length)))))
+              dashboard-items)
+        (when dashboard-center-content
+          (dashboard-center-text
+           (if dashboard--section-starts
+               (car (last dashboard--section-starts))
+             (point))
+           (point-max)))
+        (insert dashboard-page-separator)
+        (save-excursion
+          (dolist (start dashboard--section-starts)
+            (goto-char start)
+            (insert dashboard-page-separator)))
+        (dashboard-insert-footer)
+        (goto-char (point-min))
+        (dashboard-mode)))
+    (when recentf-is-on
+      (setq recentf-list origial-recentf-list))))
 
 (defun dashboard-refresh-buffer (&rest _)
   "Refresh buffer."
