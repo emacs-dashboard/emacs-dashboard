@@ -389,7 +389,8 @@ Optional argument ARGS adviced function arguments."
 (defun dashboard-insert-startupify-lists ()
   "Insert the list of widgets into the buffer."
   (interactive)
-  (let ((recentf-is-on (recentf-enabled-p))
+  (let ((inhibit-redisplay t)
+        (recentf-is-on (recentf-enabled-p))
         (origial-recentf-list recentf-list)
         (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
         (max-line-length 0))
@@ -428,7 +429,7 @@ Optional argument ARGS adviced function arguments."
         (save-excursion
           (dolist (start dashboard--section-starts)
             (goto-char start)
-            (backward-delete-char 1)  ; delete the newline we added previously
+            (delete-char -1)  ; delete the newline we added previously
             (insert dashboard-page-separator)))
         (dashboard-insert-footer)
         (goto-char (point-min))
