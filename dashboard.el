@@ -368,7 +368,7 @@ Optional argument ARGS adviced function arguments."
 ;; Insertion
 ;;
 (defmacro dashboard--with-buffer (&rest body)
-  "With dashboard buffer."
+  "Execute BODY in dashboard buffer."
   (declare (indent 0))
   `(with-current-buffer (get-buffer-create dashboard-buffer-name)
      (let (buffer-read-only) ,@body)
