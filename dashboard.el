@@ -249,11 +249,11 @@ Optional prefix ARG says how many lines to move; default is one line."
 (defun dashboard--section-list (section)
   "Return the list from SECTION."
   (cl-case section
-    (`recents recentf-list)
-    (`bookmarks (bookmark-all-names))
-    (`projects (dashboard-projects-backend-load-projects))
+    (`recents        recentf-list)
+    (`bookmarks      (bookmark-all-names))
+    (`projects       (dashboard-projects-backend-load-projects))
     (`ls-directories (dashboard-ls--dirs))
-    (`ls-files (dashboard-ls--files))
+    (`ls-files       (dashboard-ls--files))
     (t (user-error "Unknown section for search: %s" section))))
 
 (defun dashboard--current-item-in-path ()
@@ -410,6 +410,9 @@ Optional argument ARGS adviced function arguments."
                   (push (point) dashboard--section-starts)
                   (funcall item-generator list-size)
                   (goto-char (point-max))
+                  ;; add a newline so the next section-name doesn't get include
+                  ;; on the same line.
+                  (insert "\n")
                   (when recentf-is-on
                     (setq recentf-list origial-recentf-list))
                   (setq max-line-length
@@ -425,6 +428,7 @@ Optional argument ARGS adviced function arguments."
         (save-excursion
           (dolist (start dashboard--section-starts)
             (goto-char start)
+            (backward-delete-char 1)  ; delete the newline we added previously
             (insert dashboard-page-separator)))
         (dashboard-insert-footer)
         (goto-char (point-min))
