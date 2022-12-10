@@ -8,6 +8,8 @@
 (package-file "dashboard.el")
 (files "dashboard-widgets.el" "*.org" "banners")
 
+(script "test" "echo \"Error: no test specified\" && exit 1")
+
 (source "gnu")
 (source "melpa")
 
