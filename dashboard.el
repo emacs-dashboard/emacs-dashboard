@@ -425,12 +425,14 @@ Optional argument ARGS adviced function arguments."
                (car (last dashboard--section-starts))
              (point))
            (point-max)))
-        (insert dashboard-page-separator)
         (save-excursion
           (dolist (start dashboard--section-starts)
             (goto-char start)
             (delete-char -1)  ; delete the newline we added previously
             (insert dashboard-page-separator)))
+        (progn
+          (delete-char -1)
+          (insert dashboard-page-separator))
         (dashboard-insert-footer)
         (goto-char (point-min))
         (dashboard-mode)))
