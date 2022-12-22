@@ -751,7 +751,6 @@ to widget creation."
 (defun dashboard-insert-footer ()
   "Insert footer of dashboard."
   (when-let ((footer (and dashboard-set-footer (dashboard-random-footer))))
-    (insert "\n")
     (dashboard-insert-center
      dashboard-footer-icon
      " "
