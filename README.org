@@ -305,4 +305,4 @@ make install
 
 ** Prerequisites
 
-  * [[https://github.com/emacs-eask/eask][Eask]]
+  * [[https://github.com/emacs-eask/cli][Eask]]
