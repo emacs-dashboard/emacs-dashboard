@@ -388,7 +388,7 @@ If nil it is disabled.  Possible values for list-type are:
 
 (defun dashboard-str-len (str)
   "Calculate STR in pixel width."
-  (let ((width (window-font-width))
+  (let ((width (frame-char-width))
         (len (dashboard-string-pixel-width str)))
     (+ (/ len width)
        (if (zerop (% len width)) 0 1))))  ; add one if exceeed
@@ -496,7 +496,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (goto-char start)
     (let ((width 0))
       (while (< (point) end)
-        (let ((line-length (- (line-end-position) (line-beginning-position))))
+        (let* ((line-str (buffer-substring (line-beginning-position) (line-end-position)))
+               (line-length (dashboard-str-len line-str)))
           (setq width (max width line-length)))
         (forward-line 1))
       (let ((prefix (propertize " " 'display `(space . (:align-to (- center ,(/ width 2)))))))
