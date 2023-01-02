@@ -159,11 +159,11 @@ preserved."
 
 (defcustom dashboard-navigator-buttons nil
   "Specify the navigator buttons.
-The format is: 'icon title help action face prefix suffix'.
+The format is: `icon title help action face prefix suffix`.
 
 Example:
-'((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _)
-                                    (show-stars)) 'warning \"[\" \"]\"))"
+`((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _)
+                                    (show-stars)) warning \"[\" \"]\"))"
   :type '(repeat (repeat (list string string string function symbol string string)))
   :group 'dashboard)
 
@@ -388,7 +388,7 @@ If nil it is disabled.  Possible values for list-type are:
 
 (defun dashboard-str-len (str)
   "Calculate STR in pixel width."
-  (let ((width (window-font-width))
+  (let ((width (frame-char-width))
         (len (dashboard-string-pixel-width str)))
     (+ (/ len width)
        (if (zerop (% len width)) 0 1))))  ; add one if exceeed
@@ -496,7 +496,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (goto-char start)
     (let ((width 0))
       (while (< (point) end)
-        (let ((line-length (- (line-end-position) (line-beginning-position))))
+        (let* ((line-str (buffer-substring (line-beginning-position) (line-end-position)))
+               (line-length (dashboard-str-len line-str)))
           (setq width (max width line-length)))
         (forward-line 1))
       (let ((prefix (propertize " " 'display `(space . (:align-to (- center ,(/ width 2)))))))
@@ -687,6 +688,7 @@ Argument IMAGE-PATH path to the image."
 
 (defmacro dashboard-insert-section (section-name list list-size shortcut-id shortcut-char action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
+
 SHORTCUT-CHAR is the keyboard shortcut used to access the section.
 ACTION is theaction taken when the user activates the widget button.
 WIDGET-PARAMS are passed to the \"widget-create\" function."
@@ -1247,14 +1249,16 @@ This is what `org-agenda-exit' do."
 
 (defun dashboard-agenda--sorted-agenda ()
   "Return agenda sorted by time.
-For now, it only works when dashboard-agenda has been filter by time
-and dashboard-agenda-sort is not nil."
+
+For now, it only works when dashboard-agenda has been filter by time and
+dashboard-agenda-sort is not nil."
   (let ((agenda (dashboard-get-agenda))
         (sort-function (dashboard-agenda--sort-function)))
     (sort agenda sort-function)))
 
 (defun dashboard-agenda--sort-function ()
   "Get the function use to sorted the agenda.
+
 Depending on the list `dashboard-agenda-sorting-strategy' use this strategies to
 build a predicate to compare each enty.
 This is similar as `org-entries-lessp' but with a different aproach."
@@ -1262,6 +1266,7 @@ This is similar as `org-entries-lessp' but with a different aproach."
 
 (defun dashboard-agenda--build-sort-function (strategies)
   "Build a predicate to sort the dashboard agenda.
+
 If `STRATEGIES' is nil then sort using the nil predicate.  Look for the strategy
 predicate, the attributes of the entry and compare entries.  If no predicate is
 found for the strategy it uses nil predicate."
