@@ -400,6 +400,7 @@ Optional argument ARGS adviced function arguments."
       (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
         (erase-buffer)
         (dashboard-insert-banner)
+        (insert "\n")
         (setq dashboard--section-starts nil)
         (mapc (lambda (els)
                 (let* ((el (or (car-safe els) els))
