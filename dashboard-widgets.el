@@ -1179,11 +1179,15 @@ Also,it set text properties that latter are used to sort entries and perform dif
          (todo (or (org-get-todo-state) ""))
          (org-level-face (nth (- (org-outline-level) 1) org-level-faces))
          (todo-state (format org-agenda-todo-keyword-format todo)))
-    (when (null (get-text-property 0 'face headline))
-      (add-face-text-property 0 (length headline) org-level-face t headline))
-    (when (null (get-text-property 0 'face todo-state))
-      (add-face-text-property 0 (length todo-state) (org-get-todo-face todo) t todo-state))
+    (dashboard-agenda--set-face org-level-face headline)
+    (dashboard-agenda--set-face (org-get-todo-face todo) todo-state)
     (concat todo-state " " headline)))
+
+(defun dashboard-agenda--set-face (face text)
+  "Add FACE to TEXT but inherit height from `dashboard-items-face'.
+If not height is found on FACE or `dashboard-items-face' use `default'."
+  (let ((height (face-attribute 'dashboard-items-face :height nil 'default)))
+    (add-face-text-property 0 (length text) `((:height ,height) ,face) nil text)))
 
 (defun dashboard-agenda--formatted-time ()
   "Get the scheduled or dead time of an entry.  If no time is found return nil."
