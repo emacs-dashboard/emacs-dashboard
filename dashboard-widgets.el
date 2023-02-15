@@ -157,6 +157,11 @@ preserved."
   :type 'string
   :group 'dashboard)
 
+(defcustom dashboard-banner-ascii "EMACS"
+  "String to be shown in place of the startup banner if dashboard-startup-banner is set to 'ascii'."
+  :type 'string
+  :group 'dashboard)
+
 (defcustom dashboard-navigator-buttons nil
   "Specify the navigator buttons.
 The format is: `icon title help action face prefix suffix`.
@@ -205,12 +210,14 @@ Example:
 (defcustom dashboard-startup-banner 'official
   "Specify the startup banner.
 Default value is `official', it displays the Emacs logo.  `logo' displays Emacs
-alternative logo.  An integer value is the index of text banner.  A string
-value must be a path to a .PNG or .TXT file.  If the value is nil then no banner
-is displayed."
+alternative logo. If set to `ascii', the value of dashboard-banner-ascii
+will be used as the banner. An integer value is the index of text banner.
+A string value must be a path to a .PNG or .TXT file.  If the value is
+nil then no banner is displayed."
   :type '(choice (const   :tag "no banner" nil)
                  (const   :tag "offical"   official)
                  (const   :tag "logo"      logo)
+                 (const   :tag "ascii"     ascii)
                  (integer :tag "index of a text banner")
                  (string  :tag "a path to an image or text banner")
                  (cons    :tag "an image and text banner"
@@ -536,6 +543,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
      (append (when (image-type-available-p 'png)
                (list :image dashboard-banner-logo-png))
              (list :text (dashboard-get-banner-path 1))))
+    ('ascii
+     (append (list :text dashboard-banner-ascii)))
     ((pred integerp)
      (list :text (dashboard-get-banner-path dashboard-startup-banner)))
     ((pred stringp)
@@ -584,7 +593,9 @@ Argument IMAGE-PATH path to the image."
       (insert "\n")
       ;; If specified, insert a text banner.
       (when-let (txt (plist-get banner :text))
-        (insert-file-contents txt)
+        (if (eq dashboard-startup-banner 'ascii)
+            (insert txt)
+          (insert-file-contents txt))
         (put-text-property (point) (point-max) 'face 'dashboard-text-banner)
         (setq text-width 0)
         (while (not (eobp))
