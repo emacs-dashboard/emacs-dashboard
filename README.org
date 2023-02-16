@@ -53,6 +53,8 @@ activate the widget, set the variable =dashboard-projects-backend= to either
 available from GNU elpa), then add an entry like
 =(projects . 5)= to the variable =dashboard-items=.
 
+The function =dashboard-refresh-buffer= can be used to visit and refresh the dashboard.
+
 ** Emacs Daemon
 
 In addition to the above, configure =initial-buffer-choice= to show
