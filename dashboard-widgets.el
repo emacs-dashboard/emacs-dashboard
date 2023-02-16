@@ -158,7 +158,8 @@ preserved."
   :group 'dashboard)
 
 (defcustom dashboard-banner-ascii "EMACS"
-  "String to be shown in place of the startup banner if dashboard-startup-banner is set to 'ascii'."
+  "String to be shown in place of the startup banner
+if `dashboard-startup-banner' is set to `ascii'."
   :type 'string
   :group 'dashboard)
 
@@ -210,8 +211,8 @@ Example:
 (defcustom dashboard-startup-banner 'official
   "Specify the startup banner.
 Default value is `official', it displays the Emacs logo.  `logo' displays Emacs
-alternative logo. If set to `ascii', the value of dashboard-banner-ascii
-will be used as the banner. An integer value is the index of text banner.
+alternative logo.  If set to `ascii', the value of `dashboard-banner-ascii'
+will be used as the banner.  An integer value is the index of text banner.
 A string value must be a path to a .PNG or .TXT file.  If the value is
 nil then no banner is displayed."
   :type '(choice (const   :tag "no banner" nil)
