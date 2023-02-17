@@ -440,11 +440,15 @@ Optional argument ARGS adviced function arguments."
     (when recentf-is-on
       (setq recentf-list origial-recentf-list))))
 
-(defun dashboard-refresh-buffer (&rest _)
-  "Refresh buffer."
+
+;;;###autoload
+(defun dashboard-open (&rest _)
+  "Open (or refresh) the *dashboard* buffer."
   (interactive)
   (let ((dashboard-force-refresh t)) (dashboard-insert-startupify-lists))
   (switch-to-buffer dashboard-buffer-name))
+
+(defalias #'dashboard-refresh-buffer #'dashboard-open)
 
 ;;;###autoload
 (defun dashboard-setup-startup-hook ()
