@@ -244,6 +244,14 @@ Deadline or Scheduling time will be formatted using
 ~dashboard-agenda-time-string-format~ and the keywords (TODO, DONE)
 respect [[https://orgmode.org/worg/doc.html#org-agenda-todo-keyword-format][org-agenda-todo-keyword-format]].
 
+*** Agenda tags
+
+To customize the tags format there is a variable
+~dashboard-agenda-tags-format~. This variable could be any function that
+receives the tags directly from ~org-get-tags~. By default
+~dashboard-agenda-tags-format~ is set to ~identity~. To hide the
+tags set the variable to ~ignore~: ~(setq dashboard-agenda-tags-format 'ignore)~
+or to ~nil~.
 
 ** Faces
 
