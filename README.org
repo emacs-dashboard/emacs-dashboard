@@ -34,6 +34,8 @@ You will need the following packages which are all available on Melpa:
 M-x package-install RET dashboard
 #+END_SRC
 
+** Open the Dashboard
+You can set up the dashboard to open automatically at startup using =dashboard-setup-startup-hook=:
  #+BEGIN_SRC elisp
 (require 'dashboard)
 (dashboard-setup-startup-hook)
@@ -44,7 +46,9 @@ M-x package-install RET dashboard
   (dashboard-setup-startup-hook))
  #+END_SRC
 
-By default, this will show three lists, recent files and bookmarks and org-agenda items.
+Alternatively, if you don't want the dashboard to open by default, you can use the interactive function =dashboard-open= to open it when you do want it.
+
+By default, the dashboard will show three lists, recent files and bookmarks and org-agenda items.
 
 The widget “projects”, which shows a list of recent projects, is not enabled
 by default since it depends on packages that might not be available.  To
@@ -53,7 +57,7 @@ activate the widget, set the variable =dashboard-projects-backend= to either
 available from GNU elpa), then add an entry like
 =(projects . 5)= to the variable =dashboard-items=.
 
-The function =dashboard-refresh-buffer= can be used to visit and refresh the dashboard.
+The function =dashboard-refresh-buffer= (an alias for =dashboard-open=) can be used to visit and refresh the dashboard.
 
 ** Emacs Daemon
 
