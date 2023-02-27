@@ -1155,6 +1155,15 @@ each agenda entry."
   :type 'string
   :group 'dashboard)
 
+(defcustom dashboard-agenda-tags-format 'identity
+  "Function to format the org agenda tags.
+Any custom function would receives the tags from `org-get-tags'"
+  :type '(choice
+          (const :tag "Show tags" identity)
+          (const :tag "Hide tags" ignore)
+          (function :tag "Custom function"))
+  :group 'dashboard)
+
 (defun dashboard-agenda-entry-format ()
   "Format agenda entry to show it on dashboard.
 Also,it set text properties that latter are used to sort entries and perform different actions."
@@ -1167,7 +1176,7 @@ Also,it set text properties that latter are used to sort entries and perform dif
                 (dashboard-agenda--formatted-headline)
                 (org-outline-level)
                 (org-get-category)
-                (org-get-tags)))
+                (dashboard-agenda--formatted-tags)))
          (todo-state (org-get-todo-state))
          (item-priority (org-get-priority (org-get-heading t t t t)))
          (todo-index (and todo-state
@@ -1206,6 +1215,11 @@ If not height is found on FACE or `dashboard-items-face' use `default'."
   (when-let ((time (or (org-get-scheduled-time (point)) (org-get-deadline-time (point))
                        (dashboard-agenda--entry-timestamp (point)))))
     (format-time-string dashboard-agenda-time-string-format time)))
+
+(defun dashboard-agenda--formatted-tags ()
+  "Apply `dashboard-agenda-tags-format' to org-element tags."
+  (when dashboard-agenda-tags-format
+    (funcall dashboard-agenda-tags-format (org-get-tags))))
 
 (defun dashboard-due-date-for-agenda ()
   "Return due-date for agenda period."
