@@ -195,8 +195,21 @@ Example:
   :type 'string
   :group 'dashboard)
 
+(defcustom dashboard-display-icons-p #'display-graphic-p
+  "Predicate to determine whether dashboard should show icons.
+Can be nil to not show icons and any truthy value to show them. When set
+to a function the result of the function will be interpreted as the
+predicate value."
+  :type '(choice (function :tag "Predicate function")
+                 (boolean :tag "Predicate value")))
+
+(defun dashboard-display-icons-p ()
+  (if (functionp dashboard-display-icons-p)
+      (funcall dashboard-display-icons-p)
+    dashboard-display-icons-p))
+
 (defcustom dashboard-footer-icon
-  (if (and (display-graphic-p)
+  (if (and (dashboard-display-icons-p)
            (or (fboundp 'all-the-icons-fileicon)
                (require 'all-the-icons nil 'noerror)))
       (all-the-icons-fileicon "emacs"
@@ -459,7 +472,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 
 (defun dashboard-insert-heading (heading &optional shortcut)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT if provided."
-  (when (and (display-graphic-p) dashboard-set-heading-icons)
+  (when (and (dashboard-display-icons-p) dashboard-set-heading-icons)
     ;; Try loading `all-the-icons'
     (unless (or (fboundp 'all-the-icons-octicon)
                 (require 'all-the-icons nil 'noerror))
@@ -729,7 +742,7 @@ to widget creation."
         (let ((tag ,@rest))
           (insert "\n    ")
 
-          (when (and (display-graphic-p)
+          (when (and (dashboard-display-icons-p)
                      dashboard-set-file-icons
                      (or (fboundp 'all-the-icons-icon-for-dir)
                          (require 'all-the-icons nil 'noerror)))
