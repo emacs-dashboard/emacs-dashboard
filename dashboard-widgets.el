@@ -204,6 +204,7 @@ predicate value."
                  (boolean :tag "Predicate value")))
 
 (defun dashboard-display-icons-p ()
+  "Assert whether to show icons based on the `dashboard-display-icons-p' variable."
   (if (functionp dashboard-display-icons-p)
       (funcall dashboard-display-icons-p)
     dashboard-display-icons-p))
