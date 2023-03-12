@@ -35,6 +35,9 @@
 (declare-function projectile-remove-known-project "ext:projectile.el")
 (declare-function project-forget-projects-under "ext:project.el")
 
+(declare-function linum-mode "linum.el")
+(declare-function dashboard-refresh-buffer "dashboard.el")
+
 (defgroup dashboard nil
   "Extensible startup screen."
   :group 'applications)
