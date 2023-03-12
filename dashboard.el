@@ -34,8 +34,8 @@
 (declare-function page-break-lines-mode "ext:page-break-lines.el")
 (declare-function projectile-remove-known-project "ext:projectile.el")
 (declare-function project-forget-projects-under "ext:project.el")
-
 (declare-function linum-mode "linum.el")
+
 (declare-function dashboard-refresh-buffer "dashboard.el")
 
 (defgroup dashboard nil
