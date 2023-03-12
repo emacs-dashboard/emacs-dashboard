@@ -201,7 +201,8 @@ Can be nil to not show icons and any truthy value to show them. When set
 to a function the result of the function will be interpreted as the
 predicate value."
   :type '(choice (function :tag "Predicate function")
-                 (boolean :tag "Predicate value")))
+                 (boolean :tag "Predicate value"))
+  :group 'dashboard)
 
 (defun dashboard-display-icons-p ()
   "Assert whether to show icons based on the `dashboard-display-icons-p' variable."
