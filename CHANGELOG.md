@@ -47,6 +47,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Caculate line length in pixel width (#427)
 * Add ascii option to dashboard-startup-banner (#436)
 * Agenda tags format (#441)
+* Make icon display predicate customizeable (#442)
 
 ## 1.7.0
 > Released Feb 21, 2020
