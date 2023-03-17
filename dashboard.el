@@ -374,7 +374,7 @@ Optional argument ARGS adviced function arguments."
   "Execute BODY in dashboard buffer."
   (declare (indent 0))
   `(with-current-buffer (get-buffer-create dashboard-buffer-name)
-     (let (buffer-read-only) ,@body)
+     (let ((inhibit-read-only t)) ,@body)
      (current-buffer)))
 
 (defun dashboard-maximum-section-length ()
