@@ -110,6 +110,19 @@ To add your own custom widget is pretty easy, define your widget's callback func
 (add-to-list 'dashboard-items '(custom) t)
  #+END_SRC
 
+To add an icon to a custom widget, insert it with `dashboard-insert-heading` in your custom function.  In this example, there is an icon but no shortcut.
+#+BEGIN_SRC elisp
+(defun dashboard-insert-custom (list-size)
+  (dashboard-insert-heading "News:"
+                            nil
+                            (all-the-icons-faicon "newspaper-o"
+                                                  :height 1.2
+                                                  :v-adjust 0.0
+                                                  :face 'dashboard-heading))
+  (insert "\n")
+  (insert "    Custom text"))
+ #+END_SRC
+
 To modify the widget heading name:
 #+BEGIN_SRC elisp
   (setq dashboard-item-names '(("Recent Files:" . "Recently opened files:")
