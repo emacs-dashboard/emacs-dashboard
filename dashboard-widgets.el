@@ -497,8 +497,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
              ((string-equal heading "Projects:")
               (all-the-icons-octicon (cdr (assoc 'projects dashboard-heading-icons))
                                      :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-             ((not (null icon))
-              icon)
+             ((not (null icon)) icon)
              (t " ")))
     (insert " "))
 

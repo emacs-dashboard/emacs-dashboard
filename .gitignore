@@ -5,7 +5,6 @@
 
 # ignore generated files
 *.elc
-.DS_Store
 
 # eask packages
 .eask/
