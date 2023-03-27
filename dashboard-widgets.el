@@ -181,6 +181,8 @@ Example:
       (when (boundp 'straight--profile-cache)
         (setq package-count (+ (hash-table-count straight--profile-cache) package-count)))
       (when (fboundp 'elpaca--queued)
+	(setq time (format "%f seconds" (float-time (time-subtract elpaca-after-init-time
+								   before-init-time))))
         (setq package-count (length (elpaca--queued))))
       (if (zerop package-count)
           (format "Emacs started in %s" time)
