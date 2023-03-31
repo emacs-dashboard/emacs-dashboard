@@ -69,6 +69,7 @@
 (defvar org-todo-keywords-1)
 (defvar all-the-icons-dir-icon-alist)
 (defvar package-activated-list)
+(defvar elpaca-after-init-time)
 (declare-function string-pixel-width "subr-x.el")   ; TODO: remove this after 29.1
 (declare-function shr-string-pixel-width "shr.el")  ; TODO: remove this after 29.1
 
@@ -181,8 +182,8 @@ Example:
       (when (boundp 'straight--profile-cache)
         (setq package-count (+ (hash-table-count straight--profile-cache) package-count)))
       (when (fboundp 'elpaca--queued)
-	(setq time (format "%f seconds" (float-time (time-subtract elpaca-after-init-time
-								   before-init-time))))
+        (setq time (format "%f seconds" (float-time (time-subtract elpaca-after-init-time
+                                                                   before-init-time))))
         (setq package-count (length (elpaca--queued))))
       (if (zerop package-count)
           (format "Emacs started in %s" time)
