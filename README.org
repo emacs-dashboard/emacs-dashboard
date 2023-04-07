@@ -241,7 +241,7 @@ are close. Note that this could slow down the dashboard buffer refreshment.
 
 Agenda is now sorted with ~dashboard-agenda-sort-strategy~ following
 the idea of [[https://orgmode.org/worg/doc.html#org-agenda-sorting-strategy][org-agenda-sorting-strategy]]. Suported strategies are
-~priority-up~, ~priority-down, ~time-up~, ~time-down~, ~todo-state-up~ and ~todo-state-down~
+~priority-up~, ~priority-down~, ~time-up~, ~time-down~, ~todo-state-up~ and ~todo-state-down~
 
 *** Agenda format
 
