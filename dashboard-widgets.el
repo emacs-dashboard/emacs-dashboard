@@ -815,9 +815,9 @@ to widget creation."
                            (cond
                             ((or (string-equal ,section-name "Agenda for today:")
                                  (string-equal ,section-name "Agenda for the coming week:"))
-                             (dashboard--agenda-item-icon))
+                             dashboard--agenda-item-icon)
                             ((file-remote-p path)
-                             (dashboard--remote-path-icon))
+                             dashboard--remote-path-icon)
                             (t (dashboard-icon-for-file (file-name-nondirectory path)
                                                         :v-adjust -0.05))))))
               (setq tag (concat icon " " ,@rest))))
