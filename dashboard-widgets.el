@@ -101,23 +101,8 @@ preserved."
   :type 'integer
   :group 'dashboard)
 
-(defcustom dashboard-heading-icons
-  '((recents   . "history")
-    (bookmarks . "bookmark")
-    (agenda    . "calendar")
-    (projects  . "rocket")
-    (registers . "database"))
-
-  "Association list for the icons of the heading sections.
-Will be of the form `(list-type . icon-name-string)`.
-If nil it is disabled.  Possible values for list-type are:
-`recents' `bookmarks' `projects' `agenda' `registers'"
-  :type  '(repeat (alist :key-type symbol :value-type string))
-  :group 'dashboard)
-
-(defvar dashboard--agenda-item-icon nil)
-(defvar dashboard--remote-path-icon nil)
-(defcustom dashboard-icon-type 'all-the-icons
+(defcustom dashboard-icon-type (or (require 'nerd-icons nil t)
+                                   (require 'all-the-icons nil t))
   "Icon type used for dashboard.
 The value can be one of: `all-the-icons', `nerd-icons'."
   :type 'symbol
@@ -126,27 +111,42 @@ The value can be one of: `all-the-icons', `nerd-icons'."
   (lambda (k v)
     (and (eq v 'all-the-icons) (not (require 'all-the-icons nil t)) (setq v nil))
     (and (eq v 'nerd-icons) (not (require 'nerd-icons nil t)) (setq v nil))
-    (set k v)
-    (setq dashboard--agenda-item-icon
-          (pcase (symbol-value k)
-            ('all-the-icons (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
-            ('nerd-icons (nerd-icons-octicon "nf-oct-primitive_dot" :height 1.0 :v-adjust 0.01))))
-    (setq dashboard--remote-path-icon
-          (pcase (symbol-value k)
-            ('all-the-icons (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
-            ('nerd-icons (nerd-icons-octicon "nf-oct-radio_tower" :height 1.0 :v-adjust 0.01))))
-    (setq dashboard-heading-icons
-          (pcase (symbol-value k)
-            ('all-the-icons   '((recents   . "history")
-                                (bookmarks . "bookmark")
-                                (agenda    . "calendar")
-                                (projects  . "rocket")
-                                (registers . "database")))
-            ('nerd-icons   '((recents   . "nf-oct-history")
-                             (bookmarks . "nf-oct-bookmark")
-                             (agenda    . "nf-oct-calendar")
-                             (projects  . "nf-oct-rocket")
-                             (registers . "nf-oct-database")))))))
+    (set k v)))
+
+(defcustom dashboard-heading-icons
+  (pcase dashboard-icon-type
+    ('all-the-icons   '((recents   . "history")
+                        (bookmarks . "bookmark")
+                        (agenda    . "calendar")
+                        (projects  . "rocket")
+                        (registers . "database")))
+    ('nerd-icons   '((recents   . "nf-oct-history")
+                     (bookmarks . "nf-oct-bookmark")
+                     (agenda    . "nf-oct-calendar")
+                     (projects  . "nf-oct-rocket")
+                     (registers . "nf-oct-database"))))
+  "Association list for the icons of the heading sections.
+Will be of the form `(list-type . icon-name-string)`.
+If nil it is disabled.  Possible values for list-type are:
+`recents' `bookmarks' `projects' `agenda' `registers'"
+  :type  '(repeat (alist :key-type symbol :value-type string))
+  :group 'dashboard)
+
+(defcustom dashboard-agenda-item-icon
+  (cond
+   ((eq dashboard-icon-type 'all-the-icons) (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
+   ((eq dashboard-icon-type 'nerd-icons) (nerd-icons-octicon "nf-oct-primitive_dot" :height 1.0 :v-adjust 0.01)))
+  "Agenda item icon."
+  :type 'string
+  :group 'dashboard)
+
+(defcustom dashboard-remote-path-icon
+  (cond
+   ((eq dashboard-icon-type 'all-the-icons) (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
+   ((eq dashboard-icon-type 'nerd-icons) (nerd-icons-octicon "nf-oct-radio_tower" :height 1.0 :v-adjust 0.01)))
+  "Remote path icon."
+  :type 'string
+  :group 'dashboard)
 
 (defcustom dashboard-set-heading-icons nil
   "When non nil, heading sections will have icons."
@@ -815,9 +815,9 @@ to widget creation."
                            (cond
                             ((or (string-equal ,section-name "Agenda for today:")
                                  (string-equal ,section-name "Agenda for the coming week:"))
-                             dashboard--agenda-item-icon)
+                             dashboard-agenda-item-icon)
                             ((file-remote-p path)
-                             dashboard--remote-path-icon)
+                             dashboard-remote-path-icon)
                             (t (dashboard-icon-for-file (file-name-nondirectory path)
                                                         :v-adjust -0.05))))))
               (setq tag (concat icon " " ,@rest))))
