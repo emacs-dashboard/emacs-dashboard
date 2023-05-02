@@ -268,36 +268,39 @@ predicate value."
   "Get the formatted icon for DIR.
 ARGS should be a plist containing `:height', `:v-adjust',
 or `:face' properties."
-  (cond ((eq dashboard-icon-type 'all-the-icons) (apply #'all-the-icons-icon-for-dir dir args))
-        ((eq dashboard-icon-type 'nerd-icons) (apply #'nerd-icons-icon-for-dir dir args))))
+  (pcase dashboard-icon-type
+    ('all-the-icons (apply #'all-the-icons-icon-for-dir dir args))
+    ('nerd-icons (apply #'nerd-icons-icon-for-dir dir args))))
 
 (defun dashboard-icon-for-file (file &rest args)
   "Get the formatted icon for FILE.
 ARGS should be a plist containing `:height', `:v-adjust',
 or `:face' properties."
-  (cond ((eq dashboard-icon-type 'all-the-icons) (apply #'all-the-icons-icon-for-file file args))
-        ((eq dashboard-icon-type 'nerd-icons) (apply #'nerd-icons-icon-for-file file args))))
+  (pcase dashboard-icon-type
+      ('all-the-icons (apply #'all-the-icons-icon-for-file file args))
+      ('nerd-icons (apply #'nerd-icons-icon-for-file file args))))
 
 (defun dashboard-octicon (name &rest args)
   "Get the formatted octicon.
 ARGS should be a plist containing `:height', `:v-adjust',
 or `:face' properties."
-  (cond ((eq dashboard-icon-type 'all-the-icons) (apply #'all-the-icons-octicon name args))
-        ((eq dashboard-icon-type 'nerd-icons) (apply #'nerd-icons-octicon name args))))
+  (pcase dashboard-icon-type
+    ('all-the-icons (apply #'all-the-icons-octicon name args))
+    ('nerd-icons (apply #'nerd-icons-octicon name args))))
 
 (defcustom dashboard-footer-icon
   (if (dashboard-display-icons-p)
-      (cond
-       ((eq dashboard-icon-type 'all-the-icons)
-        (all-the-icons-fileicon "emacs"
-                                :height 1.1
-                                :v-adjust -0.05
-                                :face 'font-lock-keyword-face))
-       ((eq dashboard-icon-type 'nerd-icons)
-        (nerd-icons-sucicon "nf-custom-emacs"
-                            :height 1.1
-                            :v-adjust -0.05
-                            :face 'font-lock-keyword-face)))
+      (pcase dashboard-icon-type
+        ('all-the-icons
+         (all-the-icons-fileicon "emacs"
+                                 :height 1.1
+                                 :v-adjust -0.05
+                                 :face 'font-lock-keyword-face))
+        ('nerd-icons
+         (nerd-icons-sucicon "nf-custom-emacs"
+                             :height 1.1
+                             :v-adjust -0.05
+                             :face 'font-lock-keyword-face)))
     (propertize ">" 'face 'dashboard-footer))
   "Footer's icon."
   :type 'string
