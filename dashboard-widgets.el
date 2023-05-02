@@ -34,6 +34,7 @@
 (declare-function nerd-icons-icon-for-dir "ext:nerd-icons.el")
 (declare-function nerd-icons-icon-for-file "ext:nerd-icons.el")
 (declare-function nerd-icons-sucicon "ext:nerd-icons.el")
+(declare-function nerd-icons-octicon "ext:nerd-icons.el")
 (declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
 (declare-function calendar-date-compare "ext:calendar.el")
