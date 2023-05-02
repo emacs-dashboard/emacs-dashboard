@@ -594,7 +594,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
         (dashboard-octicon (cdr (assoc 'ls-files dashboard-heading-icons))
                            :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
        (_
-        (if (null heading) " " heading))))
+        (if (null icon) " " icon))))
     (insert " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
