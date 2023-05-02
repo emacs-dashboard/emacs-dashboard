@@ -31,6 +31,10 @@
 (declare-function all-the-icons-icon-for-file "ext:all-the-icons.el")
 (declare-function all-the-icons-fileicon "ext:data-fileicons.el")
 (declare-function all-the-icons-octicon "ext:data-octicons.el")
+(declare-function nerd-icons-icon-for-dir "ext:nerd-icons.el")
+(declare-function nerd-icons-icon-for-file "ext:nerd-icons.el")
+(declare-function nerd-icons-sucicon "ext:nerd-icons.el")
+(declare-function nerd-icons-octicon "ext:nerd-icons.el")
 (declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
 (declare-function calendar-date-compare "ext:calendar.el")
@@ -96,6 +100,53 @@ with Imagemagick support.  When value is non-zero the image banner
 will be resized to the specified width in pixels, with aspect ratio
 preserved."
   :type 'integer
+  :group 'dashboard)
+
+(defcustom dashboard-icon-type (or (require 'nerd-icons nil t)
+                                   (require 'all-the-icons nil t))
+  "Icon type used for dashboard.
+The value can be one of: `all-the-icons', `nerd-icons'."
+  :type 'symbol
+  :group 'dashboard
+  :set
+  (lambda (k v)
+    (and (eq v 'all-the-icons) (not (require 'all-the-icons nil t)) (setq v nil))
+    (and (eq v 'nerd-icons) (not (require 'nerd-icons nil t)) (setq v nil))
+    (set k v)))
+
+(defcustom dashboard-heading-icons
+  (pcase dashboard-icon-type
+    ('all-the-icons   '((recents   . "history")
+                        (bookmarks . "bookmark")
+                        (agenda    . "calendar")
+                        (projects  . "rocket")
+                        (registers . "database")))
+    ('nerd-icons   '((recents   . "nf-oct-history")
+                     (bookmarks . "nf-oct-bookmark")
+                     (agenda    . "nf-oct-calendar")
+                     (projects  . "nf-oct-rocket")
+                     (registers . "nf-oct-database"))))
+  "Association list for the icons of the heading sections.
+Will be of the form `(list-type . icon-name-string)`.
+If nil it is disabled.  Possible values for list-type are:
+`recents' `bookmarks' `projects' `agenda' `registers'"
+  :type  '(repeat (alist :key-type symbol :value-type string))
+  :group 'dashboard)
+
+(defcustom dashboard-agenda-item-icon
+  (pcase dashboard-icon-type
+   ('all-the-icons (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
+   ('nerd-icons (nerd-icons-octicon "nf-oct-primitive_dot" :height 1.0 :v-adjust 0.01)))
+  "Agenda item icon."
+  :type 'string
+  :group 'dashboard)
+
+(defcustom dashboard-remote-path-icon
+  (pcase dashboard-icon-type
+   ('all-the-icons (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
+   ('nerd-icons (nerd-icons-octicon "nf-oct-radio_tower" :height 1.0 :v-adjust 0.01)))
+  "Remote path icon."
+  :type 'string
   :group 'dashboard)
 
 (defcustom dashboard-set-heading-icons nil
@@ -213,14 +264,43 @@ predicate value."
       (funcall dashboard-display-icons-p)
     dashboard-display-icons-p))
 
+(defun dashboard-icon-for-dir (dir &rest args)
+  "Get the formatted icon for DIR.
+ARGS should be a plist containing `:height', `:v-adjust',
+or `:face' properties."
+  (pcase dashboard-icon-type
+    ('all-the-icons (apply #'all-the-icons-icon-for-dir dir args))
+    ('nerd-icons (apply #'nerd-icons-icon-for-dir dir args))))
+
+(defun dashboard-icon-for-file (file &rest args)
+  "Get the formatted icon for FILE.
+ARGS should be a plist containing `:height', `:v-adjust',
+or `:face' properties."
+  (pcase dashboard-icon-type
+      ('all-the-icons (apply #'all-the-icons-icon-for-file file args))
+      ('nerd-icons (apply #'nerd-icons-icon-for-file file args))))
+
+(defun dashboard-octicon (name &rest args)
+  "Get the formatted octicon.
+ARGS should be a plist containing `:height', `:v-adjust',
+or `:face' properties."
+  (pcase dashboard-icon-type
+    ('all-the-icons (apply #'all-the-icons-octicon name args))
+    ('nerd-icons (apply #'nerd-icons-octicon name args))))
+
 (defcustom dashboard-footer-icon
-  (if (and (dashboard-display-icons-p)
-           (or (fboundp 'all-the-icons-fileicon)
-               (require 'all-the-icons nil 'noerror)))
-      (all-the-icons-fileicon "emacs"
-                              :height 1.1
-                              :v-adjust -0.05
-                              :face 'font-lock-keyword-face)
+  (if (dashboard-display-icons-p)
+      (pcase dashboard-icon-type
+        ('all-the-icons
+         (all-the-icons-fileicon "emacs"
+                                 :height 1.1
+                                 :v-adjust -0.05
+                                 :face 'font-lock-keyword-face))
+        ('nerd-icons
+         (nerd-icons-sucicon "nf-custom-emacs"
+                             :height 1.1
+                             :v-adjust -0.05
+                             :face 'font-lock-keyword-face)))
     (propertize ">" 'face 'dashboard-footer))
   "Footer's icon."
   :type 'string
@@ -309,19 +389,6 @@ Set to nil for unbounded."
   :type  'integer
   :group 'dashboard)
 
-(defcustom dashboard-heading-icons
-  '((recents   . "history")
-    (bookmarks . "bookmark")
-    (agenda    . "calendar")
-    (projects  . "rocket")
-    (registers . "database"))
-  "Association list for the icons of the heading sections.
-Will be of the form `(list-type . icon-name-string)`.
-If nil it is disabled.  Possible values for list-type are:
-`recents' `bookmarks' `projects' `agenda' `registers'"
-  :type  '(repeat (alist :key-type symbol :value-type string))
-  :group 'dashboard)
-
 (defcustom dashboard-path-style nil
   "Style to display path."
   :type '(choice
@@ -384,11 +451,11 @@ If nil it is disabled.  Possible values for list-type are:
   :group 'dashboard)
 
 (define-obsolete-face-alias
- 'dashboard-text-banner-face 'dashboard-text-banner "1.2.6")
+  'dashboard-text-banner-face 'dashboard-text-banner "1.2.6")
 (define-obsolete-face-alias
- 'dashboard-banner-logo-title-face 'dashboard-banner-logo-title "1.2.6")
+  'dashboard-banner-logo-title-face 'dashboard-banner-logo-title "1.2.6")
 (define-obsolete-face-alias
- 'dashboard-heading-face 'dashboard-heading "1.2.6")
+  'dashboard-heading-face 'dashboard-heading "1.2.6")
 
 ;;
 ;; Util
@@ -478,28 +545,23 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-insert-heading (heading &optional shortcut icon)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT, ICON if provided."
   (when (and (dashboard-display-icons-p) dashboard-set-heading-icons)
-    ;; Try loading `all-the-icons'
-    (unless (or (fboundp 'all-the-icons-octicon)
-                (require 'all-the-icons nil 'noerror))
-      (error "Package `all-the-icons' isn't installed"))
-
     (insert (cond
              ((string-equal heading "Recent Files:")
-              (all-the-icons-octicon (cdr (assoc 'recents dashboard-heading-icons))
-                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+              (dashboard-octicon (cdr (assoc 'recents dashboard-heading-icons))
+                                 :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
              ((string-equal heading "Bookmarks:")
-              (all-the-icons-octicon (cdr (assoc 'bookmarks dashboard-heading-icons))
-                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+              (dashboard-octicon (cdr (assoc 'bookmarks dashboard-heading-icons))
+                                 :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
              ((or (string-equal heading "Agenda for today:")
                   (string-equal heading "Agenda for the coming week:"))
-              (all-the-icons-octicon (cdr (assoc 'agenda dashboard-heading-icons))
-                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+              (dashboard-octicon (cdr (assoc 'agenda dashboard-heading-icons))
+                                 :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
              ((string-equal heading "Registers:")
-              (all-the-icons-octicon (cdr (assoc 'registers dashboard-heading-icons))
-                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+              (dashboard-octicon (cdr (assoc 'registers dashboard-heading-icons))
+                                 :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
              ((string-equal heading "Projects:")
-              (all-the-icons-octicon (cdr (assoc 'projects dashboard-heading-icons))
-                                     :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
+              (dashboard-octicon (cdr (assoc 'projects dashboard-heading-icons))
+                                 :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
              ((not (null icon)) icon)
              (t " ")))
     (insert " "))
@@ -749,21 +811,19 @@ to widget creation."
           (insert "\n    ")
 
           (when (and (dashboard-display-icons-p)
-                     dashboard-set-file-icons
-                     (or (fboundp 'all-the-icons-icon-for-dir)
-                         (require 'all-the-icons nil 'noerror)))
+                     dashboard-set-file-icons)
             (let* ((path (car (last (split-string ,@rest " - "))))
                    (icon (if (and (not (file-remote-p path))
                                   (file-directory-p path))
-                             (all-the-icons-icon-for-dir path nil "")
+                             (dashboard-icon-for-dir path nil "")
                            (cond
                             ((or (string-equal ,section-name "Agenda for today:")
                                  (string-equal ,section-name "Agenda for the coming week:"))
-                             (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
+                             dashboard-agenda-item-icon)
                             ((file-remote-p path)
-                             (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
-                            (t (all-the-icons-icon-for-file (file-name-nondirectory path)
-                                                            :v-adjust -0.05))))))
+                             dashboard-remote-path-icon)
+                            (t (dashboard-icon-for-file (file-name-nondirectory path)
+                                                        :v-adjust -0.05))))))
               (setq tag (concat icon " " ,@rest))))
 
           (widget-create 'item
