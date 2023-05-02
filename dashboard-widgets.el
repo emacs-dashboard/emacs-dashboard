@@ -134,17 +134,17 @@ If nil it is disabled.  Possible values for list-type are:
   :group 'dashboard)
 
 (defcustom dashboard-agenda-item-icon
-  (cond
-   ((eq dashboard-icon-type 'all-the-icons) (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
-   ((eq dashboard-icon-type 'nerd-icons) (nerd-icons-octicon "nf-oct-primitive_dot" :height 1.0 :v-adjust 0.01)))
+  (pcase dashboard-icon-type
+   ('all-the-icons (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
+   ('nerd-icons (nerd-icons-octicon "nf-oct-primitive_dot" :height 1.0 :v-adjust 0.01)))
   "Agenda item icon."
   :type 'string
   :group 'dashboard)
 
 (defcustom dashboard-remote-path-icon
-  (cond
-   ((eq dashboard-icon-type 'all-the-icons) (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
-   ((eq dashboard-icon-type 'nerd-icons) (nerd-icons-octicon "nf-oct-radio_tower" :height 1.0 :v-adjust 0.01)))
+  (pcase dashboard-icon-type
+   ('all-the-icons (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
+   ('nerd-icons (nerd-icons-octicon "nf-oct-radio_tower" :height 1.0 :v-adjust 0.01)))
   "Remote path icon."
   :type 'string
   :group 'dashboard)
