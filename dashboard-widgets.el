@@ -268,16 +268,17 @@ predicate value."
   "Replace non-displayable character from STR.
 
 Optional argument REP is the replacement string of non-displayable character."
-  (when (stringp str)
-    (let ((rep (or rep ""))
-          (results (list)))
-      (dolist (string (split-string str ""))
-        (let* ((char (string-to-char string))
-               (string (if (char-displayable-p char)
-                           string
-                         rep)))
-          (push string results)))
-      (string-join (reverse results)))))
+  (if (stringp str)
+      (let ((rep (or rep ""))
+            (results (list)))
+        (dolist (string (split-string str ""))
+          (let* ((char (string-to-char string))
+                 (string (if (char-displayable-p char)
+                             string
+                           rep)))
+            (push string results)))
+        (string-join (reverse results)))
+    ""))
 
 (defun dashboard-display-icons-p ()
   "Assert whether to show icons based on the `dashboard-display-icons-p' variable."
@@ -877,7 +878,7 @@ to widget creation."
   (when-let ((footer (and dashboard-set-footer (dashboard-random-footer))))
     (insert "\n")
     (dashboard-insert-center
-     (or (dashboard-replace-displayable dashboard-footer-icon) "")
+     (dashboard-replace-displayable dashboard-footer-icon)
      (if (and (stringp dashboard-footer-icon)
               (not (string-empty-p dashboard-footer-icon)))
          " "
