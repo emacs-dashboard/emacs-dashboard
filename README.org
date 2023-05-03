@@ -17,6 +17,7 @@ An extensible emacs startup screen showing you what's most important.
   4. Recent projects list (Depends on `projectile` or `project.el` package)
   5. Org mode agenda
   6. Register list
+  7. Supports both [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] and [[https://github.com/rainstormstudio/nerd-icons.el][nerd-icons]]
 
 * Screenshot
 
@@ -28,6 +29,7 @@ You will need the following packages which are all available on Melpa:
 1. (optional) page-break-lines - [[https://github.com/purcell/page-break-lines]]
 2. (optional) projectile - [[https://github.com/bbatsov/projectile]]
 3. (optional) all-the-icons - [[https://github.com/domtronn/all-the-icons.el]]
+4. (optional) nerd-icons - [[https://github.com/rainstormstudio/nerd-icons.el]]
 
 * Usage
 
@@ -131,16 +133,33 @@ To modify the widget heading name:
                                ("Agenda for the coming week:" . "Agenda:"))
 #+END_SRC
 
+To use ~all-the-icons~ package:
+#+BEGIN_SRC emacs-lisp
+  (setq dashboard-icon-type 'all-the-icons) ;; use `all-the-icons' package
+#+END_SRC
+
+To use ~nerd-icons~ package:
+#+BEGIN_SRC emacs-lisp
+  (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
+  (setq dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
+#+END_SRC
+
 To add icons to the widget headings and their items:
 #+BEGIN_SRC elisp
-(setq dashboard-set-heading-icons t)
-(setq dashboard-set-file-icons t)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
 #+END_SRC
 
 To modify heading icons with another icon from all-the-icons octicons:
 #+BEGIN_SRC elisp
-(dashboard-modify-heading-icons '((recents . "file-text")
-                                  (bookmarks . "book")))
+  (dashboard-modify-heading-icons '((recents . "file-text")
+                                    (bookmarks . "book")))
+#+END_SRC
+
+To modify heading icons with another icon from nerd-icons octicons:
+#+BEGIN_SRC emacs-lisp
+  (dashboard-modify-heading-icons '((recents . "nf-oct-file_text")
+                                    (bookmarks . "nf-oct-book")))
 #+END_SRC
 
 To show navigator below the banner:
