@@ -878,7 +878,10 @@ to widget creation."
     (insert "\n")
     (dashboard-insert-center
      (or (dashboard-replace-displayable dashboard-footer-icon) "")
-     " "
+     (if (and dashboard-footer-icon
+              (not (string-empty-p dashboard-footer-icon)))
+         " "
+       "")
      (propertize footer 'face 'dashboard-footer)
      "\n")))
 
