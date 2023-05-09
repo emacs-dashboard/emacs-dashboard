@@ -140,7 +140,8 @@ preserved."
   :type 'list
   :group 'dashboard)
 
-(defcustom dashboard-icon-type (and dashboard-set-heading-icons
+(defcustom dashboard-icon-type (and (or dashboard-set-heading-icons
+                                        dashboard-set-file-icons)
                                     (or (require 'nerd-icons nil t)
                                         (require 'all-the-icons nil t)))
   "Icon type used for dashboard.
