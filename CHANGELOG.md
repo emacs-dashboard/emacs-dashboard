@@ -49,6 +49,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Agenda tags format (#441)
 * Make icon display predicate customizeable (#442)
 * Add support for nerd-icons (#451)
+* Add custom variables for icon's arguments (#461)
 
 ## 1.7.0
 > Released Feb 21, 2020
