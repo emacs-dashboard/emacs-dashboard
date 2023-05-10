@@ -178,6 +178,16 @@ If nil it is disabled.  Possible values for list-type are:
   :type  '(repeat (alist :key-type symbol :value-type string))
   :group 'dashboard)
 
+(defcustom dashboard-heading-icon-height 1.2
+  "The height of the heading icon."
+  :type 'float
+  :group 'dashboard)
+
+(defcustom dashboard-heading-icon-v-adjust 0.0
+  "The v-adjust of the heading icon."
+  :type 'float
+  :group 'dashboard)
+
 (defcustom dashboard-agenda-item-icon
   (pcase dashboard-icon-type
     ('all-the-icons (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
@@ -298,8 +308,7 @@ or `:face' properties."
 
 (defun dashboard-icon-for-file (file &rest args)
   "Get the formatted icon for FILE.
-ARGS should be a plist containing `:height', `:v-adjust',
-or `:face' properties."
+ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties."
   (dashboard-replace-displayable
    (pcase dashboard-icon-type
      ('all-the-icons (apply #'all-the-icons-icon-for-file file args))
@@ -307,8 +316,7 @@ or `:face' properties."
 
 (defun dashboard-octicon (name &rest args)
   "Get the formatted octicon.
-ARGS should be a plist containing `:height', `:v-adjust',
-or `:face' properties."
+ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties."
   (dashboard-replace-displayable
    (pcase dashboard-icon-type
      ('all-the-icons (apply #'all-the-icons-octicon name args))
@@ -571,33 +579,29 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-insert-heading (heading &optional shortcut icon)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT, ICON if provided."
   (when (and (dashboard-display-icons-p) dashboard-set-heading-icons)
-    (insert
-     (pcase heading
-       ("Recent Files:"
-        (dashboard-octicon (cdr (assoc 'recents dashboard-heading-icons))
-                           :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-       ("Bookmarks:"
-        (dashboard-octicon (cdr (assoc 'bookmarks dashboard-heading-icons))
-                           :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-       ((or "Agenda for today:"
-            "Agenda for the coming week:")
-        (dashboard-octicon (cdr (assoc 'agenda dashboard-heading-icons))
-                           :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-       ("Registers:"
-        (dashboard-octicon (cdr (assoc 'registers dashboard-heading-icons))
-                           :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-       ("Projects:"
-        (dashboard-octicon (cdr (assoc 'projects dashboard-heading-icons))
-                           :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-       ("List Directories:"
-        (dashboard-octicon (cdr (assoc 'ls-directories dashboard-heading-icons))
-                           :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-       ("List Files:"
-        (dashboard-octicon (cdr (assoc 'ls-files dashboard-heading-icons))
-                           :height 1.2 :v-adjust 0.0 :face 'dashboard-heading))
-       (_
-        (if (null icon) " " icon))))
-    (insert " "))
+    (let ((args `( :height   ,dashboard-heading-icon-height
+                   :v-adjust ,dashboard-heading-icon-v-adjust
+                   :face     dashboard-heading)))
+      (insert
+       (pcase heading
+         ("Recent Files:"
+          (apply #'dashboard-octicon (cdr (assoc 'recents dashboard-heading-icons)) args))
+         ("Bookmarks:"
+          (apply #'dashboard-octicon (cdr (assoc 'bookmarks dashboard-heading-icons)) args))
+         ((or "Agenda for today:"
+              "Agenda for the coming week:")
+          (apply #'dashboard-octicon (cdr (assoc 'agenda dashboard-heading-icons)) args))
+         ("Registers:"
+          (apply #'dashboard-octicon (cdr (assoc 'registers dashboard-heading-icons)) args))
+         ("Projects:"
+          (apply #'dashboard-octicon (cdr (assoc 'projects dashboard-heading-icons)) args))
+         ("List Directories:"
+          (apply #'dashboard-octicon (cdr (assoc 'ls-directories dashboard-heading-icons)) args))
+         ("List Files:"
+          (apply #'dashboard-octicon (cdr (assoc 'ls-files dashboard-heading-icons)) args))
+         (_
+          (if (null icon) " " icon))))
+      (insert " ")))
 
   (insert (propertize heading 'face 'dashboard-heading))
 
