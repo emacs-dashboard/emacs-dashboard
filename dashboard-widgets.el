@@ -35,6 +35,7 @@
 (declare-function nerd-icons-icon-for-file "ext:nerd-icons.el")
 (declare-function nerd-icons-sucicon "ext:nerd-icons.el")
 (declare-function nerd-icons-octicon "ext:nerd-icons.el")
+(declare-function nerd-icons-codicon "ext:nerd-icons.el")
 (declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
 (declare-function calendar-date-compare "ext:calendar.el")
@@ -191,7 +192,7 @@ If nil it is disabled.  Possible values for list-type are:
 (defcustom dashboard-agenda-item-icon
   (pcase dashboard-icon-type
     ('all-the-icons (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
-    ('nerd-icons (nerd-icons-octicon "nf-oct-primitive_dot" :height 1.0 :v-adjust 0.01)))
+    ('nerd-icons (nerd-icons-octicon "nf-oct-dot_fill" :height 1.0 :v-adjust 0.01)))
   "Agenda item icon."
   :type 'string
   :group 'dashboard)
@@ -199,7 +200,7 @@ If nil it is disabled.  Possible values for list-type are:
 (defcustom dashboard-remote-path-icon
   (pcase dashboard-icon-type
     ('all-the-icons (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
-    ('nerd-icons (nerd-icons-octicon "nf-oct-radio_tower" :height 1.0 :v-adjust 0.01)))
+    ('nerd-icons (nerd-icons-codicon "nf-cod-radio_tower" :height 1.0 :v-adjust 0.01)))
   "Remote path icon."
   :type 'string
   :group 'dashboard)
