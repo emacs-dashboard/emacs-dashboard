@@ -453,12 +453,25 @@ Optional argument ARGS adviced function arguments."
 
 (defalias #'dashboard-refresh-buffer #'dashboard-open)
 
+(defun dashboard-resize-on-hook (&optional _)
+  "Re-render dashboard on window size change."
+  (let ((space-win (get-buffer-window dashboard-buffer-name))
+        (frame-win (frame-selected-window)))
+    (when (and space-win
+               (not (window-minibuffer-p frame-win)))
+      (with-selected-window space-win
+        (dashboard-insert-startupify-lists)))))
+
 ;;;###autoload
 (defun dashboard-setup-startup-hook ()
   "Setup post initialization hooks.
 If a command line argument is provided, assume a filename and skip displaying
 Dashboard."
   (when (< (length command-line-args) 2)
+    (add-hook 'window-setup-hook (lambda ()
+                                   ;; 100 means `dashboard-resize-on-hook' will run last
+                                   (add-hook 'window-size-change-functions 'dashboard-resize-on-hook 100)
+                                   (dashboard-resize-on-hook)))
     (add-hook 'after-init-hook (lambda ()
                                  ;; Display useful lists of items
                                  (dashboard-insert-startupify-lists)))
