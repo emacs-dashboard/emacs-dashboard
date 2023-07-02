@@ -192,7 +192,8 @@ If nil it is disabled.  Possible values for list-type are:
 (defcustom dashboard-agenda-item-icon
   (pcase dashboard-icon-type
     ('all-the-icons (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
-    ('nerd-icons (nerd-icons-octicon "nf-oct-dot_fill" :height 1.0 :v-adjust 0.01)))
+    ;; MRO 20230625 change to TODO-Item org: nf-oct-dot_fill -> nf-seti-todo
+    ('nerd-icons (nerd-icons-sucicon "nf-seti-todo" :height 1.0 :v-adjust 0.01)))
   "Agenda item icon."
   :type 'string
   :group 'dashboard)
@@ -302,26 +303,23 @@ Optional argument REP is the replacement string of non-displayable character."
   "Get the formatted icon for DIR.
 ARGS should be a plist containing `:height', `:v-adjust',
 or `:face' properties."
-  (dashboard-replace-displayable
    (pcase dashboard-icon-type
      ('all-the-icons (apply #'all-the-icons-icon-for-dir dir args))
-     ('nerd-icons (apply #'nerd-icons-icon-for-dir dir args)))))
+     ('nerd-icons (nerd-icons-icon-for-dir dir args))))
 
 (defun dashboard-icon-for-file (file &rest args)
   "Get the formatted icon for FILE.
 ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties."
-  (dashboard-replace-displayable
    (pcase dashboard-icon-type
      ('all-the-icons (apply #'all-the-icons-icon-for-file file args))
-     ('nerd-icons (apply #'nerd-icons-icon-for-file file args)))))
+     ('nerd-icons (nerd-icons-icon-for-file file args))))
 
 (defun dashboard-octicon (name &rest args)
   "Get the formatted octicon.
 ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties."
-  (dashboard-replace-displayable
-   (pcase dashboard-icon-type
-     ('all-the-icons (apply #'all-the-icons-octicon name args))
-     ('nerd-icons (apply #'nerd-icons-octicon name args)))))
+  (pcase dashboard-icon-type
+     ('all-the-icons (all-the-icons-octicon name args))
+     ('nerd-icons (nerd-icons-octicon name args))))
 
 (defcustom dashboard-footer-icon
   (if (dashboard-display-icons-p)
@@ -884,7 +882,7 @@ to widget creation."
   (when-let ((footer (and dashboard-set-footer (dashboard-random-footer))))
     (insert "\n")
     (dashboard-insert-center
-     (dashboard-replace-displayable dashboard-footer-icon)
+     dashboard-footer-icon
      (if (and (stringp dashboard-footer-icon)
               (not (string-empty-p dashboard-footer-icon)))
          " "
