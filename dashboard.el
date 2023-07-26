@@ -12,7 +12,7 @@
 ;;; License: GPLv3
 ;;
 ;; Created: October 05, 2016
-;; Package-Version: 1.8.0-SNAPSHOT
+;; Package-Version: 1.8.0
 ;; Keywords: startup, screen, tools, dashboard
 ;; Package-Requires: ((emacs "26.1"))
 ;;; Commentary:
