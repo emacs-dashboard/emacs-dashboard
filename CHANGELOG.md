@@ -5,8 +5,13 @@ All notable changes to this project will be documented in this file.
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 
-## 1.8.0 (Unreleased)
+## 1.9.0 (Unreleased)
 > Released N/A
+
+- N/A
+
+## 1.8.0
+> Released Jul 26, 2023
 
 * Disable display-line-numbers-mode (#182)
 * Mute no project removed message (#212)
