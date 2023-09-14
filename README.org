@@ -42,12 +42,26 @@ You can set up the dashboard to open automatically at startup using =dashboard-s
  #+BEGIN_SRC elisp
 (require 'dashboard)
 (dashboard-setup-startup-hook)
-;; Or if you use use-package
+#+END_SRC
+
+Or with use-package:
+#+BEGIN_SRC elisp
+;; use-package with package.el:
 (use-package dashboard
   :ensure t
   :config
   (dashboard-setup-startup-hook))
- #+END_SRC
+#+END_SRC
+
+#+BEGIN_SRC elisp
+;; use-package with Elpaca:
+(use-package dashboard
+  :elpaca t
+  :config
+  (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
+  (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
+  (dashboard-setup-startup-hook))
+#+END_SRC
 
 Alternatively, if you don't want the dashboard to open by default, you can use the interactive function =dashboard-open= to open it when you do want it.
 
