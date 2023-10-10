@@ -385,6 +385,11 @@ installed."
                  (const :tag "Use project.el" project-el))
   :group 'dashboard)
 
+(defcustom dashboard-remove-missing-entry nil
+  "If non-nil, try to remove missing entries."
+  :type 'boolean
+  :group 'dashboard)
+
 (defcustom dashboard-items
   '((recents   . 5)
     (bookmarks . 5)
@@ -1198,11 +1203,14 @@ Return function that returns a list of projects."
   (cl-case dashboard-projects-backend
     (`projectile
      (require 'projectile)
-     (dashboard-mute-apply (projectile-cleanup-known-projects))
+     (when dashboard-remove-missing-entry
+       (dashboard-mute-apply (projectile-cleanup-known-projects)))
      (projectile-load-known-projects))
     (`project-el
      (require 'project)
-     (dashboard-mute-apply (dashboard-funcall-fboundp #'project-forget-zombie-projects))
+     (when dashboard-remove-missing-entry
+       (dashboard-mute-apply
+         (dashboard-funcall-fboundp #'project-forget-zombie-projects)))
      (project-known-project-roots))
     (t
      (display-warning '(dashboard)
