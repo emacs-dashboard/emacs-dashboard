@@ -42,7 +42,6 @@
 (declare-function projectile-cleanup-known-projects "ext:projectile.el")
 (declare-function projectile-load-known-projects "ext:projectile.el")
 (declare-function projectile-mode "ext:projectile.el")
-(declare-function projectile-relevant-known-projects "ext:projectile.el")
 ;;; project.el in Emacs 26 does not contain this function
 (declare-function project-known-project-roots "ext:project.el" nil t)
 (declare-function project-forget-zombie-projects "ext:project.el" nil t)
@@ -269,9 +268,8 @@ Example:
 
 (defcustom dashboard-display-icons-p #'display-graphic-p
   "Predicate to determine whether dashboard should show icons.
-Can be nil to not show icons and any truthy value to show them. When set
-to a function the result of the function will be interpreted as the
-predicate value."
+Can be nil to not show icons and any truthy value to show them.  When set to a
+function the result of the function will be interpreted as the predicate value."
   :type '(choice (function :tag "Predicate function")
                  (boolean :tag "Predicate value"))
   :group 'dashboard)
@@ -316,7 +314,7 @@ ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties.
      ('nerd-icons (apply #'nerd-icons-icon-for-file file args)))))
 
 (defun dashboard-octicon (name &rest args)
-  "Get the formatted octicon.
+  "Get the formatted octicon by NAME.
 ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties."
   (dashboard-replace-displayable
    (pcase dashboard-icon-type
@@ -383,6 +381,11 @@ To activate the projects widget, add e.g. `(projects . 10)' to
 installed."
   :type '(choice (const :tag "Use projectile" projectile)
                  (const :tag "Use project.el" project-el))
+  :group 'dashboard)
+
+(defcustom dashboard-remove-missing-entry nil
+  "If non-nil, try to remove missing entries."
+  :type 'boolean
   :group 'dashboard)
 
 (defcustom dashboard-items
@@ -543,6 +546,9 @@ Set to nil for unbounded."
                                      search-label
                                      &optional no-next-line)
   "Insert a shortcut SHORTCUT-CHAR for a given SEARCH-LABEL.
+
+SHORTCUT-ID is the section identifier.
+
 Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
   (let* (;; Ensure punctuation and upper case in search string is not
          ;; used to construct the `defun'
@@ -820,6 +826,7 @@ Argument IMAGE-PATH path to the image."
 (defmacro dashboard-insert-section (section-name list list-size shortcut-id shortcut-char action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
 
+SHORTCUT-ID is the section identifier.
 SHORTCUT-CHAR is the keyboard shortcut used to access the section.
 ACTION is theaction taken when the user activates the widget button.
 WIDGET-PARAMS are passed to the \"widget-create\" function."
@@ -1067,7 +1074,9 @@ to widget creation."
 (defun dashboard-insert-recents (list-size)
   "Add the list of LIST-SIZE items from recently edited files."
   (setq dashboard--recentf-cache-item-format nil)
-  (dashboard-mute-apply (recentf-mode 1) (recentf-cleanup))
+  (dashboard-mute-apply
+    (recentf-mode 1)
+    (when dashboard-remove-missing-entry (recentf-cleanup)))
   (dashboard-insert-section
    "Recent Files:"
    (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist 'recents)
@@ -1198,11 +1207,14 @@ Return function that returns a list of projects."
   (cl-case dashboard-projects-backend
     (`projectile
      (require 'projectile)
-     (dashboard-mute-apply (projectile-cleanup-known-projects))
+     (when dashboard-remove-missing-entry
+       (dashboard-mute-apply (projectile-cleanup-known-projects)))
      (projectile-load-known-projects))
     (`project-el
      (require 'project)
-     (dashboard-mute-apply (dashboard-funcall-fboundp #'project-forget-zombie-projects))
+     (when dashboard-remove-missing-entry
+       (dashboard-mute-apply
+         (dashboard-funcall-fboundp #'project-forget-zombie-projects)))
      (project-known-project-roots))
     (t
      (display-warning '(dashboard)

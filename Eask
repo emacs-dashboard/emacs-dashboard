@@ -1,5 +1,5 @@
 (package "dashboard"
-         "1.8.0snapshot"
+         "1.9.0snapshot"
          "A startup screen extracted from Spacemacs")
 
 (website-url "https://github.com/emacs-dashboard/emacs-dashboard")
