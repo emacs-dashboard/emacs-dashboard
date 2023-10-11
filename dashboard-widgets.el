@@ -1076,7 +1076,8 @@ to widget creation."
   (setq dashboard--recentf-cache-item-format nil)
   (dashboard-mute-apply
     (recentf-mode 1)
-    (when dashboard-remove-missing-entry (recentf-cleanup)))
+    (when dashboard-remove-missing-entry
+      (ignore-errors (recentf-cleanup))))
   (dashboard-insert-section
    "Recent Files:"
    (dashboard-shorten-paths recentf-list 'dashboard-recentf-alist 'recents)
@@ -1208,13 +1209,15 @@ Return function that returns a list of projects."
     (`projectile
      (require 'projectile)
      (when dashboard-remove-missing-entry
-       (dashboard-mute-apply (projectile-cleanup-known-projects)))
+       (dashboard-mute-apply
+         (ignore-errors (projectile-cleanup-known-projects))))
      (projectile-load-known-projects))
     (`project-el
      (require 'project)
      (when dashboard-remove-missing-entry
        (dashboard-mute-apply
-         (dashboard-funcall-fboundp #'project-forget-zombie-projects)))
+         (ignore-errors
+           (dashboard-funcall-fboundp #'project-forget-zombie-projects))))
      (project-known-project-roots))
     (t
      (display-warning '(dashboard)
