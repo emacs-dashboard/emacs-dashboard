@@ -1,20 +1,11 @@
 ;;; dashboard-widgets.el --- A startup screen extracted from Spacemacs  -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2016-2023 emacs-dashboard maintainers
-;;
-;; Author     : Rakan Al-Hneiti <rakan.alhneiti@gmail.com>
-;; Maintainer : Jesús Martínez <jesusmartinez93@gmail.com>
-;;              Shen, Jen-Chieh <jcs090218@gmail.com>
-;; URL        : https://github.com/emacs-dashboard/emacs-dashboard
-;;
+
 ;; This file is not part of GNU Emacs.
 ;;
 ;;; License: GPLv3
 ;;
-;; Created: October 05, 2016
-;; Package-Version: 1.9.0-SNAPSHOT
-;; Keywords: startup, screen, tools, dashboard
-;; Package-Requires: ((emacs "26.1"))
 ;;; Commentary:
 
 ;; An extensible Emacs dashboard, with sections for
@@ -716,7 +707,7 @@ Argument IMAGE-PATH path to the image."
           buffer-read-only
           text-width
           image-spec)
-      (insert "\n")
+      (when (display-graphic-p) (insert "\n"))
       ;; If specified, insert a text banner.
       (when-let (txt (plist-get banner :text))
         (if (eq dashboard-startup-banner 'ascii)
