@@ -251,12 +251,6 @@ Example:
   :type '(function string)
   :group 'dashboard)
 
-(defcustom dashboard-footer
-  (nth (random (1- (1+ (length dashboard-footer-messages)))) dashboard-footer-messages)
-  "A footer with some short message."
-  :type 'string
-  :group 'dashboard)
-
 (defcustom dashboard-display-icons-p #'display-graphic-p
   "Predicate to determine whether dashboard should show icons.
 Can be nil to not show icons and any truthy value to show them.  When set to a
@@ -319,13 +313,13 @@ ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties.
          (all-the-icons-fileicon "emacs"
                                  :height 1.1
                                  :v-adjust -0.05
-                                 :face 'font-lock-keyword-face))
+                                 :face 'dashboard-footer-icon-face))
         ('nerd-icons
          (nerd-icons-sucicon "nf-custom-emacs"
                              :height 1.1
                              :v-adjust -0.05
-                             :face 'font-lock-keyword-face)))
-    (propertize ">" 'face 'dashboard-footer))
+                             :face 'dashboard-footer-icon-face)))
+    (propertize ">" 'face 'dashboard-footer-icon-face))
   "Footer's icon."
   :type 'string
   :group 'dashboard)
@@ -474,9 +468,14 @@ Set to nil for unbounded."
   "Face used for no items."
   :group 'dashboard)
 
-(defface dashboard-footer
+(defface dashboard-footer-face
   '((t (:inherit font-lock-doc-face)))
-  "Face used for widget headings."
+  "Face used for footer text."
+  :group 'dashboard)
+
+(defface dashboard-footer-icon-face
+  '((t (:inherit dashboard-footer-face)))
+  "Face used for icon in footer."
   :group 'dashboard)
 
 (define-obsolete-face-alias
@@ -879,15 +878,13 @@ to widget creation."
 
 (defun dashboard-insert-footer ()
   "Insert footer of dashboard."
-  (when-let ((footer (and dashboard-set-footer (dashboard-random-footer))))
+  (when-let ((footer (and dashboard-set-footer (dashboard-random-footer)))
+             (footer-icon (dashboard-replace-displayable dashboard-footer-icon)))
     (insert "\n")
     (dashboard-insert-center
-     (dashboard-replace-displayable dashboard-footer-icon)
-     (if (and (stringp dashboard-footer-icon)
-              (not (string-empty-p dashboard-footer-icon)))
-         " "
-       "")
-     (propertize footer 'face 'dashboard-footer)
+     (if (string-empty-p footer-icon) footer-icon
+       (concat (propertize footer-icon 'face 'dashboard-footer-icon-face) " "))
+     (propertize footer 'face 'dashboard-footer-face)
      "\n")))
 
 ;;
