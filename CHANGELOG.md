@@ -8,7 +8,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## 1.9.0 (Unreleased)
 > Released N/A
 
-- fix: Make remove entry optional (#480)
+* fix: Make remove entry optional (#480)
+* Add dashboard icon face (#483)
 
 ## 1.8.0
 > Released Jul 26, 2023
