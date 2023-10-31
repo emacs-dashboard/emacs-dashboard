@@ -883,7 +883,7 @@ to widget creation."
     (insert "\n")
     (dashboard-insert-center
      (if (string-empty-p footer-icon) footer-icon
-       (concat (propertize footer-icon 'face 'dashboard-footer-icon-face) " "))
+       (concat footer-icon " "))
      (propertize footer 'face 'dashboard-footer-face)
      "\n")))
 
