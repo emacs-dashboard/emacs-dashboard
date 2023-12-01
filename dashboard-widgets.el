@@ -697,6 +697,12 @@ String -> bool.
 Argument IMAGE-PATH path to the image."
   (eq 'gif (image-type image-path)))
 
+(defun dashboard--type-is-xbm-p (image-path)
+  "Return if image is a xbm.
+String -> bool.
+Argument IMAGE-PATH path to the image."
+  (eq 'xbm (image-type image-path)))
+
 (defun dashboard-insert-banner ()
   "Insert the banner at the top of the dashboard."
   (goto-char (point-max))
@@ -729,6 +735,8 @@ Argument IMAGE-PATH path to the image."
                          (list :max-height dashboard-image-banner-max-height)))))
           (setq image-spec
                 (cond ((dashboard--type-is-gif-p img)
+                       (create-image img))
+                      ((dashboard--type-is-xbm-p img)
                        (create-image img))
                       ((image-type-available-p 'imagemagick)
                        (apply 'create-image img 'imagemagick nil size-props))
