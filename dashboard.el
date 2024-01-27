@@ -464,19 +464,20 @@ Optional argument ARGS adviced function arguments."
 
 (defun dashboard-initialize ()
   "Switch to dashboard and run `dashboard-after-initialize-hook'."
-  (switch-to-buffer dashboard-buffer-name)
-  (goto-char (point-min))
-  (redisplay)
-  (run-hooks 'dashboard-after-initialize-hook))
+  (when (and (< (length command-line-args) 2) ;; Assume no file name passed
+             (not inhibit-startup-screen)) ;; Don't display if something already set inhibit-startup-screen
+    (switch-to-buffer dashboard-buffer-name)
+    (goto-char (point-min))
+    (redisplay)
+    (run-hooks 'dashboard-after-initialize-hook)))
 
 ;;;###autoload
 (defun dashboard-setup-startup-hook ()
   "Setup post initialization hooks unless a command line argument is provided."
-  (when (< (length command-line-args) 2) ;; Assume no file name passed
-    (add-hook 'window-size-change-functions #'dashboard-resize-on-hook 100)
-    (add-hook 'window-setup-hook #'dashboard-resize-on-hook)
-    (add-hook 'after-init-hook #'dashboard-insert-startupify-lists)
-    (add-hook 'emacs-startup-hook #'dashboard-initialize)))
+  (add-hook 'window-size-change-functions #'dashboard-resize-on-hook 100)
+  (add-hook 'window-setup-hook #'dashboard-resize-on-hook)
+  (add-hook 'after-init-hook #'dashboard-insert-startupify-lists)
+  (add-hook 'emacs-startup-hook #'dashboard-initialize))
 
 (provide 'dashboard)
 ;;; dashboard.el ends here
