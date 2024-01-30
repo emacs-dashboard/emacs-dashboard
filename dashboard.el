@@ -80,6 +80,11 @@
   :group 'dashboard
   :type 'hook)
 
+(defcustom dashboard-hide-cursor nil
+  "Whether to hide the cursor in the dashboard."
+  :type 'boolean
+  :group 'dashboard)
+
 (define-derived-mode dashboard-mode special-mode "Dashboard"
   "Dashboard major mode for startup screen."
   :group 'dashboard
@@ -91,6 +96,8 @@
   (when (featurep 'display-line-numbers) (display-line-numbers-mode -1))
   (when (featurep 'page-break-lines) (page-break-lines-mode 1))
   (setq-local revert-buffer-function #'dashboard-refresh-buffer)
+  (when dashboard-hide-cursor
+    (setq-local cursor-type nil))
   (setq inhibit-startup-screen t
         buffer-read-only t
         truncate-lines t))
