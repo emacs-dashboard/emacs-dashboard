@@ -80,6 +80,11 @@
   :group 'dashboard
   :type 'hook)
 
+(defcustom dashboard-hide-cursor nil
+  "Whether to hide the cursor in the dashboard."
+  :type 'boolean
+  :group 'dashboard)
+
 (define-derived-mode dashboard-mode special-mode "Dashboard"
   "Dashboard major mode for startup screen."
   :group 'dashboard
@@ -99,11 +104,6 @@
 
 (defcustom dashboard-center-content nil
   "Whether to center content within the window."
-  :type 'boolean
-  :group 'dashboard)
-
-(defcustom dashboard-hide-cursor nil
-  "Whether to hide the cursor in the dashboard."
   :type 'boolean
   :group 'dashboard)
 
