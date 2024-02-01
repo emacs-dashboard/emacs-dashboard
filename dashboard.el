@@ -455,14 +455,12 @@ Optional argument ARGS adviced function arguments."
           (when-let* ((content-height (cdr (window-absolute-pixel-position (point-max))))
                       (vertical-padding (floor (/ (- (window-pixel-height) content-height) 2)))
                       ((> vertical-padding 0))
-                      (vertical-lines (/ vertical-padding
-                                         (line-pixel-height))))
+                      (vertical-lines (floor (/ vertical-padding (line-pixel-height)))))
             (insert (make-string vertical-lines ?\n))))
         (goto-char (point-min))
         (dashboard-mode)))
     (when recentf-is-on
       (setq recentf-list origial-recentf-list))))
-
 
 ;;;###autoload
 (defun dashboard-open (&rest _)
