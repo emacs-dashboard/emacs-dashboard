@@ -445,10 +445,12 @@ Optional argument ARGS adviced function arguments."
         (dashboard-insert-footer)
         (when dashboard-vertically-center-content
           (goto-char (point-min))
-          (let* ((buffer-lines (count-lines (point-min) (point-max)))
-                 (vertical-padding (floor (/ (- (window-height) buffer-lines) 2))))
-            (when (> vertical-padding 0)
-              (insert (make-string vertical-padding ?\n)))))
+          (when-let* ((content-height (cdr (window-absolute-pixel-position (point-max))))
+                      (vertical-padding (floor (/ (- (window-pixel-height) content-height) 2)))
+                      ((> vertical-padding 0))
+                      (vertical-lines (/ vertical-padding
+                                         (line-pixel-height))))
+            (insert (make-string vertical-lines ?\n))))
         (goto-char (point-min))
         (dashboard-mode)))
     (when recentf-is-on
