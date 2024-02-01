@@ -107,6 +107,11 @@
   :type 'boolean
   :group 'dashboard)
 
+(defcustom dashboard-vertically-center-content nil
+  "Whether to vertically center content within the window."
+  :type 'boolean
+  :group 'dashboard)
+
 (defconst dashboard-buffer-name "*dashboard*"
   "Dashboard's buffer name.")
 
@@ -445,6 +450,14 @@ Optional argument ARGS adviced function arguments."
           (delete-char -1)
           (insert dashboard-page-separator))
         (dashboard-insert-footer)
+        (when dashboard-vertically-center-content
+          (goto-char (point-min))
+          (when-let* ((content-height (cdr (window-absolute-pixel-position (point-max))))
+                      (vertical-padding (floor (/ (- (window-pixel-height) content-height) 2)))
+                      ((> vertical-padding 0))
+                      (vertical-lines (/ vertical-padding
+                                         (line-pixel-height))))
+            (insert (make-string vertical-lines ?\n))))
         (goto-char (point-min))
         (dashboard-mode)))
     (when recentf-is-on
