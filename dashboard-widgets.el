@@ -93,6 +93,14 @@ preserved."
   :type 'integer
   :group 'dashboard)
 
+(defcustom dashboard-image-extra-props nil
+  "Additional image attributes to assign to the image.
+This could be useful for displaying images with transparency,
+for example, by setting the `:mask' property to `heuristic'.
+See `create-image' and Info node `(elisp)Image Descriptors'."
+  :type 'plist
+  :group 'dashboard)
+
 (defcustom dashboard-set-heading-icons nil
   "When non nil, heading sections will have icons."
   :type 'boolean
@@ -728,23 +736,24 @@ Argument IMAGE-PATH path to the image."
       ;; If specified, insert an image banner. When displayed in a graphical frame, this will
       ;; replace the text banner.
       (when-let (img (plist-get banner :image))
-        (let ((size-props
+        (let ((img-props
                (append (when (> dashboard-image-banner-max-width 0)
                          (list :max-width dashboard-image-banner-max-width))
                        (when (> dashboard-image-banner-max-height 0)
-                         (list :max-height dashboard-image-banner-max-height)))))
+                         (list :max-height dashboard-image-banner-max-height))
+                       dashboard-image-extra-props)))
           (setq image-spec
                 (cond ((dashboard--type-is-gif-p img)
                        (create-image img))
                       ((dashboard--type-is-xbm-p img)
                        (create-image img))
                       ((image-type-available-p 'imagemagick)
-                       (apply 'create-image img 'imagemagick nil size-props))
+                       (apply 'create-image img 'imagemagick nil img-props))
                       (t
                        (apply 'create-image img nil nil
                               (when (and (fboundp 'image-transforms-p)
                                          (memq 'scale (funcall 'image-transforms-p)))
-                                size-props))))))
+                                img-props))))))
         (add-text-properties start (point) `(display ,image-spec))
         (when (dashboard--type-is-gif-p img) (image-animate image-spec 0 t)))
       ;; Finally, center the banner (if any).
