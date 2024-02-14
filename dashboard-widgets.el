@@ -393,15 +393,15 @@ If nil it is disabled.  Possible values for list-type are:
   :group 'dashboard)
 
 (defcustom dashboard-item-shortcuts
-  '((recents   . "r")
-    (bookmarks . "m")
-    (projects  . "p")
-    (agenda    . "a")
-    (registers . "e"))
+  '((recents   . "R")
+    (bookmarks . "M")
+    (projects  . "P")
+    (agenda    . "A")
+    (registers . "E"))
   "Association list of items and their corresponding shortcuts.
 Will be of the form `(list-type . keys)' as understood by `(kbd keys)'.
 If nil, shortcuts are disabled.  If an entry's value is nil, that item's
-shortcut is disbaled.  See `dashboard-items' for possible values of list-type.'"
+shortcut is disabled.  See `dashboard-items' for possible values of list-type.'"
   :type '(repeat (alist :key-type symbol :value-type string))
   :group 'dashboard)
 

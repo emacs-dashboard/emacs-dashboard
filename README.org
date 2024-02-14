@@ -322,13 +322,15 @@ You can use any of the following shortcuts inside Dashboard
 |----------------------------+------------------|
 | Tab Or C-i                 | Next Item        |
 | Shift-Tab                  | Previous Item    |
+| n, k                       | Next Line        |
+| j, p                       | Previous Line    |
 | Return / Mouse Click / C-m | Open             |
-| r                          | Recent files     |
-| m                          | Bookmarks        |
-| p                          | Projects         |
-| a                          | Org-Mode Agenda  |
-| e                          | Registers        |
-| g                          | Refresh contents |
+| R                          | Recent files     |
+| M                          | Bookmarks        |
+| P                          | Projects         |
+| A                          | Org-Mode Agenda  |
+| E                          | Registers        |
+| G                          | Refresh contents |
 | {                          | Previous section |
 | }                          | Next section     |
 |----------------------------+------------------|
