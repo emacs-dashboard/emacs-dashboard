@@ -24,12 +24,12 @@ An extensible emacs startup screen showing you what's most important.
 [[./etc/screenshot.png]]
 
 * Dependencies
-You will need the following packages which are all available on Melpa:
+You will need the following packages which are all available on MELPA:
 
-1. (optional) page-break-lines - [[https://github.com/purcell/page-break-lines]]
-2. (optional) projectile - [[https://github.com/bbatsov/projectile]]
-3. (optional) all-the-icons - [[https://github.com/domtronn/all-the-icons.el]]
-4. (optional) nerd-icons - [[https://github.com/rainstormstudio/nerd-icons.el]]
+1. [[https://github.com/purcell/page-break-lines][page-break-lines]] (optional)
+2. [[https://github.com/bbatsov/projectile][projectile]] (optional)
+3. [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] (optional)
+4. [[https://github.com/rainstormstudio/nerd-icons.el][nerd-icons]] (optional)
 
 * Usage
 
@@ -111,10 +111,10 @@ To update the banner or banner title
 
 To customize which widgets are displayed, you can use the following snippet
 #+BEGIN_SRC elisp
-(setq dashboard-items '((recents  . 5)
+(setq dashboard-items '((recents   . 5)
                         (bookmarks . 5)
-                        (projects . 5)
-                        (agenda . 5)
+                        (projects  . 5)
+                        (agenda    . 5)
                         (registers . 5)))
  #+END_SRC
 This will add the recent files, bookmarks, projects, org-agenda and registers widgets to your dashboard each displaying 5 items.
@@ -149,13 +149,13 @@ To modify the widget heading name:
 
 To use ~all-the-icons~ package:
 #+BEGIN_SRC emacs-lisp
-  (setq dashboard-icon-type 'all-the-icons) ;; use `all-the-icons' package
+  (setq dashboard-icon-type 'all-the-icons)  ; use `all-the-icons' package
 #+END_SRC
 
 To use ~nerd-icons~ package:
 #+BEGIN_SRC emacs-lisp
-  (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
-  (setq dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
+  (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
+  (setq dashboard-icon-type 'nerd-icons) ; use `nerd-icons' package
 #+END_SRC
 
 To add icons to the widget headings and their items:
@@ -166,13 +166,13 @@ To add icons to the widget headings and their items:
 
 To modify heading icons with another icon from all-the-icons octicons:
 #+BEGIN_SRC elisp
-  (dashboard-modify-heading-icons '((recents . "file-text")
+  (dashboard-modify-heading-icons '((recents   . "file-text")
                                     (bookmarks . "book")))
 #+END_SRC
 
 To modify heading icons with another icon from nerd-icons octicons:
 #+BEGIN_SRC emacs-lisp
-  (dashboard-modify-heading-icons '((recents . "nf-oct-file_text")
+  (dashboard-modify-heading-icons '((recents   . "nf-oct-file_text")
                                     (bookmarks . "nf-oct-book")))
 #+END_SRC
 
