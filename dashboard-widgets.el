@@ -17,6 +17,9 @@
 (require 'image)
 (require 'subr-x)
 
+;;
+;;; Externals
+
 ;; Compiler pacifier
 (declare-function all-the-icons-icon-for-dir "ext:all-the-icons.el")
 (declare-function all-the-icons-icon-for-file "ext:all-the-icons.el")
@@ -67,6 +70,13 @@
 (defvar elpaca-after-init-time)
 (declare-function string-pixel-width "subr-x.el")   ; TODO: remove this after 29.1
 (declare-function shr-string-pixel-width "shr.el")  ; TODO: remove this after 29.1
+
+(defvar recentf-list nil)
+
+(defvar dashboard-buffer-name)
+
+;;
+;;; Customization
 
 (defcustom dashboard-page-separator "\n\n"
   "Separator to use between the different pages."
@@ -439,13 +449,9 @@ Set to nil for unbounded."
   :type 'string
   :group 'dashboard)
 
-(defvar recentf-list nil)
-
-(defvar dashboard-buffer-name)
-
 ;;
-;; Faces
-;;
+;;; Faces
+
 (defface dashboard-text-banner
   '((t (:inherit font-lock-keyword-face)))
   "Face used for text banners."
@@ -494,8 +500,8 @@ Set to nil for unbounded."
  'dashboard-heading-face 'dashboard-heading "1.2.6")
 
 ;;
-;; Util
-;;
+;;; Util
+
 (defmacro dashboard-mute-apply (&rest body)
   "Execute BODY without message."
   (declare (indent 0) (debug t))
@@ -523,8 +529,8 @@ Set to nil for unbounded."
        (if (zerop (% len width)) 0 1))))  ; add one if exceeed
 
 ;;
-;; Generic widget helpers
-;;
+;;; Widget helpers
+
 (defun dashboard-subseq (seq end)
   "Return the subsequence of SEQ from 0 to END."
   (let ((len (length seq))) (butlast seq (- len (min len end)))))
@@ -641,8 +647,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (dashboard-center-text start (point))))
 
 ;;
-;; BANNER
-;;
+;;; Banner
 
 (defun dashboard-get-banner-path (index)
   "Return the full path to banner with index INDEX."
@@ -783,8 +788,8 @@ Argument IMAGE-PATH path to the image."
   (dashboard-insert-init-info))
 
 ;;
-;; INIT INFO
-;;
+;;; Initialize info
+
 (defun dashboard-insert-init-info ()
   "Insert init info when `dashboard-set-init-info' is t."
   (when dashboard-set-init-info
@@ -851,8 +856,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
        (insert (propertize "\n    --- No items ---" 'face 'dashboard-no-items-face)))))
 
 ;;
-;; Section list
-;;
+;;; Section list
+
 (defmacro dashboard-insert-section-list (section-name list action &rest rest)
   "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST
 to widget creation."
@@ -888,7 +893,9 @@ to widget creation."
                          :format "%[%t%]")))
       ,list)))
 
-;; Footer
+;;
+;;; Footer
+
 (defun dashboard-random-footer ()
   "Return a random footer from `dashboard-footer-messages'."
   (nth (random (length dashboard-footer-messages)) dashboard-footer-messages))
@@ -905,8 +912,8 @@ to widget creation."
      "\n")))
 
 ;;
-;; Truncate
-;;
+;;; Truncate
+
 (defcustom dashboard-shorten-by-window-width nil
   "Shorten path by window edges."
   :type 'boolean
@@ -1055,8 +1062,8 @@ to widget creation."
     align-length))
 
 ;;
-;; Recentf
-;;
+;;; Recentf
+
 (defcustom dashboard-recentf-show-base nil
   "Show the base file name infront of it's path."
   :type '(choice
@@ -1106,8 +1113,8 @@ to widget creation."
        (t (format dashboard-recentf-item-format filename path))))))
 
 ;;
-;; Bookmarks
-;;
+;;; Bookmarks
+
 (defcustom dashboard-bookmarks-show-base t
   "Show the base file name infront of it's path."
   :type '(choice
@@ -1150,8 +1157,8 @@ to widget creation."
      el)))
 
 ;;
-;; Projects
-;;
+;;; Projects
+
 (defcustom dashboard-projects-switch-function
   nil
   "Custom function to switch to projects from dashboard.
@@ -1247,8 +1254,8 @@ over custom backends."
                           :error)))))
 
 ;;
-;; Org Agenda
-;;
+;;; Org Agenda
+
 (defcustom dashboard-week-agenda t
   "Show agenda weekly if its not nil."
   :type 'boolean
@@ -1502,8 +1509,8 @@ to compare."
    (format "%s" el)))
 
 ;;
-;; Registers
-;;
+;;; Registers
+
 (defun dashboard-insert-registers (list-size)
   "Add the list of LIST-SIZE items of registers."
   (require 'register)

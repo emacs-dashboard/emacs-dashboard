@@ -27,6 +27,9 @@
 
 (require 'dashboard-widgets)
 
+;;
+;;; Externals
+
 (declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
 (declare-function dashboard-ls--dirs "ext:dashboard-ls.el")
@@ -38,6 +41,9 @@
 
 (declare-function dashboard-refresh-buffer "dashboard.el")
 
+;;
+;;; Customization
+
 (defgroup dashboard nil
   "Extensible startup screen."
   :group 'applications)
@@ -45,17 +51,17 @@
 ;; Custom splash screen
 (defvar dashboard-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-p") 'dashboard-previous-line)
-    (define-key map (kbd "C-n") 'dashboard-next-line)
-    (define-key map (kbd "<up>") 'dashboard-previous-line)
-    (define-key map (kbd "<down>") 'dashboard-next-line)
-    (define-key map (kbd "k") 'dashboard-previous-line)
-    (define-key map (kbd "j") 'dashboard-next-line)
-    (define-key map [tab] 'widget-forward)
-    (define-key map (kbd "C-i") 'widget-forward)
-    (define-key map [backtab] 'widget-backward)
-    (define-key map (kbd "RET") 'dashboard-return)
-    (define-key map [mouse-1] 'dashboard-mouse-1)
+    (define-key map (kbd "C-p") #'dashboard-previous-line)
+    (define-key map (kbd "C-n") #'dashboard-next-line)
+    (define-key map (kbd "<up>") #'dashboard-previous-line)
+    (define-key map (kbd "<down>") #'dashboard-next-line)
+    (define-key map (kbd "k") #'dashboard-previous-line)
+    (define-key map (kbd "j") #'dashboard-next-line)
+    (define-key map [tab] #'widget-forward)
+    (define-key map (kbd "C-i") #'widget-forward)
+    (define-key map [backtab] #'widget-backward)
+    (define-key map (kbd "RET") #'dashboard-return)
+    (define-key map [mouse-1] #'dashboard-mouse-1)
     (define-key map (kbd "}") #'dashboard-next-section)
     (define-key map (kbd "{") #'dashboard-previous-section)
 
@@ -122,8 +128,8 @@
   "List of section starting positions.")
 
 ;;
-;; Util
-;;
+;;; Util
+
 (defun dashboard--goto-line (line)
   "Goto LINE."
   (goto-char (point-min)) (forward-line (1- line)))
@@ -138,8 +144,8 @@
      (move-to-column column)))
 
 ;;
-;; Core
-;;
+;;; Core
+
 (defun dashboard--current-section ()
   "Return section symbol in dashboard."
   (save-excursion
@@ -157,8 +163,8 @@
       (user-error "Failed searching dashboard section"))))
 
 ;;
-;; Navigation
-;;
+;;; Navigation
+
 (defun dashboard-previous-section ()
   "Navigate back to previous section."
   (interactive)
@@ -244,8 +250,8 @@ Optional prefix ARG says how many lines to move; default is one line."
   (beginning-of-line-text))
 
 ;;
-;; ffap
-;;
+;;; ffap
+
 (defun dashboard--goto-section (section)
   "Move to SECTION declares in variable `dashboard-item-shortcuts'."
   (let ((fnc (intern (format "dashboard-jump-to-%s" section))))
@@ -302,8 +308,8 @@ Optional argument ARGS adviced function arguments."
 (advice-add 'ffap-guesser :around #'dashboard--ffap-guesser--adv)
 
 ;;
-;; Removal
-;;
+;;; Removal
+
 (defun dashboard-remove-item-under ()
   "Remove a item from the current item section."
   (interactive)
@@ -349,8 +355,8 @@ Optional argument ARGS adviced function arguments."
   (interactive))  ; TODO: ..
 
 ;;
-;; Confirmation
-;;
+;;; Confirmation
+
 (defun dashboard-return ()
   "Hit return key in dashboard buffer."
   (interactive)
@@ -380,8 +386,8 @@ Optional argument ARGS adviced function arguments."
       (setq track-mouse old-track-mouse))))
 
 ;;
-;; Insertion
-;;
+;;; Insertion
+
 (defmacro dashboard--with-buffer (&rest body)
   "Execute BODY in dashboard buffer."
   (declare (indent 0))
