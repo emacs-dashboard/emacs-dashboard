@@ -90,23 +90,25 @@ Dashboard in frames created with =emacsclient -c= as follows:
 To update the banner or banner title
 
 #+BEGIN_SRC elisp
-;; Set the title
-(setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
-;; Set the banner
-(setq dashboard-startup-banner [VALUE])
-;; Value can be
-;; - nil to display no banner
-;; - 'official which displays the official emacs logo
-;; - 'logo which displays an alternative emacs logo
-;; - 1, 2 or 3 which displays one of the text banners
-;; - "path/to/your/image.gif", "path/to/your/image.png", "path/to/your/text.txt" or "path/to/your/image.xbm" which displays whatever gif/image/text/xbm you would prefer
-;; - a cons of '("path/to/your/image.png" . "path/to/your/text.txt")
+  ;; Set the title
+  (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
+  ;; Set the banner
+  (setq dashboard-startup-banner [VALUE])
+  ;; Value can be
+  ;; - nil to display no banner
+  ;; - 'official which displays the official emacs logo
+  ;; - 'logo which displays an alternative emacs logo
+  ;; - 1, 2 or 3 which displays one of the text banners
+  ;; - "path/to/your/image.gif", "path/to/your/image.png", "path/to/your/text.txt" or "path/to/your/image.xbm" which displays whatever gif/image/text/xbm you would prefer
+  ;; - a cons of '("path/to/your/image.png" . "path/to/your/text.txt")
 
-;; Content is not centered by default. To center, set
-(setq dashboard-center-content t)
+  ;; Content is not centered by default. To center, set
+  (setq dashboard-center-content t)
+  ;; vertically center content
+  (setq dashboard-vertically-center-content t)
 
-;; To disable shortcut "jump" indicators for each section, set
-(setq dashboard-show-shortcuts nil)
+  ;; To disable shortcut "jump" indicators for each section, set
+  (setq dashboard-show-shortcuts nil)
 #+END_SRC
 
 To customize which widgets are displayed, you can use the following snippet
@@ -118,6 +120,27 @@ To customize which widgets are displayed, you can use the following snippet
                         (registers . 5)))
  #+END_SRC
 This will add the recent files, bookmarks, projects, org-agenda and registers widgets to your dashboard each displaying 5 items.
+
+To customize item shortcuts:
+#+BEGIN_SRC elisp
+(setq dashboard-item-shortcuts '((recents   . "r")
+                                 (bookmarks . "m")
+                                 (projects  . "p")
+                                 (agenda    . "a")
+                                 (registers . "e")))
+#+END_SRC
+
+To modify the widget heading name:
+#+BEGIN_SRC elisp
+  (setq dashboard-item-names '(("Recent Files:"               . "Recently opened files:")
+                               ("Agenda for today:"           . "Today's agenda:")
+                               ("Agenda for the coming week:" . "Agenda:"))
+#+END_SRC
+
+The default length for each item.
+#+BEGIN_SRC elisp
+(setq dashboard-items-default-length 20)
+#+END_SRC
 
 To add your own custom widget is pretty easy, define your widget's callback function and add it to `dashboard-items` as such:
 #+BEGIN_SRC elisp
@@ -139,13 +162,6 @@ To add an icon to a custom widget, insert it with `dashboard-insert-heading` in 
   (insert "\n")
   (insert "    Custom text"))
  #+END_SRC
-
-To modify the widget heading name:
-#+BEGIN_SRC elisp
-  (setq dashboard-item-names '(("Recent Files:" . "Recently opened files:")
-                               ("Agenda for today:" . "Today's agenda:")
-                               ("Agenda for the coming week:" . "Agenda:"))
-#+END_SRC
 
 To use ~all-the-icons~ package:
 #+BEGIN_SRC emacs-lisp
@@ -176,7 +192,7 @@ To modify heading icons with another icon from nerd-icons octicons:
                                     (bookmarks . "nf-oct-book")))
 #+END_SRC
 
-To show navigator below the banner:
+To show navigators below the banner:
 #+BEGIN_SRC emacs-lisp
 (setq dashboard-set-navigator t)
 #+END_SRC
