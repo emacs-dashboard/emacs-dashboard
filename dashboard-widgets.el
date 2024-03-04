@@ -710,6 +710,12 @@ String -> bool.
 Argument IMAGE-PATH path to the image."
   (eq 'gif (image-type image-path)))
 
+(defun dashboard--type-is-webp-p (image-path)
+  "Return t if the image at IMAGE-PATH is a WebP image, nil otherwise.
+   String -> bool.
+   Argument IMAGE-PATH path to the image."
+  (eq 'webp (image-type image-path)))
+
 (defun dashboard--type-is-xbm-p (image-path)
   "Return if image is a xbm.
 String -> bool.
@@ -750,6 +756,8 @@ Argument IMAGE-PATH path to the image."
           (setq image-spec
                 (cond ((dashboard--type-is-gif-p img)
                        (create-image img))
+                      ((dashboard--type-is-webp-p img)
+                       (create-image img))
                       ((dashboard--type-is-xbm-p img)
                        (create-image img))
                       ((image-type-available-p 'imagemagick)
@@ -760,7 +768,11 @@ Argument IMAGE-PATH path to the image."
                                          (memq 'scale (funcall 'image-transforms-p)))
                                 img-props))))))
         (add-text-properties start (point) `(display ,image-spec))
-        (when (dashboard--type-is-gif-p img) (image-animate image-spec 0 t)))
+        
+(when (or (dashboard--type-is-gif-p img) (dashboard--type-is-webp-p img))
+  (image-animate image-spec 0 t)))
+
+      
       ;; Finally, center the banner (if any).
       (when-let* ((text-align-spec `(space . (:align-to (- center ,(/ text-width 2)))))
                   (image-align-spec `(space . (:align-to (- center (0.5 . ,image-spec)))))
