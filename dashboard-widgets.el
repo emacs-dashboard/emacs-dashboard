@@ -710,11 +710,21 @@ String -> bool.
 Argument IMAGE-PATH path to the image."
   (eq 'gif (image-type image-path)))
 
-(defun dashboard--type-is-webp-p (image-path)
-  "Return t if the image at IMAGE-PATH is a WebP image, nil otherwise.
+
+(defun dashboard--is-image-animated-p (image-path)
+  "Return t if animated and has multiple frames, nil otherwise.
    String -> bool.
-   Argument IMAGE-PATH path to the image."
-  (eq 'webp (image-type image-path)))
+   Argument IMAGE-PATH: Path to the image.
+   This function first checks if the image type supports animation 
+   like GIF or WebP, and then verifies if the supported image has 
+   multiple frames."
+  (when (or (eq (image-type image-path) 'gif)
+            (eq (image-type image-path) 'webp))
+    (let ((image (create-image image-path)))
+      (if (image-multi-frame-p image)
+          t
+        nil))))
+
 
 (defun dashboard--type-is-xbm-p (image-path)
   "Return if image is a xbm.
@@ -754,9 +764,9 @@ Argument IMAGE-PATH path to the image."
                          (list :max-height dashboard-image-banner-max-height))
                        dashboard-image-extra-props)))
           (setq image-spec
-                (cond ((dashboard--type-is-gif-p img)
+                (cond  ((dashboard--is-image-animated-p img)
                        (create-image img))
-                      ((dashboard--type-is-webp-p img)
+                      ((dashboard--type-is-gif-p img)
                        (create-image img))
                       ((dashboard--type-is-xbm-p img)
                        (create-image img))
@@ -769,7 +779,7 @@ Argument IMAGE-PATH path to the image."
                                 img-props))))))
         (add-text-properties start (point) `(display ,image-spec))
         
-(when (or (dashboard--type-is-gif-p img) (dashboard--type-is-webp-p img))
+(when (dashboard--is-image-animated-p img)
   (image-animate image-spec 0 t)))
 
       
