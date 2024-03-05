@@ -712,19 +712,13 @@ Argument IMAGE-PATH path to the image."
 
 
 (defun dashboard--is-image-animated-p (image-path)
-  "Return t if animated and has multiple frames, nil otherwise.
-   String -> bool.
-   Argument IMAGE-PATH: Path to the image.
-   This function first checks if the image type supports animation 
-   like GIF or WebP, and then verifies if the supported image has 
-   multiple frames."
-  (when (or (eq (image-type image-path) 'gif)
-            (eq (image-type image-path) 'webp))
-    (let ((image (create-image image-path)))
-      (if (image-multi-frame-p image)
-          t
-        nil))))
-
+  "Return if image has multiple frames.
+String -> bool.
+Argument IMAGE-PATH path to the image."
+   (when (or (eq (image-type image-path) 'gif)
+           (eq (image-type image-path) 'webp))
+   (let ((image (create-image image-path)))
+     (image-multi-frame-p image))))
 
 (defun dashboard--type-is-xbm-p (image-path)
   "Return if image is a xbm.
@@ -778,9 +772,7 @@ Argument IMAGE-PATH path to the image."
                                          (memq 'scale (funcall 'image-transforms-p)))
                                 img-props))))))
         (add-text-properties start (point) `(display ,image-spec))
-        
-(when (dashboard--is-image-animated-p img)
-  (image-animate image-spec 0 t)))
+        (when (dashboard--is-image-animated-p img) (image-animate image-spec 0 t)))
 
       
       ;; Finally, center the banner (if any).
