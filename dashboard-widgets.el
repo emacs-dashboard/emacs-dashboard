@@ -704,13 +704,6 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (_
      (message "unsupported banner config %s" dashboard-startup-banner))))
 
-(defun dashboard--type-is-gif-p (image-path)
-  "Return if image is a gif.
-String -> bool.
-Argument IMAGE-PATH path to the image."
-  (eq 'gif (image-type image-path)))
-
-
 (defun dashboard--image-animated-p (image-path)
   "Return if image is a gif or webp.
 String -> bool.
