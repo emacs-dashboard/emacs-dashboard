@@ -708,8 +708,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Return if image is a gif or webp.
 String -> bool.
 Argument IMAGE-PATH path to the image."
-  (or (eq 'gif (image-type image-path))
-      (eq 'webp (image-type image-path))))
+  (memq (image-type image-path) '(gif webp)))
 
 (defun dashboard--type-is-xbm-p (image-path)
   "Return if image is a xbm.
@@ -749,7 +748,7 @@ Argument IMAGE-PATH path to the image."
                          (list :max-height dashboard-image-banner-max-height))
                        dashboard-image-extra-props)))
           (setq image-spec
-                (cond  ((dashboard--image-animated-p img)
+                (cond ((dashboard--image-animated-p img)
                        (create-image img))
                       ((dashboard--type-is-xbm-p img)
                        (create-image img))
@@ -761,7 +760,7 @@ Argument IMAGE-PATH path to the image."
                                          (memq 'scale (funcall 'image-transforms-p)))
                                 img-props))))))
         (add-text-properties start (point) `(display ,image-spec))
-        (when  (image-multi-frame-p image-spec) (image-animate image-spec 0 t)))
+        (when (image-multi-frame-p image-spec) (image-animate image-spec 0 t)))
 
       
       ;; Finally, center the banner (if any).
