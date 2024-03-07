@@ -12,6 +12,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Add dashboard icon face (#483)
 * Add customization option to hide the cursor on the dashboard (#492)
 * Add option to vertically center dashboard (#318 and #493)
+* fix: Adding anmiation to webp image (#502)
 
 ## 1.8.0
 > Released Jul 26, 2023
