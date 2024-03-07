@@ -762,7 +762,6 @@ Argument IMAGE-PATH path to the image."
         (add-text-properties start (point) `(display ,image-spec))
         (when (image-multi-frame-p image-spec) (image-animate image-spec 0 t)))
 
-      
       ;; Finally, center the banner (if any).
       (when-let* ((text-align-spec `(space . (:align-to (- center ,(/ text-width 2)))))
                   (image-align-spec `(space . (:align-to (- center (0.5 . ,image-spec)))))
