@@ -719,15 +719,16 @@ Argument IMAGE-PATH path to the image."
 (defun dashboard-insert-banner ()
   "Insert the banner at the top of the dashboard."
   (goto-char (point-max))
-  (when-let (banner (dashboard-choose-banner))
+  (when-let ((banner (dashboard-choose-banner)))
     (insert "\n")
     (let ((start (point))
           buffer-read-only
           text-width
-          image-spec)
-      (when (display-graphic-p) (insert "\n"))
+          image-spec
+          (graphic-mode (display-graphic-p)))
+      (when graphic-mode (insert "\n"))
       ;; If specified, insert a text banner.
-      (when-let (txt (plist-get banner :text))
+      (when-let ((txt (plist-get banner :text)))
         (if (eq dashboard-startup-banner 'ascii)
             (save-excursion (insert txt))
           (insert-file-contents txt))
@@ -735,12 +736,12 @@ Argument IMAGE-PATH path to the image."
         (setq text-width 0)
         (while (not (eobp))
           (let ((line-length (- (line-end-position) (line-beginning-position))))
-            (if (< text-width line-length)
-                (setq text-width line-length)))
+            (when (< text-width line-length)
+              (setq text-width line-length)))
           (forward-line 1)))
       ;; If specified, insert an image banner. When displayed in a graphical frame, this will
       ;; replace the text banner.
-      (when-let (img (plist-get banner :image))
+      (when-let ((img (plist-get banner :image)))
         (let ((img-props
                (append (when (> dashboard-image-banner-max-width 0)
                          (list :max-width dashboard-image-banner-max-width))
@@ -760,7 +761,7 @@ Argument IMAGE-PATH path to the image."
                                          (memq 'scale (funcall 'image-transforms-p)))
                                 img-props))))))
         (add-text-properties start (point) `(display ,image-spec))
-        (when (image-multi-frame-p image-spec) (image-animate image-spec 0 t)))
+        (when (ignore-errors (image-multi-frame-p image-spec)) (image-animate image-spec 0 t)))
 
       ;; Finally, center the banner (if any).
       (when-let* ((text-align-spec `(space . (:align-to (- center ,(/ text-width 2)))))
