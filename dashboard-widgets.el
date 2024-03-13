@@ -922,7 +922,6 @@ to widget creation."
   "Insert footer of dashboard."
   (when-let ((footer (and dashboard-set-footer (dashboard-random-footer)))
              (footer-icon (dashboard-replace-displayable dashboard-footer-icon)))
-    (insert "\n")
     (dashboard-insert-center
      (if (string-empty-p footer-icon) footer-icon
        (concat footer-icon " "))
