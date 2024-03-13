@@ -798,8 +798,11 @@ Argument IMAGE-PATH path to the image."
                     (t nil)))
                   (prefix (propertize " " 'display prop)))
         (add-text-properties start (point) `(line-prefix ,prefix wrap-prefix ,prefix)))
-      (insert "\n\n")
-      (add-text-properties start (point) '(cursor-intangible t inhibit-isearch t))))
+      (insert "\n")
+      (add-text-properties start (point) '(cursor-intangible t inhibit-isearch t)))))
+
+(defun dashboard-insert-banner-title ()
+  "Insert `dashboard-banner-logo-title' if it's non-nil."
   (when dashboard-banner-logo-title
     (dashboard-insert-center (propertize dashboard-banner-logo-title 'face 'dashboard-banner-logo-title))
     (insert "\n")))
