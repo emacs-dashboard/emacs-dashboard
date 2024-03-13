@@ -128,7 +128,8 @@
     dashboard-insert-navigator
     dashboard-insert-newline
     dashboard-insert-init-info
-    dashboard-insert-items
+    dashboard-insert-items 
+    dashboard-insert-newline
     dashboard-insert-footer)
   "List of dashboard widgets (in order) to insert in dashboard buffer."
   :type '(repeat function)
