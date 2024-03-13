@@ -342,7 +342,7 @@ ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties.
   :type 'string
   :group 'dashboard)
 
-(defcustom dashboard-heading-shorcut-key-str " (%s)"
+(defcustom dashboard-heading-shorcut-format " (%s)"
   "String for display key used in headings."
   :type 'string
   :group 'dashboard)
@@ -633,7 +633,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (let ((ov (make-overlay (- (point) (length heading)) (point) nil t)))
     (overlay-put ov 'display (or (cdr (assoc heading dashboard-item-names)) heading))
     (overlay-put ov 'face 'dashboard-heading))
-  (when shortcut (insert (format dashboard-heading-shorcut-key-str shortcut))))
+  (when shortcut (insert (format dashboard-heading-shorcut-format shortcut))))
 
 (defun dashboard-center-text (start end)
   "Center the text between START and END."
