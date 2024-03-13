@@ -118,7 +118,7 @@
   :type 'boolean
   :group 'dashboard)
 
-(defucustom dashboard-use-solaire t
+(defcustom dashboard-use-solaire t
   "Whether to use 'solaire-mode' (if installed) in dashboard."
   :type 'boolean)
 
@@ -476,10 +476,8 @@ See `dashboard-item-generators' for all items available."
         (erase-buffer)
         (setq dashboard--section-starts nil)
         
-        (mapc (lambda (alist)
-                (let* ((name (or (car-safe alist) alist))
-                       (fn (cdr-safe (assoc name dashboard-startupify-list))))
-                  (funcall fn)))
+        (mapc (lambda (fn)
+                (funcall fn)
               dashboard-startupify-list)
 
         (save-excursion
