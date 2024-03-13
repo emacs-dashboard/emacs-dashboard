@@ -129,7 +129,6 @@
     dashboard-insert-newline
     dashboard-insert-init-info
     dashboard-insert-items
-    dashboard-insert-newline
     dashboard-insert-footer)
   "List of dashboard widgets (in order) to insert in dashboard buffer."
   :type '(repeat function)
@@ -447,16 +446,14 @@ See `dashboard-item-generators' for all items available."
               (setq max-line-length
                     (max max-line-length (dashboard-maximum-section-length)))))
           dashboard-items)
-    
-    ;; add a newline so the next section-name doesn't get include
-    ;; on the same line.
-    (insert "\n")
+
     (when dashboard-center-content
       (dashboard-center-text
        (if dashboard--section-starts
            (car (last dashboard--section-starts))
          (point))
-       (point-max)))))
+       (point-max)))
+    (dashboard-insert-page-break)))
 
 (defun dashboard-insert-startupify-lists ()
   "Insert the list of widgets into the buffer."
