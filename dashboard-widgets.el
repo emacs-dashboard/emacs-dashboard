@@ -342,6 +342,11 @@ ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties.
   :type 'string
   :group 'dashboard)
 
+(defcustom dashboard-heading-shorcut-key-str " (%s)"
+  "String for display key used in headings."
+  :type 'string
+  :group 'dashboard)
+
 (defcustom dashboard-startup-banner 'official
   "Specify the startup banner.
 Default value is `official', it displays the Emacs logo.  `logo' displays Emacs
@@ -590,7 +595,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Insert a page break line in dashboard buffer."
   (dashboard-append dashboard-page-separator))
 
-(defun dashboard-insert-heading (heading &optional shortcut icon)
+(defun dashboard-insert-heading (heading &optional shortcut shortcut icon)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT, ICON if provided."
   (when (and (dashboard-display-icons-p) dashboard-set-heading-icons)
     (let ((args `( :height   ,dashboard-heading-icon-height
@@ -628,7 +633,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (let ((ov (make-overlay (- (point) (length heading)) (point) nil t)))
     (overlay-put ov 'display (or (cdr (assoc heading dashboard-item-names)) heading))
     (overlay-put ov 'face 'dashboard-heading))
-  (when shortcut (insert (format " (%s)" shortcut))))
+  (when shortcut (insert (format dashboard-heading-shorcut-key-str shortcut))))
 
 (defun dashboard-center-text (start end)
   "Center the text between START and END."
