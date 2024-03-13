@@ -407,6 +407,38 @@ Optional argument ARGS adviced function arguments."
         (forward-line 1)))
     max-line-length))
 
+(defun dashboard-insert-items ()
+  "Function to insert dashboard items.
+See `dashboard-item-generators' for all items available."
+  (let ((recentf-is-on (recentf-enabled-p))
+        (origial-recentf-list recentf-list)
+        (max-line-length 0))
+    (mapc (lambda (els)
+            (let* ((el (or (car-safe els) els))
+                   (list-size
+                    (or (cdr-safe els)
+                        dashboard-items-default-length))
+                   (item-generator
+                    (cdr-safe (assoc el dashboard-item-generators))))
+
+              (push (point) dashboard--section-starts)
+              (funcall item-generator list-size)
+              (goto-char (point-max))
+              ;; add a newline so the next section-name doesn't get include
+              ;; on the same line.
+              (insert "\n")
+              (when recentf-is-on
+                (setq recentf-list origial-recentf-list))
+              (setq max-line-length
+                    (max max-line-length (dashboard-maximum-section-length)))))
+          dashboard-items)
+    (when dashboard-center-content
+      (dashboard-center-text
+       (if dashboard--section-starts
+           (car (last dashboard--section-starts))
+         (point))
+       (point-max)))))
+
 (defun dashboard-insert-startupify-lists ()
   "Insert the list of widgets into the buffer."
   (interactive)
@@ -418,44 +450,23 @@ Optional argument ARGS adviced function arguments."
     (when recentf-is-on
       (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
     (dashboard--with-buffer
+     (if (fboundp 'solaire-mode)
+          (solaire-mode t))
       (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
         (erase-buffer)
-        (dashboard-insert-banner)
-        (insert "\n")
         (setq dashboard--section-starts nil)
-        (mapc (lambda (els)
-                (let* ((el (or (car-safe els) els))
-                       (list-size
-                        (or (cdr-safe els)
-                            dashboard-items-default-length))
-                       (item-generator
-                        (cdr-safe (assoc el dashboard-item-generators))))
-                  (push (point) dashboard--section-starts)
-                  (funcall item-generator list-size)
-                  (goto-char (point-max))
-                  ;; add a newline so the next section-name doesn't get include
-                  ;; on the same line.
-                  (insert "\n")
-                  (when recentf-is-on
-                    (setq recentf-list origial-recentf-list))
-                  (setq max-line-length
-                        (max max-line-length (dashboard-maximum-section-length)))))
-              dashboard-items)
-        (when dashboard-center-content
-          (dashboard-center-text
-           (if dashboard--section-starts
-               (car (last dashboard--section-starts))
-             (point))
-           (point-max)))
+        
+        (mapc (lambda (alist)
+                (let* ((name (or (car-safe alist) alist))
+                       (fn (cdr-safe (assoc name dashboard-startupify-list))))
+                  (funcall fn)))
+              dashboard-startupify-list)
+
         (save-excursion
           (dolist (start dashboard--section-starts)
             (goto-char start)
-            (delete-char -1)  ; delete the newline we added previously
             (insert dashboard-page-separator)))
-        (progn
-          (delete-char -1)
-          (insert dashboard-page-separator))
-        (dashboard-insert-footer)
+
         (when dashboard-vertically-center-content
           (goto-char (point-min))
           (when-let* ((content-height (cdr (window-absolute-pixel-position (point-max))))
