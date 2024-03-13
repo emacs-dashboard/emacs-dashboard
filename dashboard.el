@@ -118,6 +118,15 @@
   :type 'boolean
   :group 'dashboard)
 
+(defcustom dashboard-startupify-list
+  '((banner    . dashboard-insert-banner)
+    (items     . dashboard-insert-items)
+    (navigator . dashboard-insert-navigator)
+    (init-info . dashboard-insert-init-info))
+  "List for insert dashboard widgets in order."
+  :type '(alist :key-type symbol :value-type function)
+  :group 'dashboard)
+
 (defconst dashboard-buffer-name "*dashboard*"
   "Dashboard's buffer name.")
 
