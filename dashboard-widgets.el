@@ -370,10 +370,13 @@ nil then no banner is displayed."
 Will be of the form `(list-type . list-function)'.
 Possible values for list-type are: `recents', `bookmarks', `projects',
 `agenda' ,`registers'."
-  :type  '(repeat (alist :key-type symbol :value-type function))
+  :type  '(alist :key-type symbol :value-type function)
   :group 'dashboard)
 
-(defcustom dashboard-projects-backend 'projectile
+(defcustom dashboard-projects-backend
+  (if (fboundp 'projectile-find-file)
+      'projectile
+    'project-el)
   "The package that supplies the list of recent projects.
 With the value `projectile', the projects widget uses the package
 projectile (available in MELPA).  With the value `project-el',
@@ -785,9 +788,7 @@ Argument IMAGE-PATH path to the image."
       (add-text-properties start (point) '(cursor-intangible t inhibit-isearch t))))
   (when dashboard-banner-logo-title
     (dashboard-insert-center (propertize dashboard-banner-logo-title 'face 'dashboard-banner-logo-title))
-    (insert "\n\n"))
-  (dashboard-insert-navigator)
-  (dashboard-insert-init-info))
+    (insert "\n")))
 
 ;;
 ;;; Initialize info
@@ -834,8 +835,7 @@ Argument IMAGE-PATH path to the image."
                          :format "%[%t%]")
           (insert " ")))
       (dashboard-center-text (line-beginning-position) (line-end-position))
-      (insert "\n"))
-    (insert "\n")))
+      (insert "\n"))))
 
 (defmacro dashboard-insert-section (section-name list list-size shortcut-id shortcut-char action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
