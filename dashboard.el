@@ -462,12 +462,12 @@ See `dashboard-item-generators' for all items available."
     (when recentf-is-on
       (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
     (dashboard--with-buffer
-     (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
+      (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
         (erase-buffer)
         (setq dashboard--section-starts nil)
         
         (mapc (lambda (fn)
-                (funcall fn)
+                (funcall fn))
               dashboard-startupify-list)
 
         (save-excursion
@@ -486,7 +486,7 @@ See `dashboard-item-generators' for all items available."
         (goto-char (point-min))
         (dashboard-mode)))
     (when recentf-is-on
-      (setq recentf-list origial-recentf-list))))
+      (setq recentf-list origial-recentf-list)))))
 
 ;;;###autoload
 (defun dashboard-open (&rest _)
