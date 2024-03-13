@@ -124,7 +124,7 @@
     dashboard-insert-navigator
     dashboard-insert-newline
     dashboard-insert-init-info
-    dashboard-insert-items 
+    dashboard-insert-items
     dashboard-insert-newline
     dashboard-insert-footer)
   "List of dashboard widgets (in order) to insert in dashboard buffer."
@@ -437,7 +437,7 @@ See `dashboard-item-generators' for all items available."
               (push (point) dashboard--section-starts)
               (funcall item-generator list-size)
               (goto-char (point-max))
-              
+
               (when recentf-is-on
                 (setq recentf-list origial-recentf-list))
               (setq max-line-length
