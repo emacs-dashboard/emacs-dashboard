@@ -595,7 +595,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Insert a page break line in dashboard buffer."
   (dashboard-append dashboard-page-separator))
 
-(defun dashboard-insert-heading (heading &optional shortcut shortcut icon)
+(defun dashboard-insert-heading (heading &optional shortcut icon)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT, ICON if provided."
   (when (and (dashboard-display-icons-p) dashboard-set-heading-icons)
     (let ((args `( :height   ,dashboard-heading-icon-height
