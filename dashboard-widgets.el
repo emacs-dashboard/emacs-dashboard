@@ -80,7 +80,11 @@
 
 (defcustom dashboard-page-separator "\n\n"
   "Separator to use between the different pages."
-  :type 'string
+  :type '(choice
+          (const :tag "Default" "\n\n")
+          (const :tag "Use Page indicator (requires page-break-lines)"
+                 "\n\f\n")
+          (string :tag "Use Custom String"))
   :group 'dashboard)
 
 (defcustom dashboard-image-banner-max-height 0
@@ -594,6 +598,13 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-insert-page-break ()
   "Insert a page break line in dashboard buffer."
   (dashboard-append dashboard-page-separator))
+
+(defun dashboard-insert-newline (&optional n)
+  "Insert N times of newlines."
+  (unless n
+    (setq n 1))
+  (dotimes (_ 1)
+    (insert "\n")))
 
 (defun dashboard-insert-heading (heading &optional shortcut icon)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT, ICON if provided."
