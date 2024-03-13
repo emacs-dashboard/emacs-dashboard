@@ -120,10 +120,14 @@
 
 (defcustom dashboard-startupify-list
   '((banner    . dashboard-insert-banner)
-    (items     . dashboard-insert-items)
+    (new-line . (lambda () (insert "\n")))
     (navigator . dashboard-insert-navigator)
+    (items     . dashboard-insert-items)
+    (new-line . (lambda () (insert "\n")))
+    (footer . dashboard-insert-footer)
+    (new-line . (lambda () (insert "\n")))
     (init-info . dashboard-insert-init-info))
-  "List for insert dashboard widgets in order."
+  "List of dashboard widgets (in order) to insert in dashboard buffer."
   :type '(alist :key-type symbol :value-type function)
   :group 'dashboard)
 
@@ -433,14 +437,16 @@ See `dashboard-item-generators' for all items available."
               (push (point) dashboard--section-starts)
               (funcall item-generator list-size)
               (goto-char (point-max))
-              ;; add a newline so the next section-name doesn't get include
-              ;; on the same line.
-              (insert "\n")
+              
               (when recentf-is-on
                 (setq recentf-list origial-recentf-list))
               (setq max-line-length
                     (max max-line-length (dashboard-maximum-section-length)))))
           dashboard-items)
+    
+    ;; add a newline so the next section-name doesn't get include
+    ;; on the same line.
+    (insert "\n")
     (when dashboard-center-content
       (dashboard-center-text
        (if dashboard--section-starts
