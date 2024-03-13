@@ -118,10 +118,6 @@
   :type 'boolean
   :group 'dashboard)
 
-(defcustom dashboard-use-solaire t
-  "Whether to use 'solaire-mode' (if installed) in dashboard."
-  :type 'boolean)
-
 (defcustom dashboard-startupify-list
   '(dashboard-insert-banner
     dashboard-insert-newline
@@ -466,11 +462,7 @@ See `dashboard-item-generators' for all items available."
     (when recentf-is-on
       (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
     (dashboard--with-buffer
-     (if (fboundp 'solaire-mode)
-         (if dashboard-use-solaire
-             (solaire-mode t)
-           (solaire-mode -1)))
-      (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
+     (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
         (erase-buffer)
         (setq dashboard--section-starts nil)
         
