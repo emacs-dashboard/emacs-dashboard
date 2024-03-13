@@ -601,9 +601,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 
 (defun dashboard-insert-newline (&optional n)
   "Insert N times of newlines."
-  (unless n
-    (setq n 1))
-  (dotimes (_ 1)
+  (dotimes (_ (or n 1))
     (insert "\n")))
 
 (defun dashboard-insert-heading (heading &optional shortcut icon)
