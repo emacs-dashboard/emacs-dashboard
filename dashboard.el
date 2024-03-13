@@ -118,17 +118,21 @@
   :type 'boolean
   :group 'dashboard)
 
+(defucustom dashboard-use-solaire t
+  "Whether to use 'solaire-mode' (if installed) in dashboard."
+  :type 'boolean)
+
 (defcustom dashboard-startupify-list
-  '((banner    . dashboard-insert-banner)
-    (new-line . (lambda () (insert "\n")))
-    (navigator . dashboard-insert-navigator)
-    (items     . dashboard-insert-items)
-    (new-line . (lambda () (insert "\n")))
-    (footer . dashboard-insert-footer)
-    (new-line . (lambda () (insert "\n")))
-    (init-info . dashboard-insert-init-info))
+  '(dashboard-insert-banner
+    dashboard-insert-newline
+    dashboard-insert-navigator
+    dashboard-insert-newline
+    dashboard-insert-init-info
+    dashboard-insert-items
+    dashboard-insert-newline
+    dashboard-insert-footer)
   "List of dashboard widgets (in order) to insert in dashboard buffer."
-  :type '(alist :key-type symbol :value-type function)
+  :type '(repeat function)
   :group 'dashboard)
 
 (defconst dashboard-buffer-name "*dashboard*"
@@ -460,13 +464,14 @@ See `dashboard-item-generators' for all items available."
   (let ((inhibit-redisplay t)
         (recentf-is-on (recentf-enabled-p))
         (origial-recentf-list recentf-list)
-        (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
-        (max-line-length 0))
+        (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0)))
     (when recentf-is-on
       (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
     (dashboard--with-buffer
      (if (fboundp 'solaire-mode)
-          (solaire-mode t))
+         (if dashboard-use-solaire
+             (solaire-mode t)
+           (solaire-mode -1)))
       (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
         (erase-buffer)
         (setq dashboard--section-starts nil)
