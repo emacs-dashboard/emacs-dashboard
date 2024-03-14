@@ -118,6 +118,21 @@
   :type 'boolean
   :group 'dashboard)
 
+(defcustom dashboard-startupify-list
+  '(dashboard-insert-banner
+    dashboard-insert-newline
+    dashboard-insert-banner-title
+    dashboard-insert-newline
+    dashboard-insert-navigator
+    dashboard-insert-newline
+    dashboard-insert-init-info
+    dashboard-insert-items
+    dashboard-insert-newline
+    dashboard-insert-footer)
+  "List of dashboard widgets (in order) to insert in dashboard buffer."
+  :type '(repeat function)
+  :group 'dashboard)
+
 (defconst dashboard-buffer-name "*dashboard*"
   "Dashboard's buffer name.")
 
@@ -407,55 +422,61 @@ Optional argument ARGS adviced function arguments."
         (forward-line 1)))
     max-line-length))
 
+(defun dashboard-insert-items ()
+  "Function to insert dashboard items.
+See `dashboard-item-generators' for all items available."
+  (let ((recentf-is-on (recentf-enabled-p))
+        (origial-recentf-list recentf-list)
+        (max-line-length 0))
+    (mapc (lambda (els)
+            (let* ((el (or (car-safe els) els))
+                   (list-size
+                    (or (cdr-safe els)
+                        dashboard-items-default-length))
+                   (item-generator
+                    (cdr-safe (assoc el dashboard-item-generators))))
+
+              (push (point) dashboard--section-starts)
+              (funcall item-generator list-size)
+              (goto-char (point-max))
+
+              (when recentf-is-on
+                (setq recentf-list origial-recentf-list))
+              (setq max-line-length
+                    (max max-line-length (dashboard-maximum-section-length)))))
+          dashboard-items)
+
+    (when dashboard-center-content
+      (dashboard-center-text
+       (if dashboard--section-starts
+           (car (last dashboard--section-starts))
+         (point))
+       (point-max)))
+    (dashboard-insert-page-break)))
+
 (defun dashboard-insert-startupify-lists ()
   "Insert the list of widgets into the buffer."
   (interactive)
   (let ((inhibit-redisplay t)
         (recentf-is-on (recentf-enabled-p))
         (origial-recentf-list recentf-list)
-        (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0))
-        (max-line-length 0))
+        (dashboard-num-recents (or (cdr (assoc 'recents dashboard-items)) 0)))
     (when recentf-is-on
       (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
     (dashboard--with-buffer
       (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
         (erase-buffer)
-        (dashboard-insert-banner)
-        (insert "\n")
         (setq dashboard--section-starts nil)
-        (mapc (lambda (els)
-                (let* ((el (or (car-safe els) els))
-                       (list-size
-                        (or (cdr-safe els)
-                            dashboard-items-default-length))
-                       (item-generator
-                        (cdr-safe (assoc el dashboard-item-generators))))
-                  (push (point) dashboard--section-starts)
-                  (funcall item-generator list-size)
-                  (goto-char (point-max))
-                  ;; add a newline so the next section-name doesn't get include
-                  ;; on the same line.
-                  (insert "\n")
-                  (when recentf-is-on
-                    (setq recentf-list origial-recentf-list))
-                  (setq max-line-length
-                        (max max-line-length (dashboard-maximum-section-length)))))
-              dashboard-items)
-        (when dashboard-center-content
-          (dashboard-center-text
-           (if dashboard--section-starts
-               (car (last dashboard--section-starts))
-             (point))
-           (point-max)))
+
+        (mapc (lambda (fn)
+                (funcall fn))
+              dashboard-startupify-list)
+
         (save-excursion
           (dolist (start dashboard--section-starts)
             (goto-char start)
-            (delete-char -1)  ; delete the newline we added previously
             (insert dashboard-page-separator)))
-        (progn
-          (delete-char -1)
-          (insert dashboard-page-separator))
-        (dashboard-insert-footer)
+
         (when dashboard-vertically-center-content
           (goto-char (point-min))
           (when-let* ((content-height (cdr (window-absolute-pixel-position (point-max))))

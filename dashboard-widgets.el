@@ -80,7 +80,11 @@
 
 (defcustom dashboard-page-separator "\n\n"
   "Separator to use between the different pages."
-  :type 'string
+  :type '(choice
+          (const :tag "Default" "\n\n")
+          (const :tag "Use Page indicator (requires page-break-lines)"
+                 "\n\f\n")
+          (string :tag "Use Custom String"))
   :group 'dashboard)
 
 (defcustom dashboard-image-banner-max-height 0
@@ -342,6 +346,11 @@ ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties.
   :type 'string
   :group 'dashboard)
 
+(defcustom dashboard-heading-shorcut-format " (%s)"
+  "String for display key used in headings."
+  :type 'string
+  :group 'dashboard)
+
 (defcustom dashboard-startup-banner 'official
   "Specify the startup banner.
 Default value is `official', it displays the Emacs logo.  `logo' displays Emacs
@@ -370,10 +379,10 @@ nil then no banner is displayed."
 Will be of the form `(list-type . list-function)'.
 Possible values for list-type are: `recents', `bookmarks', `projects',
 `agenda' ,`registers'."
-  :type  '(repeat (alist :key-type symbol :value-type function))
+  :type  '(alist :key-type symbol :value-type function)
   :group 'dashboard)
 
-(defcustom dashboard-projects-backend 'projectile
+(defcustom dashboard-projects-backend 'project-el
   "The package that supplies the list of recent projects.
 With the value `projectile', the projects widget uses the package
 projectile (available in MELPA).  With the value `project-el',
@@ -587,6 +596,11 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Insert a page break line in dashboard buffer."
   (dashboard-append dashboard-page-separator))
 
+(defun dashboard-insert-newline (&optional n)
+  "Insert N times of newlines."
+  (dotimes (_ (or n 1))
+    (insert "\n")))
+
 (defun dashboard-insert-heading (heading &optional shortcut icon)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT, ICON if provided."
   (when (and (dashboard-display-icons-p) dashboard-set-heading-icons)
@@ -625,7 +639,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   (let ((ov (make-overlay (- (point) (length heading)) (point) nil t)))
     (overlay-put ov 'display (or (cdr (assoc heading dashboard-item-names)) heading))
     (overlay-put ov 'face 'dashboard-heading))
-  (when shortcut (insert (format " (%s)" shortcut))))
+  (when shortcut (insert (format dashboard-heading-shorcut-format shortcut))))
 
 (defun dashboard-center-text (start end)
   "Center the text between START and END."
@@ -781,17 +795,17 @@ Argument IMAGE-PATH path to the image."
                     (t nil)))
                   (prefix (propertize " " 'display prop)))
         (add-text-properties start (point) `(line-prefix ,prefix wrap-prefix ,prefix)))
-      (insert "\n\n")
-      (add-text-properties start (point) '(cursor-intangible t inhibit-isearch t))))
+      (insert "\n")
+      (add-text-properties start (point) '(cursor-intangible t inhibit-isearch t)))))
+
+(defun dashboard-insert-banner-title ()
+  "Insert `dashboard-banner-logo-title' if it's non-nil."
   (when dashboard-banner-logo-title
     (dashboard-insert-center (propertize dashboard-banner-logo-title 'face 'dashboard-banner-logo-title))
-    (insert "\n\n"))
-  (dashboard-insert-navigator)
-  (dashboard-insert-init-info))
+    (insert "\n")))
 
 ;;
 ;;; Initialize info
-
 (defun dashboard-insert-init-info ()
   "Insert init info when `dashboard-set-init-info' is t."
   (when dashboard-set-init-info
@@ -834,8 +848,7 @@ Argument IMAGE-PATH path to the image."
                          :format "%[%t%]")
           (insert " ")))
       (dashboard-center-text (line-beginning-position) (line-end-position))
-      (insert "\n"))
-    (insert "\n")))
+      (insert "\n"))))
 
 (defmacro dashboard-insert-section (section-name list list-size shortcut-id shortcut-char action &rest widget-params)
   "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
@@ -906,7 +919,6 @@ to widget creation."
   "Insert footer of dashboard."
   (when-let ((footer (and dashboard-set-footer (dashboard-random-footer)))
              (footer-icon (dashboard-replace-displayable dashboard-footer-icon)))
-    (insert "\n")
     (dashboard-insert-center
      (if (string-empty-p footer-icon) footer-icon
        (concat footer-icon " "))
