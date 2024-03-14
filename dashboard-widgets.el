@@ -382,10 +382,7 @@ Possible values for list-type are: `recents', `bookmarks', `projects',
   :type  '(alist :key-type symbol :value-type function)
   :group 'dashboard)
 
-(defcustom dashboard-projects-backend
-  (if (fboundp 'projectile-find-file)
-      'projectile
-    'project-el)
+(defcustom dashboard-projects-backend 'project-el
   "The package that supplies the list of recent projects.
 With the value `projectile', the projects widget uses the package
 projectile (available in MELPA).  With the value `project-el',
@@ -815,8 +812,7 @@ Argument IMAGE-PATH path to the image."
     (let ((init-info (if (functionp dashboard-init-info)
                          (funcall dashboard-init-info)
                        dashboard-init-info)))
-      (dashboard-insert-center (propertize init-info 'face 'font-lock-comment-face))
-      (insert "\n"))))
+      (dashboard-insert-center (propertize init-info 'face 'font-lock-comment-face)))))
 
 (defun dashboard-insert-navigator ()
   "Insert Navigator of the dashboard."
