@@ -809,14 +809,14 @@ Argument IMAGE-PATH path to the image."
 
 ;;
 ;;; Initialize info
-
 (defun dashboard-insert-init-info ()
   "Insert init info when `dashboard-set-init-info' is t."
   (when dashboard-set-init-info
     (let ((init-info (if (functionp dashboard-init-info)
                          (funcall dashboard-init-info)
                        dashboard-init-info)))
-      (dashboard-insert-center (propertize init-info 'face 'font-lock-comment-face)))))
+      (dashboard-insert-center (propertize init-info 'face 'font-lock-comment-face))
+      (insert "\n"))))
 
 (defun dashboard-insert-navigator ()
   "Insert Navigator of the dashboard."
