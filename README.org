@@ -95,7 +95,6 @@ To update the banner or banner title
   ;; Set the banner
   (setq dashboard-startup-banner [VALUE])
   ;; Value can be:
-  ;;   - nil to display no banner.
   ;;   - 'official which displays the official emacs logo.
   ;;   - 'logo which displays an alternative emacs logo.
   ;;   - an integer which displays one of the text banners
@@ -221,11 +220,6 @@ To modify heading icons with another icon from nerd-icons octicons:
                                     (bookmarks . "nf-oct-book")))
 #+END_SRC
 
-To show navigators below the banner:
-#+BEGIN_SRC emacs-lisp
-  (setq dashboard-set-navigator t)
-#+END_SRC
-
 To customize the buttons of the navigator like this:
 #+BEGIN_SRC emacs-lisp
   ;; Format: "(icon title help action face prefix suffix)"
@@ -245,23 +239,12 @@ To customize the buttons of the navigator like this:
            ("⚑" nil "Show flags" (lambda (&rest _) (message "flag")) error))))
 #+END_SRC
 
-To show info about the packages loaded and the init time:
-#+BEGIN_SRC elisp
-  (setq dashboard-set-init-info t)
-#+END_SRC
-
 Also, the message can be customized like this:
 #+BEGIN_SRC elisp
   (setq dashboard-init-info "This is an init message!")
 #+END_SRC
 
-A randomly selected footnote will be displayed. To disable it:
-#+BEGIN_SRC elisp
-  (setq dashboard-set-footer nil)
-#+END_SRC
-
 To customize it and customize its icon;
-
 #+BEGIN_SRC elisp
   (setq dashboard-footer-messages '("Dashboard is pretty cool!"))
   (setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
