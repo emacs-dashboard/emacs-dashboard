@@ -71,6 +71,15 @@
 (declare-function string-pixel-width "subr-x.el")   ; TODO: remove this after 29.1
 (declare-function shr-string-pixel-width "shr.el")  ; TODO: remove this after 29.1
 
+(make-obsolete-variable 'dashboard-set-navigator
+                        'dashboard-startupify-list "1.9.0")
+
+(make-obsolete-variable 'dashboard-set-init-info
+                        'dashboard-startupify-list "1.9.0")
+
+(make-obsolete-variable 'dashboard-set-footer
+                        'dashboard-startupify-list "1.9.0")
+
 (defvar recentf-list nil)
 
 (defvar dashboard-buffer-name)
@@ -122,21 +131,6 @@ See `create-image' and Info node `(elisp)Image Descriptors'."
 
 (defcustom dashboard-set-file-icons nil
   "When non nil, file lists will have icons."
-  :type 'boolean
-  :group 'dashboard)
-
-(defcustom dashboard-set-navigator nil
-  "When non nil, a navigator will be displayed under the banner."
-  :type 'boolean
-  :group 'dashboard)
-
-(defcustom dashboard-set-init-info t
-  "When non nil, init info will be displayed under the banner."
-  :type 'boolean
-  :group 'dashboard)
-
-(defcustom dashboard-set-footer t
-  "When non nil, a footer will be displayed at the bottom."
   :type 'boolean
   :group 'dashboard)
 
@@ -358,8 +352,7 @@ alternative logo.  If set to `ascii', the value of `dashboard-banner-ascii'
 will be used as the banner.  An integer value is the index of text banner.
 A string value must be a path to a .PNG or .TXT file.  If the value is
 nil then no banner is displayed."
-  :type '(choice (const   :tag "no banner" nil)
-                 (const   :tag "offical"   official)
+  :type '(choice (const   :tag "offical"   official)
                  (const   :tag "logo"      logo)
                  (const   :tag "ascii"     ascii)
                  (integer :tag "index of a text banner")
@@ -682,7 +675,6 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-choose-banner ()
   "Return a plist specifying the chosen banner based on `dashboard-startup-banner'."
   (pcase dashboard-startup-banner
-    ('nil nil)
     ('official
      (append (when (image-type-available-p 'png)
                (list :image dashboard-banner-official-png))
@@ -812,16 +804,15 @@ Argument IMAGE-PATH path to the image."
 ;;
 ;;; Initialize info
 (defun dashboard-insert-init-info ()
-  "Insert init info when `dashboard-set-init-info' is t."
-  (when dashboard-set-init-info
-    (let ((init-info (if (functionp dashboard-init-info)
+  "Insert init info."
+  (let ((init-info (if (functionp dashboard-init-info)
                          (funcall dashboard-init-info)
                        dashboard-init-info)))
-      (dashboard-insert-center (propertize init-info 'face 'font-lock-comment-face)))))
+      (dashboard-insert-center (propertize init-info 'face 'font-lock-comment-face))))
 
 (defun dashboard-insert-navigator ()
   "Insert Navigator of the dashboard."
-  (when (and dashboard-set-navigator dashboard-navigator-buttons)
+  (when dashboard-navigator-buttons
     (dolist (line dashboard-navigator-buttons)
       (dolist (btn line)
         (let* ((icon (car btn))
@@ -922,7 +913,7 @@ to widget creation."
 
 (defun dashboard-insert-footer ()
   "Insert footer of dashboard."
-  (when-let ((footer (and dashboard-set-footer (dashboard-random-footer)))
+  (when-let ((footer (dashboard-random-footer))
              (footer-icon (dashboard-replace-displayable dashboard-footer-icon)))
     (dashboard-insert-center
      (if (string-empty-p footer-icon) footer-icon
