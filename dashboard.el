@@ -123,13 +123,24 @@
     dashboard-insert-newline
     dashboard-insert-banner-title
     dashboard-insert-newline
-    dashboard-insert-navigator
-    dashboard-insert-newline
     dashboard-insert-init-info
     dashboard-insert-items
     dashboard-insert-newline
     dashboard-insert-footer)
-  "List of dashboard widgets (in order) to insert in dashboard buffer."
+    "List of dashboard widgets (in order) to insert in dashboard buffer.
+Avalaible functions:
+  `dashboard-insert-newline'
+  `dashboard-insert-page-break'
+  `dashboard-insert-banner'
+  `dashboard-insert-banner-title'
+  `dashboard-insert-navigator'
+  `dashboard-insert-init-info'
+  `dashboard-insert-items'
+  `dashboard-insert-footer'
+
+You can also add your custom function or a lambda to the list.
+example:
+ (lambda () (delete-char -1))"
   :type '(repeat function)
   :group 'dashboard)
 
