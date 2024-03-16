@@ -651,7 +651,7 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                (line-length (dashboard-str-len line-str)))
           (setq width (max width line-length)))
         (forward-line 1))
-      (let ((prefix (propertize " " 'display `(space . (:align-to (- center ,(/ width 2)))))))
+      (let ((prefix (propertize " " 'display `(space . (:align-to (- center ,(/ (float width) 2)))))))
         (add-text-properties start end `(line-prefix ,prefix indent-prefix ,prefix))))))
 
 (defun dashboard-insert-center (&rest strings)

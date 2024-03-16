@@ -446,12 +446,6 @@ See `dashboard-item-generators' for all items available."
                     (max max-line-length (dashboard-maximum-section-length)))))
           dashboard-items)
 
-    (when dashboard-center-content
-      (dashboard-center-text
-       (if dashboard--section-starts
-           (car (last dashboard--section-starts))
-         (point))
-       (point-max)))
     (dashboard-insert-page-break)))
 
 (defun dashboard-insert-startupify-lists ()
@@ -485,6 +479,14 @@ See `dashboard-item-generators' for all items available."
                       (vertical-lines (1- (floor (/ vertical-padding (line-pixel-height)))))
                       ((> vertical-lines 0)))
             (insert (make-string vertical-lines ?\n))))
+
+        (when dashboard-center-content
+          (dashboard-center-text
+           (if dashboard--section-starts
+               (car (last dashboard--section-starts))
+             (point))
+           (point-max)))
+
         (goto-char (point-min))
         (dashboard-mode)))
     (when recentf-is-on
