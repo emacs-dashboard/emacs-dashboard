@@ -11,13 +11,13 @@
 An extensible emacs startup screen showing you what's most important.
 
 * Features
-  1. Displays an awesome Emacs banner!
-  2. Recent files
-  3. Bookmarks list
-  4. Recent projects list (Depends on `projectile` or `project.el` package)
-  5. Org mode agenda
-  6. Register list
-  7. Supports both [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] and [[https://github.com/rainstormstudio/nerd-icons.el][nerd-icons]]
+1. Displays an awesome Emacs banner!
+2. Recent files
+3. Bookmarks list
+4. Recent projects list (Depends on `projectile` or `project.el` package)
+5. Org mode agenda
+6. Register list
+7. Supports both [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] and [[https://github.com/rainstormstudio/nerd-icons.el][nerd-icons]]
 
 * Screenshot
 
@@ -34,33 +34,33 @@ You will need the following packages which are all available on MELPA:
 * Usage
 
 #+BEGIN_SRC shell
-M-x package-install RET dashboard
+  M-x package-install RET dashboard
 #+END_SRC
 
 ** Open the Dashboard
 You can set up the dashboard to open automatically at startup using =dashboard-setup-startup-hook=:
- #+BEGIN_SRC elisp
-(require 'dashboard)
-(dashboard-setup-startup-hook)
+#+BEGIN_SRC elisp
+  (require 'dashboard)
+  (dashboard-setup-startup-hook)
 #+END_SRC
 
 Or with use-package:
 #+BEGIN_SRC elisp
-;; use-package with package.el:
-(use-package dashboard
-  :ensure t
-  :config
-  (dashboard-setup-startup-hook))
+  ;; use-package with package.el:
+  (use-package dashboard
+    :ensure t
+    :config
+    (dashboard-setup-startup-hook))
 #+END_SRC
 
 #+BEGIN_SRC elisp
-;; use-package with Elpaca:
-(use-package dashboard
-  :elpaca t
-  :config
-  (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
-  (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
-  (dashboard-setup-startup-hook))
+  ;; use-package with Elpaca:
+  (use-package dashboard
+    :elpaca t
+    :config
+    (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
+    (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
+    (dashboard-setup-startup-hook))
 #+END_SRC
 
 Alternatively, if you don't want the dashboard to open by default, you can use the interactive function =dashboard-open= to open it when you do want it.
@@ -82,7 +82,7 @@ In addition to the above, configure =initial-buffer-choice= to show
 Dashboard in frames created with =emacsclient -c= as follows:
 
 #+BEGIN_SRC elisp
-(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
 #+END_SRC
 
 * Configuration
@@ -117,24 +117,31 @@ To update the banner or banner title
 
 To customize which items are displayed, you can use the following snippet
 #+BEGIN_SRC elisp
-(setq dashboard-items '((recents   . 5)
-                        (bookmarks . 5)
-                        (projects  . 5)
-                        (agenda    . 5)
-                        (registers . 5)))
- #+END_SRC
+  (setq dashboard-items '((recents   . 5)
+                          (bookmarks . 5)
+                          (projects  . 5)
+                          (agenda    . 5)
+                          (registers . 5)))
+#+END_SRC
 This will add the recent files, bookmarks, projects, org-agenda and registers widgets to your dashboard each displaying 5 items.
 
 To customize which widgets to display in order (example: Banner, footer message ...):
 #+begin_src emacs-lisp
   (setq dashboard-startupify-list '(dashboard-insert-banner
-                                    dashboard-insert-banner-title
-                                    dashboard-insert-init-info
                                     dashboard-insert-newline
-                                    dashboard-insert-footer
-                                    dashboard-insert-items
+                                    dashboard-insert-banner-title
+                                    dashboard-insert-newline
                                     dashboard-insert-navigator
-                                    dashboard-insert-newline))
+                                    dashboard-insert-newline
+                                    dashboard-insert-init-info
+                                    dashboard-insert-items
+                                    dashboard-insert-newline
+                                    dashboard-insert-footer))
+#+end_src
+
+To enable cycle navigation between each section:
+#+begin_src emacs-lisp
+  (setq dashboard-navigation-cycle t)
 #+end_src
 
 To customize string format in shortcuts:
@@ -144,11 +151,11 @@ To customize string format in shortcuts:
 
 To customize item shortcuts:
 #+BEGIN_SRC elisp
-(setq dashboard-item-shortcuts '((recents   . "r")
-                                 (bookmarks . "m")
-                                 (projects  . "p")
-                                 (agenda    . "a")
-                                 (registers . "e")))
+  (setq dashboard-item-shortcuts '((recents   . "r")
+                                   (bookmarks . "m")
+                                   (projects  . "p")
+                                   (agenda    . "a")
+                                   (registers . "e")))
 #+END_SRC
 
 To modify the widget heading name:
@@ -160,29 +167,29 @@ To modify the widget heading name:
 
 The default length for each item.
 #+BEGIN_SRC elisp
-(setq dashboard-items-default-length 20)
+  (setq dashboard-items-default-length 20)
 #+END_SRC
 
 To add your own custom widget is pretty easy, define your widget's callback function and add it to `dashboard-items` as such:
 #+BEGIN_SRC elisp
-(defun dashboard-insert-custom (list-size)
-  (insert "Custom text"))
-(add-to-list 'dashboard-item-generators  '(custom . dashboard-insert-custom))
-(add-to-list 'dashboard-items '(custom) t)
- #+END_SRC
+  (defun dashboard-insert-custom (list-size)
+    (insert "Custom text"))
+  (add-to-list 'dashboard-item-generators  '(custom . dashboard-insert-custom))
+  (add-to-list 'dashboard-items '(custom) t)
+#+END_SRC
 
 To add an icon to a custom widget, insert it with `dashboard-insert-heading` in your custom function.  In this example, there is an icon but no shortcut.
 #+BEGIN_SRC elisp
-(defun dashboard-insert-custom (list-size)
-  (dashboard-insert-heading "News:"
-                            nil
-                            (all-the-icons-faicon "newspaper-o"
-                                                  :height 1.2
-                                                  :v-adjust 0.0
-                                                  :face 'dashboard-heading))
-  (insert "\n")
-  (insert "    Custom text"))
- #+END_SRC
+  (defun dashboard-insert-custom (list-size)
+    (dashboard-insert-heading "News:"
+                              nil
+                              (all-the-icons-faicon "newspaper-o"
+                                                    :height 1.2
+                                                    :v-adjust 0.0
+                                                    :face 'dashboard-heading))
+    (insert "\n")
+    (insert "    Custom text"))
+#+END_SRC
 
 To use ~all-the-icons~ package:
 #+BEGIN_SRC emacs-lisp
@@ -215,86 +222,86 @@ To modify heading icons with another icon from nerd-icons octicons:
 
 To show navigators below the banner:
 #+BEGIN_SRC emacs-lisp
-(setq dashboard-set-navigator t)
+  (setq dashboard-set-navigator t)
 #+END_SRC
 
 To customize the buttons of the navigator like this:
 #+BEGIN_SRC emacs-lisp
-;; Format: "(icon title help action face prefix suffix)"
-(setq dashboard-navigator-buttons
-      `(;; line1
-        ((,(all-the-icons-octicon "mark-github" :height 1.1 :v-adjust 0.0)
-         "Homepage"
-         "Browse homepage"
-         (lambda (&rest _) (browse-url "homepage")))
-        ("★" "Star" "Show stars" (lambda (&rest _) (show-stars)) warning)
-        ("?" "" "?/h" #'show-help nil "<" ">"))
-         ;; line 2
-        ((,(all-the-icons-faicon "linkedin" :height 1.1 :v-adjust 0.0)
-          "Linkedin"
-          ""
-          (lambda (&rest _) (browse-url "homepage")))
-         ("⚑" nil "Show flags" (lambda (&rest _) (message "flag")) error))))
+  ;; Format: "(icon title help action face prefix suffix)"
+  (setq dashboard-navigator-buttons
+        `(;; line1
+          ((,(all-the-icons-octicon "mark-github" :height 1.1 :v-adjust 0.0)
+            "Homepage"
+            "Browse homepage"
+            (lambda (&rest _) (browse-url "homepage")))
+           ("★" "Star" "Show stars" (lambda (&rest _) (show-stars)) warning)
+           ("?" "" "?/h" #'show-help nil "<" ">"))
+          ;; line 2
+          ((,(all-the-icons-faicon "linkedin" :height 1.1 :v-adjust 0.0)
+            "Linkedin"
+            ""
+            (lambda (&rest _) (browse-url "homepage")))
+           ("⚑" nil "Show flags" (lambda (&rest _) (message "flag")) error))))
 #+END_SRC
 
 To show info about the packages loaded and the init time:
 #+BEGIN_SRC elisp
-(setq dashboard-set-init-info t)
+  (setq dashboard-set-init-info t)
 #+END_SRC
 
 Also, the message can be customized like this:
 #+BEGIN_SRC elisp
-(setq dashboard-init-info "This is an init message!")
+  (setq dashboard-init-info "This is an init message!")
 #+END_SRC
 
 A randomly selected footnote will be displayed. To disable it:
 #+BEGIN_SRC elisp
-(setq dashboard-set-footer nil)
+  (setq dashboard-set-footer nil)
 #+END_SRC
 
 To customize it and customize its icon;
 
 #+BEGIN_SRC elisp
-(setq dashboard-footer-messages '("Dashboard is pretty cool!"))
-(setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
-                                                   :height 1.1
-                                                   :v-adjust -0.05
-                                                   :face 'font-lock-keyword-face))
+  (setq dashboard-footer-messages '("Dashboard is pretty cool!"))
+  (setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
+                                                     :height 1.1
+                                                     :v-adjust -0.05
+                                                     :face 'font-lock-keyword-face))
 #+END_SRC
 
 To use it with [[https://github.com/hlissner/emacs-solaire-mode][solaire-mode]]:
 #+begin_src emacs-lisp
-(add-hook 'dashboard-after-initialize-hook #'solaire-mode)
+  (add-hook 'dashboard-after-initialize-hook #'solaire-mode)
 #+end_src
 
 Or for use-package users
 #+begin_src emacs-lisp
-:hook (dashboard-after-initialize . solaire-mode)
+  :hook (dashboard-after-initialize . solaire-mode)
 #+end_src
 
 To use it with [[https://github.com/ericdanan/counsel-projectile][counsel-projectile]] or [[https://github.com/bbatsov/persp-projectile][persp-projectile]]
 
 #+begin_src elisp
-(setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
+  (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
 #+end_src
 
 Or
 
 #+begin_src elisp
-(setq dashboard-projects-switch-function 'projectile-persp-switch-project)
+  (setq dashboard-projects-switch-function 'projectile-persp-switch-project)
 #+end_src
 
 ** Org mode’s agenda
 
-   To display today’s agenda items on the dashboard, add ~agenda~ to ~dashboard-items~:
+To display today’s agenda items on the dashboard, add ~agenda~ to ~dashboard-items~:
 
 #+BEGIN_SRC elisp
-(add-to-list 'dashboard-items '(agenda) t)
+  (add-to-list 'dashboard-items '(agenda) t)
 #+END_SRC
 
 To show agenda for the upcoming seven days set the variable ~dashboard-week-agenda~ to ~t~.
 #+BEGIN_SRC elisp
-(setq dashboard-week-agenda t)
+  (setq dashboard-week-agenda t)
 #+END_SRC
 
 By default org-agenda entries are filter by time, only showing those
@@ -302,7 +309,7 @@ task with ~DEADLINE~, ~SCHEDULE-TIME~ or ~TIMESTAMP~ . To show all agenda entrie
 (except ~DONE~)
 
 #+begin_src elisp
-(setq dashboard-filter-agenda-entry 'dashboard-no-filter-agenda)
+  (setq dashboard-filter-agenda-entry 'dashboard-no-filter-agenda)
 #+end_src
 
 To have an extra filter, ~MATCH~ parameter is exposed as
@@ -352,13 +359,13 @@ or to ~nil~.
 It is possible to customize Dashboard's appearance using the following faces:
 
 - ~dashboard-banner-logo-title~ ::
-     Highlights the banner title.
+  Highlights the banner title.
 - ~dashboard-text-banner~ ::
-     Highlights text banners.
+  Highlights text banners.
 - ~dashboard-heading~ ::
-     Highlights widget headings.
+  Highlights widget headings.
 - ~dashboard-items-face~ ::
-     Highlights widget items.
+  Highlights widget items.
 
 * Shortcuts
 
@@ -381,11 +388,11 @@ You can use any of the following shortcuts inside Dashboard
 |----------------------------+------------------|
 
 * Wish List
-  1. [X] Center content
-  2. [X] More banner options
-  3. [X] Customizing the list of widgets to display
-  4. [X] Integrate Org-mode's agenda
-  5. [ ] Listing Perspectives
+1. [X] Center content
+2. [X] More banner options
+3. [X] Customizing the list of widgets to display
+4. [X] Integrate Org-mode's agenda
+5. [ ] Listing Perspectives
 
 * Contributions
 
@@ -402,15 +409,15 @@ develop your changes and then install this as "development version".
 This is accomplished with the following steps:
 
 #+BEGIN_SRC shell
-# In emacs:
-M-x package-delete dashboard-<version> RET
+  # In emacs:
+  M-x package-delete dashboard-<version> RET
 #+END_SRC
 
 #+BEGIN_SRC shell
-make package
-make install
+  make package
+  make install
 #+END_SRC
 
 ** Prerequisites
 
-  * [[https://github.com/emacs-eask/cli][Eask]]
+* [[https://github.com/emacs-eask/cli][Eask]]

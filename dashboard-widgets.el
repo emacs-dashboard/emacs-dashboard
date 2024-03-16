@@ -78,10 +78,10 @@
 ;;
 ;;; Customization
 
-(defcustom dashboard-page-separator "\n\n"
+(defcustom dashboard-page-separator "\n"
   "Separator to use between the different pages."
   :type '(choice
-          (const :tag "Default" "\n\n")
+          (const :tag "Default" "\n")
           (const :tag "Use Page indicator (requires page-break-lines)"
                  "\n\f\n")
           (string :tag "Use Custom String"))
@@ -641,8 +641,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (overlay-put ov 'face 'dashboard-heading))
   (when shortcut (insert (format dashboard-heading-shorcut-format shortcut))))
 
-(defun dashboard-center-text (start end)
-  "Center the text between START and END."
+(defun dashboard--find-max-width (start end)
+  "Return the max width within the region START and END."
   (save-excursion
     (goto-char start)
     (let ((width 0))
@@ -651,8 +651,13 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                (line-length (dashboard-str-len line-str)))
           (setq width (max width line-length)))
         (forward-line 1))
-      (let ((prefix (propertize " " 'display `(space . (:align-to (- center ,(/ (float width) 2)))))))
-        (add-text-properties start end `(line-prefix ,prefix indent-prefix ,prefix))))))
+      width)))
+
+(defun dashboard-center-text (start end)
+  "Center the text between START and END."
+  (let* ((width (dashboard--find-max-width start end))
+         (prefix (propertize " " 'display `(space . (:align-to (- center ,(/ (float width) 2)))))))
+    (add-text-properties start end `(line-prefix ,prefix indent-prefix ,prefix))))
 
 (defun dashboard-insert-center (&rest strings)
   "Insert STRINGS in the center of the buffer."
