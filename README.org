@@ -138,6 +138,7 @@ To customize which widgets to display in order (example: Banner, footer message 
                                     dashboard-insert-newline
                                     dashboard-insert-footer))
 #+end_src
+See dashboard-startupify-list for all the widgets avalaibles.
 
 To enable cycle navigation between each section:
 #+begin_src emacs-lisp
