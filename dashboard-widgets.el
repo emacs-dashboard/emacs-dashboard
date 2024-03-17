@@ -347,9 +347,7 @@ ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties.
 
 (defcustom dashboard-startup-banner 'official
   "Specify the banner type to use.
-
 Value can be
- - nil display no banner
  - 'official  displays the official Emacs logo.
  - 'logo  displays an alternative Emacs logo.
  - an integer which displays one of the text banners.
