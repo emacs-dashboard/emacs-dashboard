@@ -357,8 +357,7 @@ Value can be
    supported files types are gif/image/text/xbm
  - a cons of 2 strings which specifies the path of an image to use
    and other path of a text file to use if image isn't supported.
- - a list that can display an random banner, must contain 2 or more
-   arguments, supported values are:
+ - a list that can display an random banner, supported values are:
    string (filepath), 'official, 'logo and integers."
   :type '(choice (const   :tag "official"  official)
                  (const   :tag "logo"      logo)
