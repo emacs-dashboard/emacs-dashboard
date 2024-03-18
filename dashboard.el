@@ -497,6 +497,7 @@ See `dashboard-item-generators' for all items available."
       (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
     (dashboard--with-buffer
       (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
+        (run-hooks 'dashboard-before-initialize-hook)
         (erase-buffer)
         (setq dashboard--section-starts nil)
 
