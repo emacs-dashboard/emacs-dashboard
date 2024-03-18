@@ -23,7 +23,7 @@ An extensible emacs startup screen showing you what's most important.
 * Screenshot
 | Spacemacs-like Style     | Doom-like style           |
 |--------------------------+---------------------------|
-| [[./etc/screenshot.png]] | [[./etc/screenshot2.png]] |
+| [[./etc/screenshot.png]] | [[./etc/screenshot_2.png]] |
 
 
 * Dependencies
