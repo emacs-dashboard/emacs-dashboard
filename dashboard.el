@@ -81,13 +81,13 @@
     map)
   "Keymap for dashboard mode.")
 
-(defcustom dashboard-after-initialize-hook nil
-  "Hook that is run after dashboard buffer is initialized."
+(defcustom dashboard-before-initialize-hook nil
+  "Hook that is run before dashboard buffer is initialized."
   :group 'dashboard
   :type 'hook)
 
-(defcustom dashboard-before-initialize-hook nil
-  "Hook that is run before dashboard buffer is initialized."
+(defcustom dashboard-after-initialize-hook nil
+  "Hook that is run after dashboard buffer is initialized."
   :group 'dashboard
   :type 'hook)
 
