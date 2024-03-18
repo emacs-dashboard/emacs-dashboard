@@ -18,7 +18,7 @@ An extensible emacs startup screen showing you what's most important.
 5. Org mode agenda.
 6. Register list.
 7. Supports both [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] and [[https://github.com/rainstormstudio/nerd-icons.el][nerd-icons]]
-8. Doom and Spacemacs dashboard style support.
+8. Support for display dashboard in a Doom or Spacemacs style.
 
 * Screenshot
 
