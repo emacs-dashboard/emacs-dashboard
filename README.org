@@ -286,11 +286,10 @@ To customize it and customize its icon;
 To use it with [[https://github.com/hlissner/emacs-solaire-mode][solaire-mode]]:
 #+begin_src emacs-lisp
   (add-hook 'dashboard-after-initialize-hook #'solaire-mode)
-#+end_src
-
-Or for use-package users
-#+begin_src emacs-lisp
-  :hook (dashboard-after-initialize . solaire-mode)
+;; Or for use-package users
+  (use-package solaire-mode
+    :hook (dashboard-after-initialize . solaire-mode)
+    ...)
 #+end_src
 
 To user it with [[https://github.com/hlissner/emacs-hide-mode-line][hide-mode-line]]
@@ -312,7 +311,8 @@ Or for doom-modeline users
   :custom
   (doom-modeline-mode-alist
    (delete (assoc 'dashboard-mode doom-modeline-mode-alist)
-           doom-modeline-mode-alist)))
+           doom-modeline-mode-alist))
+  ...)
 #+end_src
 
 
