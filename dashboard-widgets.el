@@ -412,7 +412,9 @@ installed."
 Will be of the form `(list-type . list-size)'.
 If nil it is disabled.  Possible values for list-type are:
 `recents' `bookmarks' `projects' `agenda' `registers'."
-  :type  '(repeat (alist :key-type symbol :value-type integer))
+  :type  '(choice
+           (repeat :tag "Symbols" symbol)
+           (alist :tag "Cons" :key-type symbol :value-type integer))
   :group 'dashboard)
 
 (defcustom dashboard-item-shortcuts
@@ -485,6 +487,11 @@ Set to nil for unbounded."
   "Face used for widget headings."
   :group 'dashboard)
 
+(defface dashboard-shortmenu-keymap-face
+  '((t (:inherit font-lock-constant-face)))
+  "Face used for show keybindings in shortmenu items."
+  :group 'dashboard)
+
 (defface dashboard-items-face
   '((t (:inherit widget-button)))
   "Face used for items."
@@ -503,11 +510,6 @@ Set to nil for unbounded."
 (defface dashboard-footer-icon-face
   '((t (:inherit dashboard-footer-face)))
   "Face used for icon in footer."
-  :group 'dashboard)
-
-(defface dashboard-doom-keymap-face
-  '((t (:inherit font-lock-constant-face)))
-  "Face used for show keybindings in shotmenu items."
   :group 'dashboard)
 
 (define-obsolete-face-alias
@@ -948,47 +950,84 @@ to widget creation."
 ;;; Doom-like Widgets
 
 (defun dashboard-insert-recents-shortmenu (&rest _)
-  (insert (format
-           "%-3s"
-           (nerd-icons-octicon
-            (alist-get 'recents dashboard-heading-icons)
-            :face 'dashboard-heading)))
-  (widget-create 'item
-                 :tag "Recently opened files"
-                 :action (lambda (&rest _) (call-interactively #'recentf))
-                 :mouse-face 'highlight
-                 :button-face 'dashboard-heading
-                 :button-prefix ""
-                 :button-suffix ""
-                 :format "%[%t%]")
-  (insert (propertize
-           (format "%20s" (substitute-command-keys "\\[project-switch-project]"))
-           'face
-           'dashboard-doom-keymap-face)))
+  (let* ((fn #'recentf)
+         (fn-keymap (format "\\[%s]" fn))
+         (icon-name (alist-get 'recents dashboard-heading-icons))
+         (icon (nerd-icons-octicon icon-name :face 'dashboard-heading)))
+    (insert (format "%-3s" icon))
+    (widget-create 'item
+                   :tag (format "%-30s" "Recently opened files")
+                   :action (lambda (&rest _) (call-interactively #'recentf))
+                   :mouse-face 'highlight
+                   :button-face 'dashboard-heading
+                   :button-prefix ""
+                   :button-suffix ""
+                   :format "%[%t%]")
+    (insert (propertize (substitute-command-keys fn-keymap)
+                        'face
+                        'dashboard-doom-keymap-face))))
 
 (defun dashboard-insert-project-shortmenu (&rest _)
-  (insert (format
-           "%-3s"
-           (nerd-icons-octicon
-            (alist-get 'projects dashboard-heading-icons)
-            :face 'dashboard-heading)))
-  (widget-create 'item
-                 :tag "Open Project"
-                 :action (lambda (&rest _) (call-interactively #'project-switch-project))
-                 :mouse-face 'highlight
-                 :button-face 'dashboard-heading
-                 :button-prefix ""
-                 :button-suffix ""
-                 :format "%[%t%]")
-  (insert (propertize
-           (format "%20s" (substitute-command-keys "\\[project-switch-project]"))
-           'face
-           'dashboard-doom-keymap-face)))
+  (let* ((fn #'project-switch-project)
+         (fn-keymap (format "\\[%s]" fn))
+         (icon-name (alist-get 'projects dashboard-heading-icons))
+         (icon (nerd-icons-octicon icon-name :face 'dashboard-heading)))
+    (insert (format "%-3s" icon))
+    (widget-create 'item
+                   :tag (format "%-30s" "Open project")
+                   :action (lambda (&rest _) (call-interactively #'project-switch-project))
+                   :mouse-face 'highlight
+                   :button-face 'dashboard-heading
+                   :button-prefix ""
+                   :button-suffix ""
+                   :format "%[%t%]")
+    (insert (propertize (substitute-command-keys fn-keymap)
+                        'face
+                        'dashboard-doom-keymap-face))))
+
+(defun dashboard-insert-org-agenda-shortmenu (&rest _)
+  (let* ((fn #'org-agenda)
+         (fn-keymap (format "\\[%s]" fn))
+         (icon-name (alist-get 'agenda dashboard-heading-icons))
+         (icon (nerd-icons-octicon icon-name :face 'dashboard-heading)))
+    (insert (format "%-3s" icon))
+    (widget-create 'item
+                   :tag (format "%-30s" "Open org-agenda")
+                   :action (lambda (&rest _) (call-interactively #'org-agenda))
+                   :mouse-face 'highlight
+                   :button-face 'dashboard-heading
+                   :button-prefix ""
+                   :button-suffix ""
+                   :format "%[%t%]")
+    (insert (propertize (substitute-command-keys fn-keymap)
+                        'face
+                        'dashboard-doom-keymap-face))))
+
+(defun dashboard-insert-bookmark-shortmenu (&rest _)
+  (let* ((fn #'bookmark-jump)
+         (fn-keymap (format "\\[%s]" fn))
+         (icon-name (alist-get 'bookmarks dashboard-heading-icons))
+         (icon (nerd-icons-octicon icon-name :face 'dashboard-heading)))
+    (insert (format "%-3s" icon))
+    (widget-create 'item
+                   :tag (format "%-30s" "Jump to bookmark")
+                   :action (lambda (&rest _) (call-interactively #'bookmark-jump))
+                   :mouse-face 'highlight
+                   :button-face 'dashboard-heading
+                   :button-prefix ""
+                   :button-suffix ""
+                   :format "%[%t%]")
+    (insert (propertize (substitute-command-keys fn-keymap)
+                        'face
+                        'dashboard-doom-keymap-face))))
 
 (defun dashboard-insert-homepage-footer ()
   (widget-create 'item
                  :tag (nerd-icons-faicon "nf-fa-github_alt" :face 'success)
-                 :action (lambda (&rest _) (browse-url "homepage"))
+                 :action 
+                 (lambda (&rest _)
+                         (browse-url
+                          "https://github.com/emacs-dashboard/emacs-dashboard"))
                  :mouse-face 'highlight
                  :button-prefix ""
                  :button-suffix ""
