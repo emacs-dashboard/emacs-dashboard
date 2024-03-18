@@ -758,9 +758,9 @@ Argument IMAGE-PATH path to the image."
       (when graphic-mode (insert "\n"))
       ;; If specified, insert a text banner.
       (when-let ((txt (plist-get banner :text)))
-        (if (consp banner)
-            (save-excursion (insert txt))
-          (insert-file-contents txt))
+        (if (file-exists-p txt)
+            (insert-file-contents txt)
+          (save-excursion (insert txt)))
         (put-text-property (point) (point-max) 'face 'dashboard-text-banner)
         (setq text-width 0)
         (while (not (eobp))
