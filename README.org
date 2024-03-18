@@ -25,7 +25,6 @@ An extensible emacs startup screen showing you what's most important.
 |--------------------------+---------------------------|
 | [[./etc/screenshot.png]] | [[./etc/screenshot2.png]] |
 
-TODO: Add Doom screenshot or update screenshot image
 
 * Dependencies
 You will need the following packages which are all available on MELPA:
@@ -140,18 +139,20 @@ To add a doom-like style:
                                     dashboard-insert-newline
                                     dashboard-insert-items
                                     dashboard-insert-newline
+                                    dashboard-insert-newline
                                     dashboard-insert-init-info
                                     dashboard-insert-newline
                                     dashboard-insert-newline
                                     dashboard-insert-homepage-footer)
         dashboard-item-generators
         '((recents . dashboard-insert-recents-shortmenu)
-          (bookmarks . dashboard-insert-bookmarks)
+          (bookmarks . dashboard-insert-bookmark-shortmenu)
           (projects . dashboard-insert-project-shortmenu)
-          (agenda . dashboard-insert-agenda)
-          (registers . dashboard-insert-registers))
-        dashboard-footer-icon (nerd-icons-faicon "nf-fa-github_alt" :face 'success)
-        dashboard-footer-messages '(""))
+          (agenda . dashboard-insert-org-agenda-shortmenu))
+        dashboard-items '(projects
+                          agenda
+                          bookmarks
+                          recents))
 #+end_src
 
 To customize which widgets to display in order (example: Banner, footer message ...):
