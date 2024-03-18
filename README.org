@@ -257,7 +257,7 @@ To customize it and customize its icon;
 
 To use it with [[https://github.com/hlissner/emacs-solaire-mode][solaire-mode]]:
 #+begin_src emacs-lisp
-  (add-hook 'dashboard-after-initialize-hook #'solaire-mode)
+  (add-hook 'dashboard-before-initialize-hook #'solaire-mode)
 #+end_src
 
 Or for use-package users
