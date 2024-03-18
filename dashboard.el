@@ -86,6 +86,11 @@
   :group 'dashboard
   :type 'hook)
 
+(defcustom dashboard-before-initialize-hook nil
+  "Hook that is run before dashboard buffer is initialized."
+  :group 'dashboard
+  :type 'hook)
+
 (defcustom dashboard-hide-cursor nil
   "Whether to hide the cursor in the dashboard."
   :type 'boolean
@@ -440,6 +445,7 @@ Optional argument ARGS adviced function arguments."
   "Execute BODY in dashboard buffer."
   (declare (indent 0))
   `(with-current-buffer (get-buffer-create dashboard-buffer-name)
+     (run-hooks 'dashboard-before-initialize-hook)
      (let ((inhibit-read-only t)) ,@body)
      (current-buffer)))
 
