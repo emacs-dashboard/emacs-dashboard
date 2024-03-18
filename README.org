@@ -23,6 +23,8 @@ An extensible emacs startup screen showing you what's most important.
 * Screenshot
 
 [[./etc/screenshot.png]]
+TODO: Add Doom screenshot
+
 
 * Dependencies
 You will need the following packages which are all available on MELPA:
@@ -126,6 +128,30 @@ To customize which items are displayed, you can use the following snippet
                           (registers . 5)))
 #+END_SRC
 This will add the recent files, bookmarks, projects, org-agenda and registers widgets to your dashboard each displaying 5 items.
+
+To add a doom-like style:
+#+begin_src emacs-lisp
+  (setq dashboard-banner-logo-title "E M A C S"
+        dashboard-startup-banner 3
+        dashboard-page-separator "\n"
+        dashboard-startupify-list '(dashboard-insert-banner
+                                    dashboard-insert-banner-title
+                                    dashboard-insert-newline
+                                    dashboard-insert-items
+                                    dashboard-insert-newline
+                                    dashboard-insert-init-info
+                                    dashboard-insert-newline
+                                    dashboard-insert-newline
+                                    dashboard-insert-homepage-footer)
+        dashboard-item-generators
+        '((recents . dashboard-insert-recents-shortmenu)
+          (bookmarks . dashboard-insert-bookmarks)
+          (projects . dashboard-insert-project-shortmenu)
+          (agenda . dashboard-insert-agenda)
+          (registers . dashboard-insert-registers))
+        dashboard-footer-icon (nerd-icons-faicon "nf-fa-github_alt" :face 'success)
+        dashboard-footer-messages '(""))
+#+end_src
 
 To customize which widgets to display in order (example: Banner, footer message ...):
 #+begin_src emacs-lisp
