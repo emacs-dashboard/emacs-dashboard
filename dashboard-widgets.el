@@ -346,20 +346,31 @@ ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties.
   :group 'dashboard)
 
 (defcustom dashboard-startup-banner 'official
-  "Specify the startup banner.
-Default value is `official', it displays the Emacs logo.  `logo' displays Emacs
-alternative logo.  If set to `ascii', the value of `dashboard-banner-ascii'
-will be used as the banner.  An integer value is the index of text banner.
-A string value must be a path to a .PNG or .TXT file.  If the value is
-nil then no banner is displayed."
-  :type '(choice (const   :tag "offical"   official)
+  "Specify the banner type to use.
+Value can be
+ - \\='official  displays the official Emacs logo.
+ - \\='logo  displays an alternative Emacs logo.
+ - an integer which displays one of the text banners.
+ - a string that specifies the path of an custom banner
+   supported files types are gif/image/text/xbm.
+ - a cons of 2 strings which specifies the path of an image to use
+   and other path of a text file to use if image isn't supported.
+ - a list that can display an random banner, supported values are:
+   string (filepath), \\='official, \\='logo and integers."
+  :type '(choice (const   :tag "official"  official)
                  (const   :tag "logo"      logo)
                  (const   :tag "ascii"     ascii)
                  (integer :tag "index of a text banner")
-                 (string  :tag "a path to an image or text banner")
-                 (cons    :tag "an image and text banner"
+                 (string  :tag "path to an image or text banner")
+                 (cons    :tag "image and text banner"
                           (string :tag "image banner path")
-                          (string :tag "text banner path")))
+                          (string :tag "text banner path"))
+                 (repeat :tag "random banners"
+                         (choice (string  :tag "a path to an image or text banner")
+                                 (const   :tag "official" official)
+                                 (const   :tag "logo"     logo)
+                                 (const   :tag "ascii"    ascii)
+                                 (integer :tag "index of a text banner"))))
   :group 'dashboard)
 
 (defcustom dashboard-item-generators
@@ -672,9 +683,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   ;; - That function will only look at filenames, this one will inspect the file data itself.
   (and (file-exists-p img) (ignore-errors (image-type-available-p (image-type img)))))
 
-(defun dashboard-choose-banner ()
-  "Return a plist specifying the chosen banner based on `dashboard-startup-banner'."
-  (pcase dashboard-startup-banner
+(defun dashboard-choose-banner (banner)
+  "Return a plist specifying the chosen banner based on BANNER."
+  (pcase banner
     ('official
      (append (when (image-type-available-p 'png)
                (list :image dashboard-banner-official-png))
@@ -686,24 +697,27 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     ('ascii
      (append (list :text dashboard-banner-ascii)))
     ((pred integerp)
-     (list :text (dashboard-get-banner-path dashboard-startup-banner)))
+     (list :text (dashboard-get-banner-path banner)))
     ((pred stringp)
-     (pcase dashboard-startup-banner
+     (pcase banner
        ((pred (lambda (f) (not (file-exists-p f))))
-        (message "could not find banner %s, use default instead" dashboard-startup-banner)
+        (message "could not find banner %s, use default instead" banner)
         (list :text (dashboard-get-banner-path 1)))
        ((pred (string-suffix-p ".txt"))
-        (list :text (if (file-exists-p dashboard-startup-banner)
-                        dashboard-startup-banner
-                      (message "could not find banner %s, use default instead" dashboard-startup-banner)
+        (list :text (if (file-exists-p banner)
+                        banner
+                      (message "could not find banner %s, use default instead" banner)
                       (dashboard-get-banner-path 1))))
        ((pred dashboard--image-supported-p)
-        (list :image dashboard-startup-banner
+        (list :image banner
               :text (dashboard-get-banner-path 1)))
        (_
-        (message "unsupported file type %s" (file-name-nondirectory dashboard-startup-banner))
+        (message "unsupported file type %s" (file-name-nondirectory banner))
         (list :text (dashboard-get-banner-path 1)))))
-    (`(,img . ,txt)
+    ((and
+      (pred listp)
+      (pred (lambda (c) (not (proper-list-p c))))
+      `(,img . ,txt))
      (list :image (if (dashboard--image-supported-p img)
                       img
                     (message "could not find banner %s, use default instead" img)
@@ -712,8 +726,12 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                      txt
                    (message "could not find banner %s, use default instead" txt)
                    (dashboard-get-banner-path 1))))
+    ((pred proper-list-p)
+     (let* ((max (length banner))
+            (choose (nth (random max) banner)))
+       (dashboard-choose-banner choose)))
     (_
-     (message "unsupported banner config %s" dashboard-startup-banner))))
+     (message "unsupported banner config %s" banner))))
 
 (defun dashboard--image-animated-p (image-path)
   "Return if image is a gif or webp.
@@ -730,7 +748,7 @@ Argument IMAGE-PATH path to the image."
 (defun dashboard-insert-banner ()
   "Insert the banner at the top of the dashboard."
   (goto-char (point-max))
-  (when-let ((banner (dashboard-choose-banner)))
+  (when-let ((banner (dashboard-choose-banner dashboard-startup-banner)))
     (insert "\n")
     (let ((start (point))
           buffer-read-only
@@ -740,9 +758,9 @@ Argument IMAGE-PATH path to the image."
       (when graphic-mode (insert "\n"))
       ;; If specified, insert a text banner.
       (when-let ((txt (plist-get banner :text)))
-        (if (eq dashboard-startup-banner 'ascii)
-            (save-excursion (insert txt))
-          (insert-file-contents txt))
+        (if (file-exists-p txt)
+            (insert-file-contents txt)
+          (save-excursion (insert txt)))
         (put-text-property (point) (point-max) 'face 'dashboard-text-banner)
         (setq text-width 0)
         (while (not (eobp))
