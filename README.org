@@ -262,7 +262,7 @@ To use it with [[https://github.com/hlissner/emacs-solaire-mode][solaire-mode]]:
 
 Or for use-package users
 #+begin_src emacs-lisp
-  :hook (dashboard-after-initialize . solaire-mode)
+  :hook (dashboard-before-initialize . solaire-mode)
 #+end_src
 
 To use it with [[https://github.com/ericdanan/counsel-projectile][counsel-projectile]] or [[https://github.com/bbatsov/persp-projectile][persp-projectile]]
