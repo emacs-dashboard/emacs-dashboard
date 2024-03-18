@@ -12,12 +12,13 @@ An extensible emacs startup screen showing you what's most important.
 
 * Features
 1. Displays an awesome Emacs banner!
-2. Recent files
-3. Bookmarks list
-4. Recent projects list (Depends on `projectile` or `project.el` package)
-5. Org mode agenda
-6. Register list
+2. Recent files.
+3. Bookmarks list.
+4. Recent projects list (Depends on `projectile` or `project.el` package).
+5. Org mode agenda.
+6. Register list.
 7. Supports both [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] and [[https://github.com/rainstormstudio/nerd-icons.el][nerd-icons]]
+8. Doom and Spacemacs dashboard style support.
 
 * Screenshot
 
