@@ -505,6 +505,11 @@ Set to nil for unbounded."
   "Face used for icon in footer."
   :group 'dashboard)
 
+(defface dashboard-doom-keymap-face
+  '((t (:inherit font-lock-constant-face)))
+  "Face used for show keybindings in shotmenu items."
+  :group 'dashboard)
+
 (define-obsolete-face-alias
  'dashboard-text-banner-face 'dashboard-text-banner "1.2.6")
 (define-obsolete-face-alias
@@ -938,6 +943,58 @@ to widget creation."
        (concat footer-icon " "))
      (propertize footer 'face 'dashboard-footer-face)
      "\n")))
+
+;;
+;;; Doom-like Widgets
+
+(defun dashboard-insert-recents-shortmenu (&rest _)
+  (insert (format
+           "%-3s"
+           (nerd-icons-octicon
+            (alist-get 'recents dashboard-heading-icons)
+            :face 'dashboard-heading)))
+  (widget-create 'item
+                 :tag "Recently opened files"
+                 :action (lambda (&rest _) (call-interactively #'recentf))
+                 :mouse-face 'highlight
+                 :button-face 'dashboard-heading
+                 :button-prefix ""
+                 :button-suffix ""
+                 :format "%[%t%]")
+  (insert (propertize
+           (format "%20s" (substitute-command-keys "\\[project-switch-project]"))
+           'face
+           'dashboard-doom-keymap-face)))
+
+(defun dashboard-insert-project-shortmenu (&rest _)
+  (insert (format
+           "%-3s"
+           (nerd-icons-octicon
+            (alist-get 'projects dashboard-heading-icons)
+            :face 'dashboard-heading)))
+  (widget-create 'item
+                 :tag "Open Project"
+                 :action (lambda (&rest _) (call-interactively #'project-switch-project))
+                 :mouse-face 'highlight
+                 :button-face 'dashboard-heading
+                 :button-prefix ""
+                 :button-suffix ""
+                 :format "%[%t%]")
+  (insert (propertize
+           (format "%20s" (substitute-command-keys "\\[project-switch-project]"))
+           'face
+           'dashboard-doom-keymap-face)))
+
+(defun dashboard-insert-homepage-footer ()
+  (widget-create 'item
+                 :tag (nerd-icons-faicon "nf-fa-github_alt" :face 'success)
+                 :action (lambda (&rest _) (browse-url "homepage"))
+                 :mouse-face 'highlight
+                 :button-prefix ""
+                 :button-suffix ""
+                 :format "%[%t%]")
+  (dashboard-center-text (- (point) 1) (point))
+  (insert "\n"))
 
 ;;
 ;;; Truncate
