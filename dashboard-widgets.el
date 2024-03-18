@@ -348,15 +348,15 @@ ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties.
 (defcustom dashboard-startup-banner 'official
   "Specify the banner type to use.
 Value can be
- - 'official  displays the official Emacs logo.
- - 'logo  displays an alternative Emacs logo.
+ - \='official  displays the official Emacs logo.
+ - \='logo  displays an alternative Emacs logo.
  - an integer which displays one of the text banners.
  - a string that specifies the path of an custom banner
-   supported files types are gif/image/text/xbm
+   supported files types are gif/image/text/xbm.
  - a cons of 2 strings which specifies the path of an image to use
    and other path of a text file to use if image isn't supported.
  - a list that can display an random banner, supported values are:
-   string (filepath), 'official, 'logo and integers."
+   string (filepath), \='official, \='logo and integers."
   :type '(choice (const   :tag "official"  official)
                  (const   :tag "logo"      logo)
                  (const   :tag "ascii"     ascii)
