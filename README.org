@@ -23,8 +23,8 @@ An extensible emacs startup screen showing you what's most important.
 * Screenshot
 
 [[./etc/screenshot.png]]
-TODO: Add Doom screenshot
-
+TODO: Add Doom screenshot or update screenshot image
+Spacemacs style/Doom style
 
 * Dependencies
 You will need the following packages which are all available on MELPA:
