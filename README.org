@@ -21,10 +21,11 @@ An extensible emacs startup screen showing you what's most important.
 8. Support for display dashboard in a Doom or Spacemacs style.
 
 * Screenshot
+| Spacemacs-like Style     | Doom-like style |
+|--------------------------+-----------------|
+| [[./etc/screenshot.png]] |                 |
 
-[[./etc/screenshot.png]]
 TODO: Add Doom screenshot or update screenshot image
-Spacemacs style/Doom style
 
 * Dependencies
 You will need the following packages which are all available on MELPA:
