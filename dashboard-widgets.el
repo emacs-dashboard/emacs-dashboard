@@ -413,7 +413,7 @@ If nil it is disabled.  Possible values for list-type are:
 `recents' `bookmarks' `projects' `agenda' `registers'."
   :type '(repeat (choice
                   symbol
-                  (cons symbol number)))
+                  (cons symbol integer)))
   :group 'dashboard)
 
 (defcustom dashboard-item-shortcuts
