@@ -287,7 +287,7 @@ To customize it and customize its icon;
 To use it with [[https://github.com/hlissner/emacs-solaire-mode][solaire-mode]]:
 #+begin_src emacs-lisp
   (add-hook 'dashboard-after-initialize-hook #'solaire-mode)
-;; Or for use-package users
+  ;; Or for use-package users
   (use-package solaire-mode
     :hook (dashboard-after-initialize . solaire-mode)
     ...)
@@ -307,13 +307,13 @@ Or for doom-modeline users
   (setq doom-modeline-mode-alist
      (delete (assoc 'dashboard-mode doom-modeline-mode-alist)
              doom-modeline-mode-alist))
-;; Or for use-package
-(use-package doom-modeline
-  :custom
-  (doom-modeline-mode-alist
-   (delete (assoc 'dashboard-mode doom-modeline-mode-alist)
-           doom-modeline-mode-alist))
-  ...)
+  ;; Or for use-package
+  (use-package doom-modeline
+   :custom
+   (doom-modeline-mode-alist
+    (delete (assoc 'dashboard-mode doom-modeline-mode-alist)
+             doom-modeline-mode-alist))
+   ...)
 #+end_src
 
 
