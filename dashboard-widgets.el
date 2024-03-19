@@ -59,7 +59,6 @@
 (declare-function org-time-string-to-time "ext:org.el")
 (declare-function org-today "ext:org.el")
 (declare-function recentf-cleanup "ext:recentf.el")
-(defalias 'org-time-less-p 'time-less-p)
 (defvar org-level-faces)
 (defvar org-agenda-new-buffers)
 (defvar org-agenda-prefix-format)
@@ -824,9 +823,9 @@ Argument IMAGE-PATH path to the image."
 (defun dashboard-insert-init-info ()
   "Insert init info."
   (let ((init-info (if (functionp dashboard-init-info)
-                         (funcall dashboard-init-info)
-                       dashboard-init-info)))
-      (dashboard-insert-center (propertize init-info 'face 'font-lock-comment-face))))
+                       (funcall dashboard-init-info)
+                     dashboard-init-info)))
+    (dashboard-insert-center (propertize init-info 'face 'font-lock-comment-face))))
 
 (defun dashboard-insert-navigator ()
   "Insert Navigator of the dashboard."
@@ -1414,12 +1413,12 @@ point."
     (unless (and (not (org-entry-is-done-p))
                  (not (org-in-archived-heading-p))
                  (or (and scheduled-time
-                          (org-time-less-p scheduled-time due-date))
+                          (time-less-p scheduled-time due-date))
                      (and deadline-time
-                          (org-time-less-p deadline-time due-date))
+                          (time-less-p deadline-time due-date))
                      (and entry-timestamp
-                          (org-time-less-p now entry-timestamp)
-                          (org-time-less-p entry-timestamp due-date))))
+                          (time-less-p now entry-timestamp)
+                          (time-less-p entry-timestamp due-date))))
       (point))))
 
 (defun dashboard-filter-agenda-by-todo ()
@@ -1492,8 +1491,8 @@ found for the strategy it uses nil predicate."
   (cl-case strategy
     (`priority-up '>)
     (`priority-down '<)
-    (`time-up 'org-time-less-p)
-    (`time-down (lambda (a b) (org-time-less-p b a)))
+    (`time-up 'time-less-p)
+    (`time-down (lambda (a b) (time-less-p b a)))
     (`todo-state-up '>)
     (`todo-state-down '<)))
 
