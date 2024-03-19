@@ -143,10 +143,15 @@ Avalaible functions:
   `dashboard-insert-items'
   `dashboard-insert-footer'
 
-You can also add your custom function or a lambda to the list.
+It must be a function or a cons cell where specify function and
+its arg.
+
+Also you can add your custom function or a lambda to the list.
 example:
  (lambda () (delete-char -1))"
-  :type '(repeat function)
+  :type '(repeat (choice
+                  function
+                  (cons function sexp)))
   :group 'dashboard)
 
 (defcustom dashboard-navigation-cycle nil
@@ -500,8 +505,13 @@ See `dashboard-item-generators' for all items available."
         (erase-buffer)
         (setq dashboard--section-starts nil)
 
-        (mapc (lambda (fn)
-                (funcall fn))
+        (mapc (lambda (list)
+                (if-let* (((consp list))
+                          (fn (car list))
+                          (args (cdr list))
+                          ((not (eq fn 'lambda))))
+                    (funcall fn args)
+                  (funcall list)))
               dashboard-startupify-list)
 
         (when dashboard-vertically-center-content
