@@ -411,7 +411,9 @@ installed."
 Will be of the form `(list-type . list-size)'.
 If nil it is disabled.  Possible values for list-type are:
 `recents' `bookmarks' `projects' `agenda' `registers'."
-  :type  '(repeat (alist :key-type symbol :value-type integer))
+  :type '(repeat (choice
+                  symbol
+                  (cons symbol number)))
   :group 'dashboard)
 
 (defcustom dashboard-item-shortcuts
