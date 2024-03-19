@@ -293,7 +293,7 @@ To use it with [[https://github.com/hlissner/emacs-solaire-mode][solaire-mode]]:
     ...)
 #+end_src
 
-To user it with [[https://github.com/hlissner/emacs-hide-mode-line][hide-mode-line]]
+To use it with [[https://github.com/hlissner/emacs-hide-mode-line][hide-mode-line]]
 #+begin_src elisp
   (add-hook 'dashboard-mode #'hide-mode-line-mode)
   ;; Or for use-package
