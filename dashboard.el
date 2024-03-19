@@ -81,6 +81,11 @@
     map)
   "Keymap for dashboard mode.")
 
+(defcustom dashboard-before-initialize-hook nil
+  "Hook that is run before dashboard buffer is initialized."
+  :group 'dashboard
+  :type 'hook)
+
 (defcustom dashboard-after-initialize-hook nil
   "Hook that is run after dashboard buffer is initialized."
   :group 'dashboard
@@ -491,6 +496,7 @@ See `dashboard-item-generators' for all items available."
       (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
     (dashboard--with-buffer
       (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
+        (run-hooks 'dashboard-before-initialize-hook)
         (erase-buffer)
         (setq dashboard--section-starts nil)
 

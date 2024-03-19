@@ -257,12 +257,12 @@ To customize it and customize its icon;
 
 To use it with [[https://github.com/hlissner/emacs-solaire-mode][solaire-mode]]:
 #+begin_src emacs-lisp
-  (add-hook 'dashboard-after-initialize-hook #'solaire-mode)
+  (add-hook 'dashboard-before-initialize-hook #'solaire-mode)
 #+end_src
 
 Or for use-package users
 #+begin_src emacs-lisp
-  :hook (dashboard-after-initialize . solaire-mode)
+  :hook (dashboard-before-initialize . solaire-mode)
 #+end_src
 
 To use it with [[https://github.com/ericdanan/counsel-projectile][counsel-projectile]] or [[https://github.com/bbatsov/persp-projectile][persp-projectile]]
