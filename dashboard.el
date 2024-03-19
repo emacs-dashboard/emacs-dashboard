@@ -445,7 +445,6 @@ Optional argument ARGS adviced function arguments."
   "Execute BODY in dashboard buffer."
   (declare (indent 0))
   `(with-current-buffer (get-buffer-create dashboard-buffer-name)
-     (run-hooks 'dashboard-before-initialize-hook)
      (let ((inhibit-read-only t)) ,@body)
      (current-buffer)))
 
