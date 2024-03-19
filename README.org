@@ -265,6 +265,29 @@ Or for use-package users
   :hook (dashboard-before-initialize . solaire-mode)
 #+end_src
 
+To use it with [[https://github.com/hlissner/emacs-hide-mode-line][hide-mode-line]]
+#+begin_src elisp
+  (add-hook 'dashboard-mode #'hide-mode-line-mode)
+  ;; Or for use-package
+  (use-package hide-mode-line
+    :hook (dashboard-mode . hide-mode-line-mode)
+    ...)
+#+end_src
+
+Or for doom-modeline users
+#+begin_src elisp
+  (setq doom-modeline-mode-alist
+     (delete (assoc 'dashboard-mode doom-modeline-mode-alist)
+             doom-modeline-mode-alist))
+  ;; Or for use-package
+  (use-package doom-modeline
+   :custom
+   (doom-modeline-mode-alist
+    (delete (assoc 'dashboard-mode doom-modeline-mode-alist)
+             doom-modeline-mode-alist))
+   ...)
+#+end_src
+
 To use it with [[https://github.com/ericdanan/counsel-projectile][counsel-projectile]] or [[https://github.com/bbatsov/persp-projectile][persp-projectile]]
 
 #+begin_src elisp
