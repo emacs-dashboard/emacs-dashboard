@@ -57,7 +57,7 @@ If you want to add an icon to a custom widget, insert it with `dashboard-insert-
 #+END_SRC
 
 
-** Items length is to high How can i change it
+** Items length is too high How can i change it
 You can change dashboard-items-default-length amount:
 #+BEGIN_SRC elisp
   (setq dashboard-items-default-length 20)
