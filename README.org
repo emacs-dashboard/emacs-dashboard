@@ -276,16 +276,7 @@ To use it with [[https://github.com/hlissner/emacs-hide-mode-line][hide-mode-lin
 
 Or for doom-modeline users
 #+begin_src elisp
-  (setq doom-modeline-mode-alist
-     (delete (assoc 'dashboard-mode doom-modeline-mode-alist)
-             doom-modeline-mode-alist))
-  ;; Or for use-package
-  (use-package doom-modeline
-   :custom
-   (doom-modeline-mode-alist
-    (delete (assoc 'dashboard-mode doom-modeline-mode-alist)
-             doom-modeline-mode-alist))
-   ...)
+  (add-to-list 'doom-modeline-mode-alist '(dashboard-mode))
 #+end_src
 
 To use it with [[https://github.com/ericdanan/counsel-projectile][counsel-projectile]] or [[https://github.com/bbatsov/persp-projectile][persp-projectile]]
