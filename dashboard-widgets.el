@@ -601,10 +601,10 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Insert a page break line in dashboard buffer."
   (dashboard-append dashboard-page-separator))
 
-(defun dashboard-insert-newline (&optional n)
-  "Insert N times of newlines."
-  (dotimes (_ (or n 1))
-    (insert "\n")))
+(defun dashboard-insert-newline (&optional times)
+  "When called without an argument, insert a newline.
+When called with TIMES return a function that insert TIMES number of newlines."
+  (insert (make-string (or times 1) (string-to-char "\n") t)))
 
 (defun dashboard-insert-heading (heading &optional shortcut icon)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT, ICON if provided."
