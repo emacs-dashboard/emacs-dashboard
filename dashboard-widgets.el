@@ -411,7 +411,7 @@ installed."
 Will be of the form `(list-type . list-size)'.
 If nil it is disabled.  Possible values for list-type are:
 `recents' `bookmarks' `projects' `agenda' `registers'."
-  :type  '(repeat (alist :key-type symbol :value-type integer))
+  :type  '(alist :key-type symbol :value-type integer)
   :group 'dashboard)
 
 (defcustom dashboard-item-shortcuts
@@ -423,8 +423,8 @@ If nil it is disabled.  Possible values for list-type are:
   "Association list of items and their corresponding shortcuts.
 Will be of the form `(list-type . keys)' as understood by `(kbd keys)'.
 If nil, shortcuts are disabled.  If an entry's value is nil, that item's
-shortcut is disbaled.  See `dashboard-items' for possible values of list-type.'"
-  :type '(repeat (alist :key-type symbol :value-type string))
+shortcut is disabled.  See `dashboard-items' for possible values of list-type.'"
+  :type '(alist :key-type symbol :value-type string)
   :group 'dashboard)
 
 (defcustom dashboard-item-names nil
