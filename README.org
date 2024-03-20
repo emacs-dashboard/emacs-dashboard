@@ -290,6 +290,8 @@ receives the tags directly from ~org-get-tags~. By default
 tags set the variable to ~ignore~: ~(setq dashboard-agenda-tags-format 'ignore)~
 or to ~nil~.
 
+** [[./FAQ.org][FAQ]]
+
 ** Faces
 
 It is possible to customize Dashboard's appearance using the following faces:
