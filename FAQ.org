@@ -70,7 +70,7 @@ You can delete them from ~dashboard-startupify-list~.
 #+begin_src emacs-lisp
   (setq dashboard-startupify-list '(dashboard-insert-banner-title
                                     dashboard-insert-navigator
-                                    (dashboard-insert-newline . 2)
+                                    ,(dashboard-insert-newline 2)
                                     dashboard-insert-footer))
 #+end_src
 
