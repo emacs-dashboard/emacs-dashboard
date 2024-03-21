@@ -132,7 +132,7 @@
     dashboard-insert-items
     dashboard-insert-newline
     dashboard-insert-footer)
-    "List of dashboard widgets (in order) to insert in dashboard buffer.
+  "List of dashboard widgets (in order) to insert in dashboard buffer.
 Avalaible functions:
   `dashboard-insert-newline'
   `dashboard-insert-page-break'
@@ -191,16 +191,16 @@ example:
   (save-excursion
     (if-let* ((sep (dashboard--separator))
               ((and (search-backward sep nil t)
-                    (search-forward sep nil t))))
-        (let ((ln (thing-at-point 'line)))
-          (cond ((string-match-p "Recent Files:" ln)     'recents)
-                ((string-match-p "Bookmarks:" ln)        'bookmarks)
-                ((string-match-p "Projects:" ln)         'projects)
-                ((string-match-p "Agenda for " ln)       'agenda)
-                ((string-match-p "Registers:" ln)        'registers)
-                ((string-match-p "List Directories:" ln) 'ls-directories)
-                ((string-match-p "List Files:" ln)       'ls-files)
-                (t (user-error "Unknown section from dashboard"))))
+                    (search-forward sep nil t)))
+              (ln (thing-at-point 'line t)))
+        (cond ((string-match-p "Recent Files:" ln)     'recents)
+              ((string-match-p "Bookmarks:" ln)        'bookmarks)
+              ((string-match-p "Projects:" ln)         'projects)
+              ((string-match-p "Agenda for " ln)       'agenda)
+              ((string-match-p "Registers:" ln)        'registers)
+              ((string-match-p "List Directories:" ln) 'ls-directories)
+              ((string-match-p "List Files:" ln)       'ls-files)
+              (t (user-error "Unknown section from dashboard")))
       (user-error "Failed searching dashboard section"))))
 
 ;;
