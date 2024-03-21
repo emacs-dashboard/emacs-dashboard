@@ -506,12 +506,9 @@ See `dashboard-item-generators' for all items available."
         (setq dashboard--section-starts nil)
 
         (mapc (lambda (list)
-                (if-let* (((consp list))
-                          (fn (car list))
-                          (args (cdr list))
-                          ((not (eq fn 'lambda))))
-                    (funcall fn args)
-                  (funcall list)))
+                (if (listp entry)
+                    (apply (car entry) (cdr entry))
+                  (funcall fn args)))
               dashboard-startupify-list)
 
         (when dashboard-vertically-center-content
