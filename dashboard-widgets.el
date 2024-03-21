@@ -607,7 +607,7 @@ When called with TIMES return a function that insert TIMES number of newlines."
   (if times
       (lambda ()
         (insert (make-string times (string-to-char "\n") t)))
-    (insert "\n"))
+    (insert "\n")))
 
 (defun dashboard-insert-heading (heading &optional shortcut icon)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT, ICON if provided."
