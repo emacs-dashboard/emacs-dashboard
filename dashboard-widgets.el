@@ -727,7 +727,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
         (list :text (dashboard-get-banner-path 1)))))
     ((and
       (pred listp)
-      (pred (lambda (c) (not (proper-list-p c))))
+      (pred (lambda (c) (and (not (proper-list-p c))
+                             (null c)))
       `(,img . ,txt))
      (list :image (if (dashboard--image-supported-p img)
                       img
