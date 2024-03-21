@@ -604,7 +604,10 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
 (defun dashboard-insert-newline (&optional times)
   "When called without an argument, insert a newline.
 When called with TIMES return a function that insert TIMES number of newlines."
-  (insert (make-string (or times 1) (string-to-char "\n") t)))
+  (if times
+      (lambda ()
+        (insert (make-string times (string-to-char "\n") t)))
+    (insert "\n"))
 
 (defun dashboard-insert-heading (heading &optional shortcut icon)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT, ICON if provided."
