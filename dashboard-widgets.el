@@ -742,12 +742,12 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     ((and
       (pred proper-list-p)
       (pred (lambda (l) (not (null l)))))
-     
+
      (let* ((max (length banner))
             (choose (nth (random max) banner)))
        (dashboard-choose-banner choose)))
     (_
-     (warn "unsupported banner config %s" banner)
+     (user-error "Unsupported banner type: `%s'" banner)
      nil)))
 
 (defun dashboard--image-animated-p (image-path)
