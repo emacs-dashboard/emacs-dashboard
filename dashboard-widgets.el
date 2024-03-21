@@ -70,15 +70,6 @@
 (declare-function string-pixel-width "subr-x.el")   ; TODO: remove this after 29.1
 (declare-function shr-string-pixel-width "shr.el")  ; TODO: remove this after 29.1
 
-(make-obsolete-variable 'dashboard-set-navigator
-                        'dashboard-startupify-list "1.9.0")
-
-(make-obsolete-variable 'dashboard-set-init-info
-                        'dashboard-startupify-list "1.9.0")
-
-(make-obsolete-variable 'dashboard-set-footer
-                        'dashboard-startupify-list "1.9.0")
-
 (defvar recentf-list nil)
 
 (defvar dashboard-buffer-name)
@@ -132,6 +123,27 @@ See `create-image' and Info node `(elisp)Image Descriptors'."
   "When non nil, file lists will have icons."
   :type 'boolean
   :group 'dashboard)
+
+(defcustom dashboard-set-navigator nil
+  "When non nil, a navigator will be displayed under the banner."
+  :type 'boolean
+  :group 'dashboard)
+(make-obsolete-variable 'dashboard-set-navigator
+                        'dashboard-startupify-list "1.9.0")
+
+(defcustom dashboard-set-init-info t
+  "When non nil, init info will be displayed under the banner."
+  :type 'boolean
+  :group 'dashboard)
+(make-obsolete-variable 'dashboard-set-init-info
+                        'dashboard-startupify-list "1.9.0")
+
+(defcustom dashboard-set-footer t
+  "When non nil, a footer will be displayed at the bottom."
+  :type 'boolean
+  :group 'dashboard)
+(make-obsolete-variable 'dashboard-set-footer
+                        'dashboard-startupify-list "1.9.0")
 
 (defcustom dashboard-footer-messages
   '("The one true editor, Emacs!"
