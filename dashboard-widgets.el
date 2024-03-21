@@ -727,8 +727,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
         (list :text (dashboard-get-banner-path 1)))))
     ((and
       (pred listp)
-      (pred (lambda (c) (and (not (proper-list-p c))
-                             (null c)))
+      (pred (lambda (c)
+                    (and (not (proper-list-p c))
+                         (not (null c)))))
       `(,img . ,txt))
      (list :image (if (dashboard--image-supported-p img)
                       img
@@ -738,12 +739,16 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                      txt
                    (message "could not find banner %s, use default instead" txt)
                    (dashboard-get-banner-path 1))))
-    ((pred proper-list-p)
+    ((and
+      (pred proper-list-p)
+      (pred (lambda (l) (not (null l)))))
+     
      (let* ((max (length banner))
             (choose (nth (random max) banner)))
        (dashboard-choose-banner choose)))
     (_
-     (message "unsupported banner config %s" banner))))
+     (warn "unsupported banner config %s" banner)
+     nil)))
 
 (defun dashboard--image-animated-p (image-path)
   "Return if image is a gif or webp.
