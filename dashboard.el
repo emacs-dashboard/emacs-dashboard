@@ -505,10 +505,10 @@ See `dashboard-item-generators' for all items available."
         (erase-buffer)
         (setq dashboard--section-starts nil)
 
-        (mapc (lambda (list)
+        (mapc (lambda (entry)
                 (if (listp entry)
                     (apply (car entry) (cdr entry))
-                  (funcall fn args)))
+                  (funcall entry)))
               dashboard-startupify-list)
 
         (when dashboard-vertically-center-content
