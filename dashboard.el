@@ -506,7 +506,8 @@ See `dashboard-item-generators' for all items available."
         (setq dashboard--section-starts nil)
 
         (mapc (lambda (entry)
-                (if (listp entry)
+                (if (and (listp entry)
+                         (not (eq (car entry) 'lambda)))
                     (apply (car entry) (cdr entry))
                   (funcall entry)))
               dashboard-startupify-list)
