@@ -507,6 +507,7 @@ See `dashboard-item-generators' for all items available."
 
         (mapc (lambda (entry)
                 (if (and (listp entry)
+                         (not (eq (car entry) 'closure))
                          (not (eq (car entry) 'lambda)))
                     (apply (car entry) (cdr entry))
                   (funcall entry)))
