@@ -733,8 +733,8 @@ When called with TIMES return a function that insert TIMES number of newlines."
     ((and
       (pred listp)
       (pred (lambda (c)
-                    (and (not (proper-list-p c))
-                         (not (null c)))))
+              (and (not (proper-list-p c))
+                   (not (null c)))))
       `(,img . ,txt))
      (list :image (if (dashboard--image-supported-p img)
                       img
