@@ -423,7 +423,9 @@ installed."
 Will be of the form `(list-type . list-size)'.
 If nil it is disabled.  Possible values for list-type are:
 `recents' `bookmarks' `projects' `agenda' `registers'."
-  :type  '(alist :key-type symbol :value-type integer)
+  :type '(repeat (choice
+                  symbol
+                  (cons symbol integer)))
   :group 'dashboard)
 
 (defcustom dashboard-item-shortcuts
@@ -611,9 +613,12 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
   "Insert a page break line in dashboard buffer."
   (dashboard-append dashboard-page-separator))
 
-(defun dashboard-insert-newline (&optional n)
-  "Insert N times of newlines."
-  (dotimes (_ (or n 1))
+(defun dashboard-insert-newline (&optional times)
+  "When called without an argument, insert a newline.
+When called with TIMES return a function that insert TIMES number of newlines."
+  (if times
+      (lambda ()
+        (insert (make-string times (string-to-char "\n") t)))
     (insert "\n")))
 
 (defun dashboard-insert-heading (heading &optional shortcut icon)

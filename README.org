@@ -167,32 +167,6 @@ To modify the widget heading name:
                                ("Agenda for the coming week:" . "Agenda:")))
 #+END_SRC
 
-The default length for each item.
-#+BEGIN_SRC elisp
-  (setq dashboard-items-default-length 20)
-#+END_SRC
-
-To add your own custom widget is pretty easy, define your widget's callback function and add it to `dashboard-items` as such:
-#+BEGIN_SRC elisp
-  (defun dashboard-insert-custom (list-size)
-    (insert "Custom text"))
-  (add-to-list 'dashboard-item-generators  '(custom . dashboard-insert-custom))
-  (add-to-list 'dashboard-items '(custom) t)
-#+END_SRC
-
-To add an icon to a custom widget, insert it with `dashboard-insert-heading` in your custom function.  In this example, there is an icon but no shortcut.
-#+BEGIN_SRC elisp
-  (defun dashboard-insert-custom (list-size)
-    (dashboard-insert-heading "News:"
-                              nil
-                              (all-the-icons-faicon "newspaper-o"
-                                                    :height 1.2
-                                                    :v-adjust 0.0
-                                                    :face 'dashboard-heading))
-    (insert "\n")
-    (insert "    Custom text"))
-#+END_SRC
-
 To use ~all-the-icons~ package:
 #+BEGIN_SRC emacs-lisp
   (setq dashboard-icon-type 'all-the-icons)  ; use `all-the-icons' package
@@ -240,30 +214,6 @@ To customize the buttons of the navigator like this:
             (lambda (&rest _) (browse-url "homepage")))
            ("⚑" nil "Show flags" (lambda (&rest _) (message "flag")) error))))
 #+END_SRC
-
-Also, the message can be customized like this:
-#+BEGIN_SRC elisp
-  (setq dashboard-init-info "This is an init message!")
-#+END_SRC
-
-To customize it and customize its icon;
-#+BEGIN_SRC elisp
-  (setq dashboard-footer-messages '("Dashboard is pretty cool!"))
-  (setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
-                                                     :height 1.1
-                                                     :v-adjust -0.05
-                                                     :face 'font-lock-keyword-face))
-#+END_SRC
-
-To use it with [[https://github.com/hlissner/emacs-solaire-mode][solaire-mode]]:
-#+begin_src emacs-lisp
-  (add-hook 'dashboard-before-initialize-hook #'solaire-mode)
-#+end_src
-
-Or for use-package users
-#+begin_src emacs-lisp
-  :hook (dashboard-before-initialize . solaire-mode)
-#+end_src
 
 To use it with [[https://github.com/ericdanan/counsel-projectile][counsel-projectile]] or [[https://github.com/bbatsov/persp-projectile][persp-projectile]]
 
@@ -339,6 +289,8 @@ receives the tags directly from ~org-get-tags~. By default
 ~dashboard-agenda-tags-format~ is set to ~identity~. To hide the
 tags set the variable to ~ignore~: ~(setq dashboard-agenda-tags-format 'ignore)~
 or to ~nil~.
+
+** [[./FAQ.org][FAQ]]
 
 ** Faces
 
