@@ -63,6 +63,11 @@ You can change dashboard-items-default-length amount:
   (setq dashboard-items-default-length 20)
 #+END_SRC
 
+** /How can i change dashboard buffer name?/
+You can change it with ~dashboard-buffer-name~
+#+begin_src emacs-lisp
+  (setq dashboard-buffer-name "*my dashboard*")
+#+end_src
 
 ** /I don't like banner, init info or even items, How can i delete them from dashboard?/
 
