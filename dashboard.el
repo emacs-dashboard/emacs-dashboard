@@ -161,7 +161,7 @@ example:
 
 (defcustom dashboard-buffer-name "*dashboard*"
   "Dashboard's buffer name."
-  :type '(string)
+  :type 'string
   :group 'dashboard)
 
 (defvar dashboard-force-refresh nil
