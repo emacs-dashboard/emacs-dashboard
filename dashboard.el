@@ -159,8 +159,10 @@ example:
   :type 'boolean
   :group 'dashboard)
 
-(defconst dashboard-buffer-name "*dashboard*"
-  "Dashboard's buffer name.")
+(defcustom dashboard-buffer-name "*dashboard*"
+  "Dashboard's buffer name."
+  :type '(string)
+  :group 'dashboard)
 
 (defvar dashboard-force-refresh nil
   "If non-nil, force refresh dashboard buffer.")
