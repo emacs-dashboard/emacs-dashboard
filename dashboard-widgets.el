@@ -347,8 +347,10 @@ ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties.
                              :v-adjust -0.05
                              :face 'dashboard-footer-icon-face)))
     (propertize ">" 'face 'dashboard-footer-icon-face))
-  "Footer's icon."
-  :type 'string
+  "Footer's icon.
+It can be a string or a string list for display random icons."
+  :type '(choice string
+                 (repeat string))
   :group 'dashboard)
 
 (defcustom dashboard-heading-shorcut-format " (%s)"
@@ -954,7 +956,12 @@ to widget creation."
 (defun dashboard-insert-footer ()
   "Insert footer of dashboard."
   (when-let ((footer (dashboard-random-footer))
-             (footer-icon (dashboard-replace-displayable dashboard-footer-icon)))
+             (footer-icon
+              (if (listp dashboard-footer-icon)
+                  (dashboard-replace-displayable
+                   (nth (random (length dashboard-footer-icon))
+                        dashboard-footer-icon))
+                (dashboard-replace-displayable dashboard-footer-icon))))
     (dashboard-insert-center
      (if (string-empty-p footer-icon) footer-icon
        (concat footer-icon " "))
