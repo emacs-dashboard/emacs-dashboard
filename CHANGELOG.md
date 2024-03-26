@@ -15,6 +15,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * fix: Adding animation to webp image (#502)
 * feat: Support for insert startupify list in order (#506)
 * Support for random banners (#510)
+* Support for random footer icon (#519)
 
 ## 1.8.0
 > Released Jul 26, 2023
