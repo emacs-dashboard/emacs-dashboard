@@ -590,7 +590,8 @@ Optionally, provide NO-NEXT-LINE to move the cursor forward a line."
     `(progn
        (eval-when-compile (defvar dashboard-mode-map))
        (defun ,sym nil
-         ,(concat "Jump to " name ".  This code is dynamically generated in `dashboard-insert-shortcut'.")
+         ,(concat "Jump to " name ".
+This code is dynamically generated in `dashboard-insert-shortcut'.")
          (interactive)
          (unless (search-forward ,search-label (point-max) t)
            (search-backward ,search-label (point-min) t))
@@ -897,7 +898,10 @@ ACTION is theaction taken when the user activates the widget button.
 WIDGET-PARAMS are passed to the \"widget-create\" function."
   `(progn
      (dashboard-insert-heading ,section-name
-                               (if (and ,list ,shortcut-char dashboard-show-shortcuts) ,shortcut-char))
+                               (when (and ,list
+                                          ,shortcut-char
+                                          dashboard-show-shortcuts)
+                                 ,shortcut-char))
      (if ,list
          (when (and (dashboard-insert-section-list
                      ,section-name
@@ -1370,7 +1374,9 @@ Any custom function would receives the tags from `org-get-tags'"
 
 (defun dashboard-agenda-entry-format ()
   "Format agenda entry to show it on dashboard.
-Also,it set text properties that latter are used to sort entries and perform different actions."
+
+Also,it set text properties that latter are used to sort entries and perform
+different actions."
   (let* ((scheduled-time (org-get-scheduled-time (point)))
          (deadline-time (org-get-deadline-time (point)))
          (entry-timestamp (dashboard-agenda--entry-timestamp (point)))
