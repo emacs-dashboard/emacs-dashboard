@@ -957,15 +957,19 @@ to widget creation."
   "Return a random footer from `dashboard-footer-messages'."
   (nth (random (length dashboard-footer-messages)) dashboard-footer-messages))
 
+(defun dashboard-footer-icon ()
+  "Return footer icon or a random icon if `dashboard-footer-messages' is a list."
+  (if (and (not (null dashboard-footer-icon))
+           (listp dashboard-footer-icon))
+      (dashboard-replace-displayable
+       (nth (random (length dashboard-footer-icon))
+            dashboard-footer-icon))
+    (dashboard-replace-displayable dashboard-footer-icon)))
+
 (defun dashboard-insert-footer ()
   "Insert footer of dashboard."
   (when-let ((footer (dashboard-random-footer))
-             (footer-icon
-              (if (listp dashboard-footer-icon)
-                  (dashboard-replace-displayable
-                   (nth (random (length dashboard-footer-icon))
-                        dashboard-footer-icon))
-                (dashboard-replace-displayable dashboard-footer-icon))))
+             (footer-icon (dashboard-footer-icon)))
     (dashboard-insert-center
      (if (string-empty-p footer-icon) footer-icon
        (concat footer-icon " "))
