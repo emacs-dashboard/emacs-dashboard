@@ -295,7 +295,9 @@ Optional argument REP is the replacement string of non-displayable character."
             (results (list)))
         (dolist (string (split-string str ""))
           (let* ((char (string-to-char string))
-                 (string (if (char-displayable-p char)
+                 (string (if (or (require 'nerd-icons nil 'noerror)
+                                 (require 'all-the-icons nil 'noerror)
+                                 (char-displayable-p char))
                              string
                            rep)))
             (push string results)))
