@@ -1,0 +1,103 @@
+* Frequently Asked Questions
+
+** /How can i hide modeline in dashboard?/
+
+You can add this to your config:
+  #+begin_src emacs-lisp
+  (add-hook 'dashboard-mode-hook (lambda () (setq-local mode-line-format nil)))
+  #+end_src
+  You can also use [[https://github.com/hlissner/emacs-hide-mode-line][hide-mode-line]]:
+#+begin_src elisp
+  (add-hook 'dashboard-mode-hook #'hide-mode-line-mode)
+  ;; Or for use-package
+  (use-package hide-mode-line
+    :hook (dashboard-mode . hide-mode-line-mode)
+    ...)
+#+end_src
+For doom-modeline users you may use this:
+#+begin_src elisp
+  (add-to-list 'doom-modeline-mode-alist '(dashboard-mode))
+#+end_src
+
+** /How can i use [[https://github.com/hlissner/emacs-solaire-mode][solaire-mode]] with dashboard?/
+
+Add this to your config:
+#+begin_src emacs-lisp
+  (add-hook 'dashboard-before-initialize-hook #'solaire-mode)
+  ;; Or if you prefer use-package
+  (use-package solaire-mode
+    :hook (dashboard-before-initialize . solaire-mode)
+    ...)
+#+end_src
+
+
+** /How can i add my custom widget?/
+
+To add your own custom widget is pretty easy, define your widget's callback function and add it to `dashboard-items` as such:
+#+BEGIN_SRC elisp
+  (defun dashboard-insert-custom (list-size)
+    (insert "Custom text"))
+  (add-to-list 'dashboard-item-generators  '(custom . dashboard-insert-custom))
+  (add-to-list 'dashboard-items '(custom) t)
+#+END_SRC
+
+If you want to add an icon to a custom widget, insert it with `dashboard-insert-heading` in your custom function:
+#+BEGIN_SRC elisp
+  ;; In this example, there is an icon but no shortcut
+  ;; see `dashboard-insert-heading' for more details.
+  (defun dashboard-insert-custom (list-size)
+    (dashboard-insert-heading "News:"
+                              nil
+                              (all-the-icons-faicon "newspaper-o"
+                                                    :height 1.2
+                                                    :v-adjust 0.0
+                                                    :face 'dashboard-heading))
+    (insert "\n")
+    (insert "    Custom text"))
+#+END_SRC
+
+
+** Items length is too high How can i change it
+You can change dashboard-items-default-length amount:
+#+BEGIN_SRC elisp
+  (setq dashboard-items-default-length 20)
+#+END_SRC
+
+** /How can i change dashboard buffer name?/
+You can change it with ~dashboard-buffer-name~
+#+begin_src emacs-lisp
+  (setq dashboard-buffer-name "*my dashboard*")
+#+end_src
+
+** /I don't like banner, init info or even items, How can i delete them from dashboard?/
+
+You can delete them from ~dashboard-startupify-list~.
+#+begin_src emacs-lisp
+  (setq dashboard-startupify-list '(dashboard-insert-banner-title
+                                    dashboard-insert-navigator
+                                    ,(dashboard-insert-newline 2)
+                                    dashboard-insert-footer))
+#+end_src
+
+** /How can i change my init message?/
+
+You can customize it like this:
+#+BEGIN_SRC elisp
+  (setq dashboard-init-info "This is an init message!")
+#+END_SRC
+
+** /How can i change footer messages?/
+
+You can customize it like this:
+#+BEGIN_SRC elisp
+  (setq dashboard-footer-messages '("Dashboard is pretty cool!"))
+#+END_SRC
+If you want to change its icon you may use this:
+#+BEGIN_SRC elisp
+  (setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
+                                                     :height 1.1
+                                                     :v-adjust -0.05
+                                                     :face 'font-lock-keyword-face))
+Also it can be a string list for display random footer icons.
+#+END_SRC
+
