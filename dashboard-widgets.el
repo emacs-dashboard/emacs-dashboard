@@ -257,7 +257,16 @@ The format is: `icon title help action face prefix suffix`.
 Example:
 `((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _)
                                     (show-stars)) warning \"[\" \"]\"))"
-  :type '(repeat (repeat (list string string string function symbol string string)))
+  :type '(repeat (repeat (list string
+                               string
+                               string
+                               function
+                               (choice face
+                                       (repeat :tag "Anonymous face" sexp))
+                               (choice string
+                                       (const nil))
+                               (choice string
+                                       (const nil)))))
   :group 'dashboard)
 
 (defcustom dashboard-init-info
@@ -295,9 +304,7 @@ Optional argument REP is the replacement string of non-displayable character."
             (results (list)))
         (dolist (string (split-string str ""))
           (let* ((char (string-to-char string))
-                 (string (if (or (require 'nerd-icons nil 'noerror)
-                                 (require 'all-the-icons nil 'noerror)
-                                 (char-displayable-p char))
+                 (string (if (char-displayable-p char)
                              string
                            rep)))
             (push string results)))
@@ -878,7 +885,8 @@ Argument IMAGE-PATH path to the image."
                                (when (and icon title
                                           (not (string-equal icon ""))
                                           (not (string-equal title "")))
-                                 (propertize " " 'face 'variable-pitch))
+                                 (propertize " " 'face `(:inherit (variable-pitch
+                                                                  ,face))))
                                (when title (propertize title 'face face)))
                          :help-echo help
                          :action action
@@ -959,15 +967,19 @@ to widget creation."
   "Return a random footer from `dashboard-footer-messages'."
   (nth (random (length dashboard-footer-messages)) dashboard-footer-messages))
 
+(defun dashboard-footer-icon ()
+  "Return footer icon or a random icon if `dashboard-footer-messages' is a list."
+  (if (and (not (null dashboard-footer-icon))
+           (listp dashboard-footer-icon))
+      (dashboard-replace-displayable
+       (nth (random (length dashboard-footer-icon))
+            dashboard-footer-icon))
+    (dashboard-replace-displayable dashboard-footer-icon)))
+
 (defun dashboard-insert-footer ()
   "Insert footer of dashboard."
   (when-let ((footer (dashboard-random-footer))
-             (footer-icon
-              (if (listp dashboard-footer-icon)
-                  (dashboard-replace-displayable
-                   (nth (random (length dashboard-footer-icon))
-                        dashboard-footer-icon))
-                (dashboard-replace-displayable dashboard-footer-icon))))
+             (footer-icon (dashboard-footer-icon)))
     (dashboard-insert-center
      (if (string-empty-p footer-icon) footer-icon
        (concat footer-icon " "))

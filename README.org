@@ -290,7 +290,9 @@ receives the tags directly from ~org-get-tags~. By default
 tags set the variable to ~ignore~: ~(setq dashboard-agenda-tags-format 'ignore)~
 or to ~nil~.
 
-** [[./FAQ.org][FAQ]]
+** FAQ
+
+Check out our [[./docs/FAQ.org][Frequently Asked Questions]].
 
 ** Faces
 
