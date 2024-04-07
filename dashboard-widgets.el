@@ -257,7 +257,16 @@ The format is: `icon title help action face prefix suffix`.
 Example:
 `((\"☆\" \"Star\" \"Show stars\" (lambda (&rest _)
                                     (show-stars)) warning \"[\" \"]\"))"
-  :type '(repeat (repeat (list string string string function symbol string string)))
+  :type '(repeat (repeat (list string
+                               string
+                               string
+                               function
+                               (choice face
+                                       (repeat :tag "Anonymous face" sexp))
+                               (choice string
+                                       (const nil))
+                               (choice string
+                                       (const nil)))))
   :group 'dashboard)
 
 (defcustom dashboard-init-info
@@ -876,7 +885,8 @@ Argument IMAGE-PATH path to the image."
                                (when (and icon title
                                           (not (string-equal icon ""))
                                           (not (string-equal title "")))
-                                 (propertize " " 'face 'variable-pitch))
+                                 (propertize " " 'face `(:inherit (variable-pitch
+                                                                  ,face))))
                                (when title (propertize title 'face face)))
                          :help-echo help
                          :action action
