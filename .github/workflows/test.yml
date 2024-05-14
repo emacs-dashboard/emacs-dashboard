@@ -20,27 +20,27 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         emacs-version:
-          - 28.2
-          - 29.3
+          - "28.2"
+          - "29.3"
         experimental: [false]
         include:
           - os: ubuntu-latest
-            emacs-version: 26.3
+            emacs-version: "26.3"
             experimental: false
           - os: macos-11
-            emacs-version: 26.3
+            emacs-version: "26.3"
             experimental: false
           - os: windows-latest
-            emacs-version: 26.3
+            emacs-version: "26.3"
             experimental: false
           - os: ubuntu-latest
-            emacs-version: 27.2
+            emacs-version: "27.2"
             experimental: false
           - os: macos-11
-            emacs-version: 27.2
+            emacs-version: "27.2"
             experimental: false
           - os: windows-latest
-            emacs-version: 27.2
+            emacs-version: "27.2"
             experimental: false
           - os: ubuntu-latest
             emacs-version: snapshot
