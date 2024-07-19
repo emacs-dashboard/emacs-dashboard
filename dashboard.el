@@ -164,6 +164,41 @@ example:
   :type 'string
   :group 'dashboard)
 
+(defcustom dashboard-recents-heading-string "Recent Files:"
+  "String to use in place of the recent files heading."
+  :type 'string
+  :group 'dashboard)
+
+(defcustom dashboard-bookmarks-heading-string "Bookmarks:"
+  "String to use in place of the bookmarks heading."
+  :type 'string
+  :group 'dashboard)
+
+(defcustom dashboard-projects-heading-string "Projects:"
+  "String to use in place of the projects heading."
+  :type 'string
+  :group 'dashboard)
+
+(defcustom dashboard-agenda-heading-string "Agenda for "
+  "String to use in place of the agenda heading."
+  :type 'string
+  :group 'dashboard)
+
+(defcustom dashboard-registers-heading-string "Registers:"
+  "String to use in place of the registers heading."
+  :type 'string
+  :group 'dashboard)
+
+(defcustom dashboard-list-directories-heading-string "List Directories:"
+  "String to use in place of the list directories heading."
+  :type 'string
+  :group 'dashboard)
+
+(defcustom dashboard-list-files-heading-string "List Files:"
+  "String to use in place of the list files heading."
+  :type 'string
+  :group 'dashboard)
+
 (defvar dashboard-force-refresh nil
   "If non-nil, force refresh dashboard buffer.")
 
@@ -200,13 +235,13 @@ example:
               ((and (search-backward sep nil t)
                     (search-forward sep nil t)))
               (ln (thing-at-point 'line t)))
-        (cond ((string-match-p "Recent Files:" ln)     'recents)
-              ((string-match-p "Bookmarks:" ln)        'bookmarks)
-              ((string-match-p "Projects:" ln)         'projects)
-              ((string-match-p "Agenda for " ln)       'agenda)
-              ((string-match-p "Registers:" ln)        'registers)
-              ((string-match-p "List Directories:" ln) 'ls-directories)
-              ((string-match-p "List Files:" ln)       'ls-files)
+        (cond ((string-match-p dashboard-recents-heading-string ln)          'recents)
+              ((string-match-p dashboard-bookmarks-heading-string ln)        'bookmarks)
+              ((string-match-p dashboard-projects-heading-string ln)         'projects)
+              ((string-match-p dashboard-agenda-heading-string ln)           'agenda)
+              ((string-match-p dashboard-registers-heading-string ln)        'registers)
+              ((string-match-p dashboard-list-directories-heading-string ln) 'ls-directories)
+              ((string-match-p dashboard-list-files-heading-string ln)       'ls-files)
               (t (user-error "Unknown section from dashboard")))
       (user-error "Failed searching dashboard section"))))
 
