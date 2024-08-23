@@ -516,7 +516,9 @@ See `dashboard-item-generators' for all items available."
 
         (when dashboard-vertically-center-content
           (goto-char (point-min))
-          (when-let* ((content-height (cdr (window-absolute-pixel-position (point-max))))
+          (when-let* ((start-height (cdr (window-absolute-pixel-position (point-min))))
+                      (end-height (cdr (window-absolute-pixel-position (point-max))))
+                      (content-height (- end-height start-height))
                       (vertical-padding (floor (/ (- (window-pixel-height) content-height) 2)))
                       ((> vertical-padding 0))
                       (vertical-lines (1- (floor (/ vertical-padding (line-pixel-height)))))
