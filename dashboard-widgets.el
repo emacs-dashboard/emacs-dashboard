@@ -53,6 +53,7 @@
 (declare-function org-get-todo-face "ext:org.el")
 (declare-function org-get-todo-state "ext:org.el")
 (declare-function org-in-archived-heading-p "ext:org.el")
+(declare-function org-link-display-format "ext:org.el")
 (declare-function org-map-entries "ext:org.el")
 (declare-function org-outline-level "ext:org.el")
 (declare-function org-release-buffers "ext:org.el")
@@ -1421,7 +1422,7 @@ different actions."
 
 (defun dashboard-agenda--formatted-headline ()
   "Set agenda faces to `HEADLINE' when face text property is nil."
-  (let* ((headline (org-get-heading t t t t))
+  (let* ((headline (org-link-display-format (org-get-heading t t t t)))
          (todo (or (org-get-todo-state) ""))
          (org-level-face (nth (- (org-outline-level) 1) org-level-faces))
          (todo-state (format org-agenda-todo-keyword-format todo)))
