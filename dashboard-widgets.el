@@ -239,6 +239,10 @@ If nil it is disabled.  Possible values for list-type are:
   (concat dashboard-banners-directory "logo.png")
   "Emacs banner image.")
 
+(defconst dashboard-banner-logo-symbol-png
+  (concat dashboard-banners-directory "logo-symbol.png")
+  "Emacs banner image.")
+
 (defcustom dashboard-banner-logo-title "Welcome to Emacs!"
   "Specify the startup banner."
   :type 'string
@@ -721,6 +725,10 @@ When called with TIMES return a function that insert TIMES number of newlines."
     ('logo
      (append (when (image-type-available-p 'png)
                (list :image dashboard-banner-logo-png))
+             (list :text (dashboard-get-banner-path 1))))
+    ('logo-symbol
+     (append (when (image-type-available-p 'png)
+               (list :image dashboard-banner-logo-symbol-png))
              (list :text (dashboard-get-banner-path 1))))
     ('ascii
      (append (list :text dashboard-banner-ascii)))
