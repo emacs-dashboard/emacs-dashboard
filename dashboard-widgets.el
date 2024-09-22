@@ -215,6 +215,10 @@ If nil it is disabled.  Possible values for list-type are:
   :type 'string
   :group 'dashboard)
 
+(defcustom dashboard-agenda-action 'dashboard-agenda--visit-file-other-window
+  "Function to call when dashboard make an action over agenda item."
+  :type 'function)
+
 (defcustom dashboard-remote-path-icon
   (pcase dashboard-icon-type
     ('all-the-icons (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
@@ -1569,6 +1573,19 @@ to compare."
      ((null arg2) t)
      (t (apply predicate (list arg1 arg2))))))
 
+(defun dashboard-agenda--visit-file (file point)
+  "Action on agenda-entry that visit a FILE at POINT."
+  (let ((buffer (find-file-noselect file)))
+    (with-current-buffer buffer
+      (goto-char point)
+      (switch-to-buffer buffer)
+      (recenter-top-bottom))))
+
+(defun dashboard-agenda--visit-file-other-window (file point)
+  "Visit FILE at POINT of an agenda item in other window."
+  (let ((buffer (find-file-other-window file)))
+    (with-current-buffer buffer (goto-char point) (recenter-top-bottom))))
+
 (defun dashboard-insert-agenda (list-size)
   "Add the list of LIST-SIZE items of agenda."
   (require 'org-agenda)
@@ -1581,10 +1598,9 @@ to compare."
    'agenda
    (dashboard-get-shortcut 'agenda)
    `(lambda (&rest _)
-      (let ((buffer (find-file-other-window (get-text-property 0 'dashboard-agenda-file ,el))))
-        (with-current-buffer buffer
-          (goto-char (get-text-property 0 'dashboard-agenda-loc ,el))
-          (switch-to-buffer buffer))))
+      (let ((file (get-text-property 0 'dashboard-agenda-file ,el))
+            (point (get-text-property 0 'dashboard-agenda-loc ,el)))
+        (funcall dashboard-agenda-action file point)))
    (format "%s" el)))
 
 ;;
