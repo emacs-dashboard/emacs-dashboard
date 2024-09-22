@@ -1403,7 +1403,7 @@ different actions."
                 (org-get-category)
                 (dashboard-agenda--formatted-tags)))
          (todo-state (org-get-todo-state))
-         (item-priority (org-get-priority (org-get-heading t t t t)))
+         (item-priority (org-get-priority (org-get-heading t t nil t)))
          (todo-index (and todo-state
                           (length (member todo-state org-todo-keywords-1))))
          (entry-data (list 'dashboard-agenda-file (buffer-file-name)
