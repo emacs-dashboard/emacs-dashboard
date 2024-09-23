@@ -217,7 +217,8 @@ If nil it is disabled.  Possible values for list-type are:
 
 (defcustom dashboard-agenda-action 'dashboard-agenda--visit-file-other-window
   "Function to call when dashboard make an action over agenda item."
-  :type 'function)
+  :type 'function
+  :group 'dashboard)
 
 (defcustom dashboard-remote-path-icon
   (pcase dashboard-icon-type
