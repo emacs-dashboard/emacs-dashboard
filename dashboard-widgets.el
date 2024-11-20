@@ -156,7 +156,7 @@ See `create-image' and Info node `(elisp)Image Descriptors'."
     "While any text editor can save your files, only Emacs can save your soul"
     "I showed you my source code, pls respond")
   "A list of messages, one of which dashboard chooses to display."
-  :type 'list
+  :type '(list string)
   :group 'dashboard)
 
 (defcustom dashboard-icon-type (and (or dashboard-set-heading-icons
@@ -788,7 +788,7 @@ Argument IMAGE-PATH path to the image."
 (defun dashboard-insert-banner ()
   "Insert the banner at the top of the dashboard."
   (goto-char (point-max))
-  (when-let ((banner (dashboard-choose-banner dashboard-startup-banner)))
+  (when-let* ((banner (dashboard-choose-banner dashboard-startup-banner)))
     (insert "\n")
     (let ((start (point))
           buffer-read-only
@@ -797,7 +797,7 @@ Argument IMAGE-PATH path to the image."
           (graphic-mode (display-graphic-p)))
       (when graphic-mode (insert "\n"))
       ;; If specified, insert a text banner.
-      (when-let ((txt (plist-get banner :text)))
+      (when-let* ((txt (plist-get banner :text)))
         (if (file-exists-p txt)
             (insert-file-contents txt)
           (save-excursion (insert txt)))
@@ -811,7 +811,7 @@ Argument IMAGE-PATH path to the image."
           (forward-line 1)))
       ;; If specified, insert an image banner. When displayed in a graphical frame, this will
       ;; replace the text banner.
-      (when-let ((img (plist-get banner :image)))
+      (when-let* ((img (plist-get banner :image)))
         (let ((img-props
                (append (when (> dashboard-image-banner-max-width 0)
                          (list :max-width dashboard-image-banner-max-width))
@@ -893,7 +893,7 @@ Argument IMAGE-PATH path to the image."
                                           (not (string-equal icon ""))
                                           (not (string-equal title "")))
                                  (propertize " " 'face `(:inherit (variable-pitch
-                                                                  ,face))))
+                                                                   ,face))))
                                (when title (propertize title 'face face)))
                          :help-echo help
                          :action action
@@ -985,8 +985,8 @@ to widget creation."
 
 (defun dashboard-insert-footer ()
   "Insert footer of dashboard."
-  (when-let ((footer (dashboard-random-footer))
-             (footer-icon (dashboard-footer-icon)))
+  (when-let* ((footer (dashboard-random-footer))
+              (footer-icon (dashboard-footer-icon)))
     (dashboard-insert-center
      (if (string-empty-p footer-icon) footer-icon
        (concat footer-icon " "))
@@ -1422,7 +1422,7 @@ different actions."
 
 (defun dashboard-agenda--entry-timestamp (point)
   "Get the timestamp from an entry at POINT."
-  (when-let ((timestamp (org-entry-get point "TIMESTAMP")))
+  (when-let* ((timestamp (org-entry-get point "TIMESTAMP")))
     (org-time-string-to-time timestamp)))
 
 (defun dashboard-agenda--formatted-headline ()
@@ -1443,8 +1443,8 @@ If not height is found on FACE or `dashboard-items-face' use `default'."
 
 (defun dashboard-agenda--formatted-time ()
   "Get the scheduled or dead time of an entry.  If no time is found return nil."
-  (when-let ((time (or (org-get-scheduled-time (point)) (org-get-deadline-time (point))
-                       (dashboard-agenda--entry-timestamp (point)))))
+  (when-let* ((time (or (org-get-scheduled-time (point)) (org-get-deadline-time (point))
+                        (dashboard-agenda--entry-timestamp (point)))))
     (format-time-string dashboard-agenda-time-string-format time)))
 
 (defun dashboard-agenda--formatted-tags ()
@@ -1493,7 +1493,7 @@ if returns a point."
 
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
-  (if-let ((prefix-format (assoc 'dashboard-agenda org-agenda-prefix-format)))
+  (if-let* ((prefix-format (assoc 'dashboard-agenda org-agenda-prefix-format)))
       (setcdr prefix-format dashboard-agenda-prefix-format)
     (push (cons 'dashboard-agenda dashboard-agenda-prefix-format) org-agenda-prefix-format))
   (org-compile-prefix-format 'dashboard-agenda)
