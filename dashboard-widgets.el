@@ -15,6 +15,7 @@
 
 (require 'cl-lib)
 (require 'image)
+(require 'mule-util)
 (require 'subr-x)
 
 ;;
@@ -463,8 +464,12 @@ shortcut is disabled.  See `dashboard-items' for possible values of list-type.'"
 When an item is nil or not present, the default name is used.
 Will be of the form `(default-name . new-name)'."
   :type '(alist :key-type string :value-type string)
-  :options '("Recent Files:" "Bookmarks:" "Agenda for today:"
-             "Agenda for the coming week:" "Registers:" "Projects:")
+  :options '("Recent Files:"
+             "Bookmarks:"
+             "Agenda for today:"
+             "Agenda for the coming week:"
+             "Registers:"
+             "Projects:")
   :group 'dashboard)
 
 (defcustom dashboard-items-default-length 20
@@ -485,11 +490,6 @@ Set to nil for unbounded."
 (defcustom dashboard-path-max-length 70
   "Maximum length for path to display."
   :type 'integer
-  :group 'dashboard)
-
-(defcustom dashboard-path-shorten-string "..."
-  "Shorten the string that displays in the center of the path."
-  :type 'string
   :group 'dashboard)
 
 ;;
@@ -1018,18 +1018,18 @@ to widget creation."
   "Shorten PATH from beginning if exceeding maximum length."
   (let* ((len-path (length path))
          (slen-path (dashboard-str-len path))
-         (len-rep (dashboard-str-len dashboard-path-shorten-string))
+         (len-rep (dashboard-str-len (truncate-string-ellipsis)))
          (len-total (- dashboard-path-max-length len-rep))
          front)
     (if (<= slen-path dashboard-path-max-length) path
       (setq front (ignore-errors (substring path (- slen-path len-total) len-path)))
-      (if front (concat dashboard-path-shorten-string front) ""))))
+      (if front (concat (truncate-string-ellipsis) front) ""))))
 
 (defun dashboard-shorten-path-middle (path)
   "Shorten PATH from middle if exceeding maximum length."
   (let* ((len-path (length path))
          (slen-path (dashboard-str-len path))
-         (len-rep (dashboard-str-len dashboard-path-shorten-string))
+         (len-rep (dashboard-str-len (truncate-string-ellipsis)))
          (len-total (- dashboard-path-max-length len-rep))
          (center (/ len-total 2))
          (end-back center)
@@ -1038,20 +1038,20 @@ to widget creation."
     (if (<= slen-path dashboard-path-max-length) path
       (setq back (substring path 0 end-back)
             front (ignore-errors (substring path start-front len-path)))
-      (if front (concat back dashboard-path-shorten-string front) ""))))
+      (if front (concat back (truncate-string-ellipsis) front) ""))))
 
 (defun dashboard-shorten-path-end (path)
   "Shorten PATH from end if exceeding maximum length."
   (let* ((len-path (length path))
          (slen-path (dashboard-str-len path))
-         (len-rep (dashboard-str-len dashboard-path-shorten-string))
+         (len-rep (dashboard-str-len (truncate-string-ellipsis)))
          (diff (- slen-path len-path))
          (len-total (- dashboard-path-max-length len-rep diff))
          back)
     (if (<= slen-path dashboard-path-max-length) path
       (setq back (ignore-errors (substring path 0 len-total)))
       (if (and back (< 0 dashboard-path-max-length))
-          (concat back dashboard-path-shorten-string) ""))))
+          (concat back (truncate-string-ellipsis)) ""))))
 
 (defun dashboard--get-base-length (path type)
   "Return the length of the base from the PATH by TYPE."
