@@ -488,7 +488,7 @@ Set to nil for unbounded."
   :group 'dashboard)
 
 (defcustom dashboard-path-shorten-string "..."
-  "String the that displays in the center of the path."
+  "Shorten the string that displays in the center of the path."
   :type 'string
   :group 'dashboard)
 
