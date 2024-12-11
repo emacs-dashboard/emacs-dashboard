@@ -72,8 +72,9 @@
 (declare-function string-pixel-width "subr-x.el")   ; TODO: remove this after 29.1
 (declare-function shr-string-pixel-width "shr.el")  ; TODO: remove this after 29.1
 
+(defvar truncate-string-ellipsis)
+(declare-function truncate-string-ellipsis "mule-util.el")  ; TODO: remove this after 28.1
 (defvar recentf-list nil)
-
 (defvar dashboard-buffer-name)
 
 ;;
@@ -1014,22 +1015,29 @@ to widget creation."
   "Return directory name from PATH."
   (file-name-nondirectory (directory-file-name (file-name-directory path))))
 
+(defun dashboard-truncate-string-ellipsis ()
+  "Return the string used to indicate truncation."
+  (if (fboundp 'truncate-string-ellipsis)
+      (truncate-string-ellipsis)
+    (or truncate-string-ellipsis
+        "...")))
+
 (defun dashboard-shorten-path-beginning (path)
   "Shorten PATH from beginning if exceeding maximum length."
   (let* ((len-path (length path))
          (slen-path (dashboard-str-len path))
-         (len-rep (dashboard-str-len (truncate-string-ellipsis)))
+         (len-rep (dashboard-str-len (dashboard-truncate-string-ellipsis)))
          (len-total (- dashboard-path-max-length len-rep))
          front)
     (if (<= slen-path dashboard-path-max-length) path
       (setq front (ignore-errors (substring path (- slen-path len-total) len-path)))
-      (if front (concat (truncate-string-ellipsis) front) ""))))
+      (if front (concat (dashboard-truncate-string-ellipsis) front) ""))))
 
 (defun dashboard-shorten-path-middle (path)
   "Shorten PATH from middle if exceeding maximum length."
   (let* ((len-path (length path))
          (slen-path (dashboard-str-len path))
-         (len-rep (dashboard-str-len (truncate-string-ellipsis)))
+         (len-rep (dashboard-str-len (dashboard-truncate-string-ellipsis)))
          (len-total (- dashboard-path-max-length len-rep))
          (center (/ len-total 2))
          (end-back center)
@@ -1038,20 +1046,20 @@ to widget creation."
     (if (<= slen-path dashboard-path-max-length) path
       (setq back (substring path 0 end-back)
             front (ignore-errors (substring path start-front len-path)))
-      (if front (concat back (truncate-string-ellipsis) front) ""))))
+      (if front (concat back (dashboard-truncate-string-ellipsis) front) ""))))
 
 (defun dashboard-shorten-path-end (path)
   "Shorten PATH from end if exceeding maximum length."
   (let* ((len-path (length path))
          (slen-path (dashboard-str-len path))
-         (len-rep (dashboard-str-len (truncate-string-ellipsis)))
+         (len-rep (dashboard-str-len (dashboard-truncate-string-ellipsis)))
          (diff (- slen-path len-path))
          (len-total (- dashboard-path-max-length len-rep diff))
          back)
     (if (<= slen-path dashboard-path-max-length) path
       (setq back (ignore-errors (substring path 0 len-total)))
       (if (and back (< 0 dashboard-path-max-length))
-          (concat back (truncate-string-ellipsis)) ""))))
+          (concat back (dashboard-truncate-string-ellipsis)) ""))))
 
 (defun dashboard--get-base-length (path type)
   "Return the length of the base from the PATH by TYPE."
