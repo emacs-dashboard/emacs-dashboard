@@ -211,7 +211,7 @@ example:
 ;;; Navigation
 
 (defun dashboard-previous-section ()
-  "Navigate forward to next section."
+  "Navigate backwards to previous section."
   (interactive)
   (let* ((items-len (1- (length dashboard-items)))
          (first-item (car (nth 0 dashboard-items)))
