@@ -1,6 +1,6 @@
 ;;; dashboard-widgets.el --- A startup screen extracted from Spacemacs  -*- lexical-binding: t -*-
 
-;; Copyright (c) 2016-2024 emacs-dashboard maintainers
+;; Copyright (c) 2016-2025 emacs-dashboard maintainers
 
 ;; This file is not part of GNU Emacs.
 ;;
