@@ -15,6 +15,7 @@
 
 (require 'cl-lib)
 (require 'image)
+(require 'mule-util)
 (require 'subr-x)
 
 ;;
@@ -71,8 +72,9 @@
 (declare-function string-pixel-width "subr-x.el")   ; TODO: remove this after 29.1
 (declare-function shr-string-pixel-width "shr.el")  ; TODO: remove this after 29.1
 
+(defvar truncate-string-ellipsis)
+(declare-function truncate-string-ellipsis "mule-util.el")  ; TODO: remove this after 28.1
 (defvar recentf-list nil)
-
 (defvar dashboard-buffer-name)
 
 ;;
@@ -156,7 +158,7 @@ See `create-image' and Info node `(elisp)Image Descriptors'."
     "While any text editor can save your files, only Emacs can save your soul"
     "I showed you my source code, pls respond")
   "A list of messages, one of which dashboard chooses to display."
-  :type 'list
+  :type '(list string)
   :group 'dashboard)
 
 (defcustom dashboard-icon-type (and (or dashboard-set-heading-icons
@@ -463,8 +465,12 @@ shortcut is disabled.  See `dashboard-items' for possible values of list-type.'"
 When an item is nil or not present, the default name is used.
 Will be of the form `(default-name . new-name)'."
   :type '(alist :key-type string :value-type string)
-  :options '("Recent Files:" "Bookmarks:" "Agenda for today:"
-             "Agenda for the coming week:" "Registers:" "Projects:")
+  :options '("Recent Files:"
+             "Bookmarks:"
+             "Agenda for today:"
+             "Agenda for the coming week:"
+             "Registers:"
+             "Projects:")
   :group 'dashboard)
 
 (defcustom dashboard-items-default-length 20
@@ -485,11 +491,6 @@ Set to nil for unbounded."
 (defcustom dashboard-path-max-length 70
   "Maximum length for path to display."
   :type 'integer
-  :group 'dashboard)
-
-(defcustom dashboard-path-shorten-string "..."
-  "String the that displays in the center of the path."
-  :type 'string
   :group 'dashboard)
 
 ;;
@@ -788,7 +789,7 @@ Argument IMAGE-PATH path to the image."
 (defun dashboard-insert-banner ()
   "Insert the banner at the top of the dashboard."
   (goto-char (point-max))
-  (when-let ((banner (dashboard-choose-banner dashboard-startup-banner)))
+  (when-let* ((banner (dashboard-choose-banner dashboard-startup-banner)))
     (insert "\n")
     (let ((start (point))
           buffer-read-only
@@ -797,7 +798,7 @@ Argument IMAGE-PATH path to the image."
           (graphic-mode (display-graphic-p)))
       (when graphic-mode (insert "\n"))
       ;; If specified, insert a text banner.
-      (when-let ((txt (plist-get banner :text)))
+      (when-let* ((txt (plist-get banner :text)))
         (if (file-exists-p txt)
             (insert-file-contents txt)
           (save-excursion (insert txt)))
@@ -811,7 +812,7 @@ Argument IMAGE-PATH path to the image."
           (forward-line 1)))
       ;; If specified, insert an image banner. When displayed in a graphical frame, this will
       ;; replace the text banner.
-      (when-let ((img (plist-get banner :image)))
+      (when-let* ((img (plist-get banner :image)))
         (let ((img-props
                (append (when (> dashboard-image-banner-max-width 0)
                          (list :max-width dashboard-image-banner-max-width))
@@ -893,7 +894,7 @@ Argument IMAGE-PATH path to the image."
                                           (not (string-equal icon ""))
                                           (not (string-equal title "")))
                                  (propertize " " 'face `(:inherit (variable-pitch
-                                                                  ,face))))
+                                                                   ,face))))
                                (when title (propertize title 'face face)))
                          :help-echo help
                          :action action
@@ -985,8 +986,8 @@ to widget creation."
 
 (defun dashboard-insert-footer ()
   "Insert footer of dashboard."
-  (when-let ((footer (dashboard-random-footer))
-             (footer-icon (dashboard-footer-icon)))
+  (when-let* ((footer (dashboard-random-footer))
+              (footer-icon (dashboard-footer-icon)))
     (dashboard-insert-center
      (if (string-empty-p footer-icon) footer-icon
        (concat footer-icon " "))
@@ -1014,22 +1015,29 @@ to widget creation."
   "Return directory name from PATH."
   (file-name-nondirectory (directory-file-name (file-name-directory path))))
 
+(defun dashboard-truncate-string-ellipsis ()
+  "Return the string used to indicate truncation."
+  (if (fboundp 'truncate-string-ellipsis)
+      (truncate-string-ellipsis)
+    (or truncate-string-ellipsis
+        "...")))
+
 (defun dashboard-shorten-path-beginning (path)
   "Shorten PATH from beginning if exceeding maximum length."
   (let* ((len-path (length path))
          (slen-path (dashboard-str-len path))
-         (len-rep (dashboard-str-len dashboard-path-shorten-string))
+         (len-rep (dashboard-str-len (dashboard-truncate-string-ellipsis)))
          (len-total (- dashboard-path-max-length len-rep))
          front)
     (if (<= slen-path dashboard-path-max-length) path
       (setq front (ignore-errors (substring path (- slen-path len-total) len-path)))
-      (if front (concat dashboard-path-shorten-string front) ""))))
+      (if front (concat (dashboard-truncate-string-ellipsis) front) ""))))
 
 (defun dashboard-shorten-path-middle (path)
   "Shorten PATH from middle if exceeding maximum length."
   (let* ((len-path (length path))
          (slen-path (dashboard-str-len path))
-         (len-rep (dashboard-str-len dashboard-path-shorten-string))
+         (len-rep (dashboard-str-len (dashboard-truncate-string-ellipsis)))
          (len-total (- dashboard-path-max-length len-rep))
          (center (/ len-total 2))
          (end-back center)
@@ -1038,20 +1046,20 @@ to widget creation."
     (if (<= slen-path dashboard-path-max-length) path
       (setq back (substring path 0 end-back)
             front (ignore-errors (substring path start-front len-path)))
-      (if front (concat back dashboard-path-shorten-string front) ""))))
+      (if front (concat back (dashboard-truncate-string-ellipsis) front) ""))))
 
 (defun dashboard-shorten-path-end (path)
   "Shorten PATH from end if exceeding maximum length."
   (let* ((len-path (length path))
          (slen-path (dashboard-str-len path))
-         (len-rep (dashboard-str-len dashboard-path-shorten-string))
+         (len-rep (dashboard-str-len (dashboard-truncate-string-ellipsis)))
          (diff (- slen-path len-path))
          (len-total (- dashboard-path-max-length len-rep diff))
          back)
     (if (<= slen-path dashboard-path-max-length) path
       (setq back (ignore-errors (substring path 0 len-total)))
       (if (and back (< 0 dashboard-path-max-length))
-          (concat back dashboard-path-shorten-string) ""))))
+          (concat back (dashboard-truncate-string-ellipsis)) ""))))
 
 (defun dashboard--get-base-length (path type)
   "Return the length of the base from the PATH by TYPE."
@@ -1422,7 +1430,7 @@ different actions."
 
 (defun dashboard-agenda--entry-timestamp (point)
   "Get the timestamp from an entry at POINT."
-  (when-let ((timestamp (org-entry-get point "TIMESTAMP")))
+  (when-let* ((timestamp (org-entry-get point "TIMESTAMP")))
     (org-time-string-to-time timestamp)))
 
 (defun dashboard-agenda--formatted-headline ()
@@ -1443,8 +1451,8 @@ If not height is found on FACE or `dashboard-items-face' use `default'."
 
 (defun dashboard-agenda--formatted-time ()
   "Get the scheduled or dead time of an entry.  If no time is found return nil."
-  (when-let ((time (or (org-get-scheduled-time (point)) (org-get-deadline-time (point))
-                       (dashboard-agenda--entry-timestamp (point)))))
+  (when-let* ((time (or (org-get-scheduled-time (point)) (org-get-deadline-time (point))
+                        (dashboard-agenda--entry-timestamp (point)))))
     (format-time-string dashboard-agenda-time-string-format time)))
 
 (defun dashboard-agenda--formatted-tags ()
@@ -1493,7 +1501,7 @@ if returns a point."
 
 (defun dashboard-get-agenda ()
   "Get agenda items for today or for a week from now."
-  (if-let ((prefix-format (assoc 'dashboard-agenda org-agenda-prefix-format)))
+  (if-let* ((prefix-format (assoc 'dashboard-agenda org-agenda-prefix-format)))
       (setcdr prefix-format dashboard-agenda-prefix-format)
     (push (cons 'dashboard-agenda dashboard-agenda-prefix-format) org-agenda-prefix-format))
   (org-compile-prefix-format 'dashboard-agenda)

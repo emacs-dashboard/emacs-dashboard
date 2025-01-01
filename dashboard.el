@@ -14,7 +14,7 @@
 ;; Created: October 05, 2016
 ;; Package-Version: 1.9.0-SNAPSHOT
 ;; Keywords: startup, screen, tools, dashboard
-;; Package-Requires: ((emacs "26.1"))
+;; Package-Requires: ((emacs "27.1"))
 ;;; Commentary:
 
 ;; An extensible Emacs dashboard, with sections for
@@ -163,9 +163,6 @@ example:
   "Dashboard's buffer name."
   :type 'string
   :group 'dashboard)
-
-(defvar dashboard-force-refresh nil
-  "If non-nil, force refresh dashboard buffer.")
 
 (defvar dashboard--section-starts nil
   "List of section starting positions.")
@@ -492,8 +489,8 @@ See `dashboard-item-generators' for all items available."
     (insert "\n")
     (insert dashboard-page-separator)))
 
-(defun dashboard-insert-startupify-lists ()
-  "Insert the list of widgets into the buffer."
+(defun dashboard-insert-startupify-lists (&optional force-refresh)
+  "Insert the list of widgets into the buffer, FORCE-REFRESH is optional."
   (interactive)
   (let ((inhibit-redisplay t)
         (recentf-is-on (recentf-enabled-p))
@@ -502,7 +499,7 @@ See `dashboard-item-generators' for all items available."
     (when recentf-is-on
       (setq recentf-list (dashboard-subseq recentf-list dashboard-num-recents)))
     (dashboard--with-buffer
-      (when (or dashboard-force-refresh (not (eq major-mode 'dashboard-mode)))
+      (when (or force-refresh (not (eq major-mode 'dashboard-mode)))
         (run-hooks 'dashboard-before-initialize-hook)
         (erase-buffer)
         (setq dashboard--section-starts nil)
@@ -513,29 +510,32 @@ See `dashboard-item-generators' for all items available."
                     (apply (car entry) `(,(cdr entry)))
                   (funcall entry)))
               dashboard-startupify-list)
-
-        (when dashboard-vertically-center-content
-          (goto-char (point-min))
-          (when-let* ((start-height (cdr (window-absolute-pixel-position (point-min))))
-                      (end-height (cdr (window-absolute-pixel-position (point-max))))
-                      (content-height (- end-height start-height))
-                      (vertical-padding (floor (/ (- (window-pixel-height) content-height) 2)))
-                      ((> vertical-padding 0))
-                      (vertical-lines (1- (floor (/ vertical-padding (line-pixel-height)))))
-                      ((> vertical-lines 0)))
-            (insert (make-string vertical-lines ?\n))))
-
-        (goto-char (point-min))
+        (dashboard-vertically-center)
         (dashboard-mode)))
     (when recentf-is-on
       (setq recentf-list origial-recentf-list))))
+
+(defun dashboard-vertically-center ()
+  "Center vertically the content of dashboard.  Always go to point-min char."
+  (when-let* (dashboard-vertically-center-content
+              (start-height (cdr (window-absolute-pixel-position (point-min))))
+              (end-height (cdr (window-absolute-pixel-position (point-max))))
+              (content-height (- end-height start-height))
+              (vertical-padding (floor (/ (- (window-pixel-height) content-height) 2)))
+              ((> vertical-padding 0))
+              (vertical-lines (1- (floor (/ vertical-padding (line-pixel-height)))))
+              ((> vertical-lines 0)))
+    (goto-char (point-min))
+    (insert (make-string vertical-lines ?\n)))
+  (goto-char (point-min)))
 
 ;;;###autoload
 (defun dashboard-open (&rest _)
   "Open (or refresh) the *dashboard* buffer."
   (interactive)
-  (let ((dashboard-force-refresh t)) (dashboard-insert-startupify-lists))
-  (switch-to-buffer dashboard-buffer-name))
+  (dashboard--with-buffer
+    (switch-to-buffer (current-buffer))
+    (dashboard-insert-startupify-lists t)))
 
 (defalias #'dashboard-refresh-buffer #'dashboard-open)
 
