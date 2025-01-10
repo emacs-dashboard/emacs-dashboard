@@ -1,0 +1,124 @@
+** Variables
+These are the variables available to users out of the box:
+| **Variable**                       | **Description**                                                                  | **Possible States**                                                                                      |
+|------------------------------------|----------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| `dashboard-navigation-cycle`       | Enable cycling through sections in navigation.                                   | `t`: Enable, `nil`: Disable                                                                             |
+| `dashboard-items`                  | Specify sections to display and their lengths.                                   | List of `(section . count)` pairs (e.g., `((recents . 5) (bookmarks . 5) (projects . 5))`)              |
+| `dashboard-startup-banner`         | Define the banner at the top of the dashboard.                                   | `'official`, path to an image, or `nil`                                                                |
+| `dashboard-banner-logo-title`      | Text to display below the banner.                                                | Any string (e.g., `"Welcome to Emacs!"`)                                                               |
+| `dashboard-center-content`         | Center the content horizontally.                                                 | `t`: Enable, `nil`: Disable                                                                             |
+| `dashboard-vertically-center-content` | Center the content vertically.                                                  | `t`: Enable, `nil`: Disable                                                                             |
+| `dashboard-page-separator`         | String used to separate sections in the buffer.                                  | Any string (default: `"\n\n"`)                                                                         |
+| `dashboard-set-heading-icons`      | Show icons next to section headings.                                             | `t`: Enable, `nil`: Disable                                                                             |
+| `dashboard-set-file-icons`         | Show icons next to items.                                                        | `t`: Enable, `nil`: Disable                                                                             |
+| `dashboard-heading-icons`          | Icons to use for section headings.                                               | Alist of `(section . icon-name)` pairs (e.g., `((recents . "history") (bookmarks . "bookmark"))`)       |
+| `dashboard-icon-type`              | Icon style used for headings and items.                                          | `'all-the-icons`, `'ascii`, `nil`                                                                      |
+| `dashboard-recentf-show-base`      | Control how recentf entries are displayed.                                       | `'Respect format`, `'hide`, `'absolute`, `'expand`, `'truncate-middle`                                  |
+| `dashboard-recentf-item-format`    | Format string for displaying recentf items.                                      | Any valid format string (e.g., `"%s"`)                                                                 |
+| `dashboard-bookmarks-item-format`  | Format string for displaying bookmarks items.                                    | Any valid format string (e.g., `"%s"`)                                                                 |
+| `dashboard-path-style`             | How to truncate paths.                                                           | `'truncate-beginning`, `'truncate-middle`, `'truncate-end`, `nil`                                       |
+| `dashboard-path-max-length`        | Maximum length of displayed paths.                                               | Integer (default: `70`)                                                                                |
+| `dashboard-footer`                 | Footer text to display at the bottom of the dashboard.                           | Any string (default: `nil`)                                                                            |
+| `dashboard-set-footer`             | Enable or disable the footer.                                                    | `t`: Enable, `nil`: Disable                                                                             |
+| `dashboard-footer-messages`        | List of footer messages to display randomly.                                     | List of strings (e.g., `("Enjoy your Emacs session!" "Type M-x help for help.")`)                       |
+| `dashboard-projects-backend`       | Backend used for project integration.                                            | `'projectile`, `'project-el`, or `nil`                                                                 |
+| `dashboard-projects-switch-function` | Function to call when switching projects.                                       | Function (e.g., `projectile-persp-switch-project`)                                                     |
+| `dashboard-agenda-prefix-format`   | Custom format string for agenda items.                                           | Any valid Org-mode prefix format                                                                       |
+| `dashboard-agenda-show-all`        | Whether to show all agenda items.                                                | `t`: Enable, `nil`: Disable                                                                             |
+| `dashboard-agenda-files`           | Files to include in the agenda section.                                          | List of file paths                                                                                     |
+| `dashboard-week-agenda`            | Whether to show the weekly agenda.                                               | `t`: Enable, `nil`: Disable                                                                             |
+| `dashboard-projects-switch-project-action` | Action to take when switching projects.                                       | Function (e.g., `'magit-status`)                                                                       |
+| `dashboard-buffer-name`            | Name of the dashboard buffer.                                                    | Any string (default: `*dashboard*`)                                                                    |
+| `dashboard-before-initialize-hook` | Hook run before initializing the dashboard buffer.                               | Hook (list of functions)                                                                               |
+| `dashboard-after-initialize-hook`  | Hook run after initializing the dashboard buffer.                                | Hook (list of functions)                                                                               |
+
+
+Example usage:
+
+- In plain e-lisp:
+#+begin_src emacs-lisp
+  ;; ...
+  (setq dashboard-startup-banner 'official)
+  (setq dashboard-center-content t)
+  (setq dashboard-banner-logo-title "Welcome back")
+  (dashboard-setup-startup-hook)
+#+end_src
+
+- With use-package:
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :ensure t
+    :init
+    (setq initial-buffer-choice 'dashboard-open)
+    :config
+    (dashboard-setup-startup-hook)
+    :custom
+    (dashboard-startup-banner 'official)
+    (dashboard-center-content t)
+    (dashboard-banner-logo-title "Welcome back"))
+#+end_src
+** Functions
+These are the variables available to users out of the box:
+| **Function**                        | **Description**                                                       | **Arguments**           |
+|-------------------------------------|-----------------------------------------------------------------------|-------------------------|
+| `dashboard-open`                    | Opens or refreshes the dashboard buffer.                              | None                    |
+| `dashboard-refresh-buffer`          | Alias for `dashboard-open`.                                           | None                    |
+| `dashboard-setup-startup-hook`      | Sets up hooks for initializing the dashboard.                         | None                    |
+| `dashboard-initialize`              | Switch to the dashboard buffer and run initialization hooks.          | None                    |
+| `dashboard-insert-startupify-lists` | Inserts the dashboard widgets into the buffer.                        | Optional `force-refresh` |
+| `dashboard-next-section`            | Navigate forward to the next section in the dashboard.                | None                    |
+| `dashboard-previous-section`        | Navigate backward to the previous section in the dashboard.           | None                    |
+| `dashboard-cycle-section-forward`   | Cycle forward through the entries in a specific section.              | `section` (optional)    |
+| `dashboard-cycle-section-backward`  | Cycle backward through the entries in a specific section.             | `section` (optional)    |
+| `dashboard-cycle-current-section-forward` | Cycle forward through entries in the current section.                | None                    |
+| `dashboard-cycle-current-section-backward` | Cycle backward through entries in the current section.               | None                    |
+| `dashboard-remove-item-under`       | Remove the current item from the dashboard.                           | None                    |
+| `dashboard-insert-items`            | Insert all configured dashboard items into the buffer.                | None                    |
+| `dashboard-insert-banner`           | Insert the banner into the dashboard buffer.                          | None                    |
+| `dashboard-insert-newline`          | Insert a newline in the dashboard buffer.                             | None                    |
+| `dashboard-insert-page-break`       | Insert a page break in the dashboard buffer.                          | None                    |
+| `dashboard-insert-footer`           | Insert the footer into the dashboard buffer.                          | None                    |
+| `dashboard-insert-navigator`        | Insert the navigator into the dashboard buffer.                       | None                    |
+| `dashboard-insert-banner-title`     | Insert the banner title into the dashboard buffer.                    | None                    |
+| `dashboard-insert-init-info`        | Insert initialization information into the dashboard buffer.          | None                    |
+| `dashboard--current-section`        | Return the symbol of the current section in the dashboard.            | None                    |
+| `dashboard--goto-section`           | Move to a specified section in the dashboard.                         | `section`               |
+| `dashboard--goto-section-by-index`  | Navigate to a section by its index.                                   | `index`                 |
+| `dashboard--section-lines`          | Return a list of line numbers where each section starts.              | None                    |
+| `dashboard--current-index`          | Return the index of the current section.                              | `section`, `pos` (optional) |
+| `dashboard--section-list`           | Return the list of items in a section.                                | `section`               |
+| `dashboard--on-path-item-p`         | Check if the point is on an item in a path section.                   | None                    |
+| `dashboard--current-item-in-path`   | Return the file path of the current item under point.                 | None                    |
+| `dashboard--ffap-guesser--adv`      | Advice around `ffap-guesser` to guess items under point in the dashboard. | `fnc`, `args`          |
+| `dashboard-remove-item-recentf`     | Remove an item from the recentf section.                              | None                    |
+| `dashboard-remove-item-bookmarks`   | Remove an item from the bookmarks section.                            | None                    |
+| `dashboard-remove-item-projects`    | Remove an item from the projects section.                             | None                    |
+| `dashboard-remove-item-agenda`      | Remove an item from the agenda section.                               | None                    |
+| `dashboard-remove-item-registers`   | Remove an item from the registers section.                            | None                    |
+| `dashboard-return`                  | Press the return key on an item in the dashboard.                     | None                    |
+| `dashboard-mouse-1`                 | Click an item in the dashboard using mouse-1.                         | None                    |
+| `dashboard-resize-on-hook`          | Re-render the dashboard on window size changes.                       | Optional `_`            |
+| `dashboard-vertically-center`       | Vertically center the content of the dashboard buffer.                | None                    |
+
+
+Example usage (bindings in this case):
+
+- In plain e-lisp:
+#+begin_src emacs-lisp
+  ;; Navigate to the next section programmatically
+  (dashboard-next-section)
+
+  ;; Bind it to a key in the global keymap
+  (global-set-key (kbd "C-c n") 'dashboard-next-section)
+#+end_src
+
+- With use-package:
+#+begin_src emacs-lisp
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook)
+  ;; Bind in `dashboard-mode-map` for use only in the dashboard - to not disrupt keybidnings in other modes
+  :bind (:map dashboard-mode-map
+              ("n" . dashboard-next-section)))
+#+end_src

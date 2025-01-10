@@ -227,6 +227,7 @@ Or
   (setq dashboard-projects-switch-function 'projectile-persp-switch-project)
 #+end_src
 
+Please check the [[./variables-and-functions.org][complete list of variables and functions]].
 ** Org mode’s agenda
 
 To display today’s agenda items on the dashboard, add ~agenda~ to ~dashboard-items~:

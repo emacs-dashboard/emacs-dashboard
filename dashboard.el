@@ -211,7 +211,7 @@ example:
 ;;; Navigation
 
 (defun dashboard-previous-section ()
-  "Navigate forward to next section."
+  "Navigate backwards to previous section."
   (interactive)
   (let* ((items-len (1- (length dashboard-items)))
          (first-item (car (nth 0 dashboard-items)))
@@ -266,6 +266,36 @@ example:
          (items-len (length pg-lst)))
     (when (and items-pg (< items-id items-len))
       (dashboard--goto-line items-pg))))
+
+(defun dashboard-cycle-section-forward (&optional section)
+  "Cycle forward through the entries in SECTION.
+If SECTION is nil, cycle in the current section."
+  (let ((target-section (or section (dashboard--current-section))))
+    (if target-section
+        (condition-case nil
+            (progn
+              (widget-forward 1)
+              (unless (eq target-section (dashboard--current-section))
+                (dashboard--goto-section target-section)))
+          (widget-forward 1))
+      (widget-forward 1))))
+
+(defun dashboard-cycle-section-backward (&optional section)
+  "Cycle backward through the entries in SECTION.
+If SECTION is nil, cycle in the current section."
+  (let ((target-section (or section (dashboard--current-section))))
+    (if target-section
+        (condition-case nil
+            (progn
+              (widget-backward 1)
+              (unless (eq target-section (dashboard--current-section))
+                (progn
+                  (dashboard--goto-section target-section)
+                  (while (eq target-section (dashboard--current-section))
+                    (widget-forward 1))
+                  (widget-backward 1))))
+          (widget-backward 1))
+      (widget-backward 1))))
 
 (defun dashboard-section-1 ()
   "Navigate to section 1." (interactive) (dashboard--goto-section-by-index 1))
