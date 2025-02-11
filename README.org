@@ -359,6 +359,40 @@ This is accomplished with the following steps:
   make install
 #+END_SRC
 
-** Prerequisites
+Or, you can use [[https://github.com/emacs-eask/cli][Eask]] to set up
+the development environment, so there's no need to delete your local ~dashboard~.
 
-* [[https://github.com/emacs-eask/cli][Eask]]
+Install all dependencies and development dependencies:
+
+#+BEGIN_SRC shell
+  eask install-deps --dev
+#+END_SRC
+
+To test the package's installation:
+
+#+BEGIN_SRC shell
+  eask package
+  eask install
+#+END_SRC
+
+To test compilation:
+
+#+BEGIN_SRC shell
+  eask compile
+#+END_SRC
+
+🪧 The following steps are optional, but we recommend you follow these lint results!
+
+The built-in ~checkdoc~ linter:
+
+#+BEGIN_SRC shell
+  eask lint checkdoc
+#+END_SRC
+
+The standard ~package~ linter:
+
+#+BEGIN_SRC shell
+  eask lint package
+#+END_SRC
+
+/📝 P.S. For more information, find the Eask manual at https://emacs-eask.github.io/.
