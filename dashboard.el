@@ -3,8 +3,8 @@
 ;; Copyright (c) 2016-2025 emacs-dashboard maintainers
 ;;
 ;; Author     : Rakan Al-Hneiti <rakan.alhneiti@gmail.com>
-;; Maintainer : Jesús Martínez <jesusmartinez93@gmail.com>
-;;              Shen, Jen-Chieh <jcs090218@gmail.com>
+;; Maintainer : Shen, Jen-Chieh <jcs090218@gmail.com>
+;;              Ricardo Arredondo <ricardo.richo@gmail.com>
 ;; URL        : https://github.com/emacs-dashboard/emacs-dashboard
 ;;
 ;; This file is not part of GNU Emacs.
@@ -15,6 +15,7 @@
 ;; Package-Version: 1.9.0-SNAPSHOT
 ;; Keywords: startup, screen, tools, dashboard
 ;; Package-Requires: ((emacs "27.1"))
+
 ;;; Commentary:
 
 ;; An extensible Emacs dashboard, with sections for
