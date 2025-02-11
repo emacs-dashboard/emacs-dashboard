@@ -16,6 +16,7 @@
 (require 'cl-lib)
 (require 'image)
 (require 'mule-util)
+(require 'rect)
 (require 'subr-x)
 
 ;;
@@ -940,7 +941,8 @@ to widget creation."
      (mapc
       (lambda (el)
         (let ((tag ,@rest))
-          (insert "\n    ")
+          (insert "\n")
+          (insert (spaces-string (or standard-indent tab-width 4)))
 
           (when (and (dashboard-display-icons-p)
                      dashboard-set-file-icons)
