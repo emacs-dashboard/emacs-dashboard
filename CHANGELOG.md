@@ -16,6 +16,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * feat: Support for insert startupify list in order (#506)
 * Support for random banners (#510)
 * Support for random footer icon (#519)
+* feat: Parameters for file icon `height` and `v-adjust` (#546)
 
 ## 1.8.0
 > Released Jul 26, 2023
