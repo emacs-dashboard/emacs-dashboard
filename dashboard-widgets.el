@@ -956,7 +956,9 @@ to widget creation."
             (let* ((path (car (last (split-string ,@rest " - "))))
                    (icon (if (and (not (file-remote-p path))
                                   (file-directory-p path))
-                             (dashboard-icon-for-dir path nil "")
+                             (dashboard-icon-for-dir path
+                                                     :height dashboard-icon-file-height
+                                                     :v-adjust dashboard-icon-file-v-adjust)
                            (cond
                             ((or (string-equal ,section-name "Agenda for today:")
                                  (string-equal ,section-name "Agenda for the coming week:"))
