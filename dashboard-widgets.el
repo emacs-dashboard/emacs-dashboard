@@ -210,6 +210,16 @@ If nil it is disabled.  Possible values for list-type are:
   :type 'float
   :group 'dashboard)
 
+(defcustom dashboard-icon-file-height 1.0
+  "The height of the file icons."
+  :type 'float
+  :group 'dashboard)
+
+(defcustom dashboard-icon-file-v-adjust -0.05
+  "The v-adjust of the file icons."
+  :type 'float
+  :group 'dashboard)
+
 (defcustom dashboard-agenda-item-icon
   (pcase dashboard-icon-type
     ('all-the-icons (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
@@ -949,7 +959,9 @@ to widget creation."
             (let* ((path (car (last (split-string ,@rest " - "))))
                    (icon (if (and (not (file-remote-p path))
                                   (file-directory-p path))
-                             (dashboard-icon-for-dir path nil "")
+                             (dashboard-icon-for-dir path
+                                                     :height dashboard-icon-file-height
+                                                     :v-adjust dashboard-icon-file-v-adjust)
                            (cond
                             ((or (string-equal ,section-name "Agenda for today:")
                                  (string-equal ,section-name "Agenda for the coming week:"))
@@ -957,7 +969,8 @@ to widget creation."
                             ((file-remote-p path)
                              dashboard-remote-path-icon)
                             (t (dashboard-icon-for-file (file-name-nondirectory path)
-                                                        :v-adjust -0.05))))))
+                                                        :height dashboard-icon-file-height
+                                                        :v-adjust dashboard-icon-file-v-adjust))))))
               (setq tag (concat icon " " ,@rest))))
 
           (widget-create 'item
