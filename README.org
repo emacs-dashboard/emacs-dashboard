@@ -196,6 +196,14 @@ To modify heading icons with another icon from nerd-icons octicons:
                                     (bookmarks . "nf-oct-book")))
 #+END_SRC
 
+To modify the icon height or vertical adjust:
+#+BEGIN_SRC emacs-lisp
+  (setq dashboard-icon-file-height 1.75)
+  (setq dashboard-icon-file-v-adjust -0.125)
+  (setq dashboard-heading-icon-height 1.75)
+  (setq dashboard-heading-icon-v-adjust -0.125)
+#+END_SRC
+
 To customize the buttons of the navigator like this:
 #+BEGIN_SRC emacs-lisp
   ;; Format: "(icon title help action face prefix suffix)"
