@@ -903,7 +903,7 @@ Argument IMAGE-PATH path to the image."
                                           (not (string-equal icon ""))
                                           (not (string-equal title "")))
                                  (propertize " " 'face `(:inherit (variable-pitch
-                                                                  ,face))))
+                                                                   ,face))))
                                (when title (propertize title 'face face)))
                          :help-echo help
                          :action action
