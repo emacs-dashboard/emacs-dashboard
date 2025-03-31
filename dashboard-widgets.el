@@ -288,7 +288,12 @@ Example:
                                        (const nil)))))
   :group 'dashboard)
 
-(defun dashboard-init-info ()
+(defcustom dashboard-init-info #'dashboard-init--info
+  "Custom function that must return a string to place instead of init-info."
+  :type 'function
+  :group 'dashboard)
+
+(defun dashboard-init--info ()
   "Init info with packages loaded and init time.
 Supported package managers are: package.el, straight.el and elpaca.el."
   (let* ((package-count (or (and (bound-and-true-p package-alist)
@@ -881,7 +886,7 @@ Argument IMAGE-PATH path to the image."
 ;;; Initialize info
 (defun dashboard-insert-init-info ()
   "Insert init info."
-  (let ((init-info (dashboard-init-info)))
+  (let ((init-info (funcall dashboard-init-info)))
     (dashboard-insert-center (propertize init-info 'face 'font-lock-comment-face))))
 
 (defun dashboard-insert-navigator ()
