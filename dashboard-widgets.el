@@ -135,13 +135,6 @@ See `create-image' and Info node `(elisp)Image Descriptors'."
 (make-obsolete-variable 'dashboard-set-navigator
                         'dashboard-startupify-list "1.9.0")
 
-(defcustom dashboard-set-init-info t
-  "When non nil, init info will be displayed under the banner."
-  :type 'boolean
-  :group 'dashboard)
-(make-obsolete-variable 'dashboard-set-init-info
-                        'dashboard-startupify-list "1.9.0")
-
 (defcustom dashboard-set-footer t
   "When non nil, a footer will be displayed at the bottom."
   :type 'boolean
@@ -293,28 +286,35 @@ Example:
   :type 'function
   :group 'dashboard)
 
-(defun dashboard-init--info ()
-  "Init info with packages loaded and init time.
+(defun dashboard-init--time ()
+  "Return Emacs starting time in string including seconds ending."
+  (if (fboundp 'elpaca--queued)
+      (format "%s seconds"
+              (float-time (time-subtract elpaca-after-init-time
+                                         before-init-time)))
+    (emacs-init-time)))
+
+(defun dashboard-init--packages-count ()
+  "Get the intalled package count depending on package manager.
 Supported package managers are: package.el, straight.el and elpaca.el."
-  (let* ((package-count (or (and (bound-and-true-p package-alist)
-                                 (length package-activated-list))
-                             0))
-         (straight-count (or (and (boundp 'straight--profile-cache)
-                                  (hash-table-count straight--profile-cache))
-                             0))
-         (elpaca-count (or (and (fboundp 'elpaca--queued)
-                                (length (elpaca--queued)))
-                             0))
-         (init-time (or (and (fboundp 'elpaca--queued)
-                             (format "%s seconds"
-                                     (float-time (time-subtract elpaca-after-init-time
-                                                                before-init-time))))
-                        (emacs-init-time)))
-         (installed-packages-count (+ package-count straight-count elpaca-count)))
-    (if (zerop installed-packages-count)
-        (format "Emacs started in %s" init-time)
-      (format "%d packages installed. Emacs started in %s."
-              installed-packages-count init-time))))
+  (let* ((package-count (if (bound-and-true-p package-alist)
+                            (length package-activated-list)
+                          0))
+         (straight-count (if (boundp 'straight--profile-cache)
+                             (hash-table-count straight--profile-cache)
+                           0))
+         (elpaca-count (if (fboundp 'elpaca--queued)
+                           (length (elpaca--queued))
+                         0)))
+    (+ package-count straight-count elpaca-count)))
+
+
+(defun dashboard-init--info (init-time packages-count)
+  "Format init message depending on PACKAGES-COUNT and includes INIT-TIME."
+  (if (zerop packages-count)
+      (format "Emacs started in %s" init-time)
+    (format "%d packages installed. Emacs started in %s."
+            packages-count init-time)))
 
 (defcustom dashboard-display-icons-p #'display-graphic-p
   "Predicate to determine whether dashboard should show icons.
@@ -886,7 +886,9 @@ Argument IMAGE-PATH path to the image."
 ;;; Initialize info
 (defun dashboard-insert-init-info ()
   "Insert init info."
-  (let ((init-info (funcall dashboard-init-info)))
+  (let* ((init-time (dashboard-init--time))
+         (packages-count (dashboard-init--packages-count))
+         (init-info (funcall dashboard-init-info init-time packages-count)))
     (dashboard-insert-center (propertize init-info 'face 'font-lock-comment-face))))
 
 (defun dashboard-insert-navigator ()
