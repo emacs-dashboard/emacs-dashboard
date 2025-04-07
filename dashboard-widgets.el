@@ -309,12 +309,16 @@ Supported package managers are: package.el, straight.el and elpaca.el."
     (+ package-count straight-count elpaca-count)))
 
 
-(defun dashboard-init--info (init-time packages-count)
-  "Format init message depending on PACKAGES-COUNT and includes INIT-TIME."
-  (if (zerop packages-count)
+(defun dashboard-init--info ()
+  "Format init message.
+Use `dashboard-init--time' and `dashboard-init--package-count' to generate
+init message."
+  (let ((init-time (dashboard-init--time))
+        (packages-count (dashboard-init--packages-count)))
+    (if (zerop packages-count)
       (format "Emacs started in %s" init-time)
     (format "%d packages installed. Emacs started in %s."
-            packages-count init-time)))
+            packages-count init-time))))
 
 (defcustom dashboard-display-icons-p #'display-graphic-p
   "Predicate to determine whether dashboard should show icons.
@@ -886,10 +890,11 @@ Argument IMAGE-PATH path to the image."
 ;;; Initialize info
 (defun dashboard-insert-init-info ()
   "Insert init info."
-  (let* ((init-time (dashboard-init--time))
-         (packages-count (dashboard-init--packages-count))
-         (init-info (funcall dashboard-init-info init-time packages-count)))
-    (dashboard-insert-center (propertize init-info 'face 'font-lock-comment-face))))
+  (let ((init-info (if (functionp dashboard-init-info)
+                       (funcall dashboard-init-info)
+                     dashboard-init-info)))
+    (dashboard-insert-center
+     (propertize init-info 'face 'font-lock-comment-face))))
 
 (defun dashboard-insert-navigator ()
   "Insert Navigator of the dashboard."

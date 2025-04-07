@@ -92,11 +92,11 @@ You can delete them from ~dashboard-startupify-list~.
                                     dashboard-insert-footer))
 #+end_src
 
-* /How can I change my welcome message?/
+* /How can I change my init message?/
 
 You can customize it like this:
 #+BEGIN_SRC elisp
-  (setq dashboard-banner-logo-title "This is an init message!")
+  (setq dashboard-init-info "This is an init message!")
 #+END_SRC
 
 * /How can I change footer messages?/
