@@ -890,9 +890,13 @@ Argument IMAGE-PATH path to the image."
 ;;; Initialize info
 (defun dashboard-insert-init-info ()
   "Insert init info."
-  (let ((init-info (if (functionp dashboard-init-info)
-                       (funcall dashboard-init-info)
-                     dashboard-init-info)))
+  (let ((init-info (cond ((stringp dashboard-init-info)
+                          dashboard-init-info)
+                         ((functionp dashboard-init-info)
+                          (funcall dashboard-init-info))
+                         (t
+                          (user-error "Unknown init info type (%s): %s"
+                                      (type-of init-info) init-info)))))
     (dashboard-insert-center
      (propertize init-info 'face 'font-lock-comment-face))))
 
