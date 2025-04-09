@@ -113,4 +113,3 @@ If you want to change its icon you may use this:
                                                      :face 'font-lock-keyword-face))
 Also it can be a string list for display random footer icons.
 #+END_SRC
-

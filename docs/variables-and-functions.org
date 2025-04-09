@@ -7,6 +7,7 @@ These are the variables available to users out of the box:
 | `dashboard-startup-banner`         | Define the banner at the top of the dashboard.                                   | `'official`, path to an image, or `nil`                                                                |
 | `dashboard-banner-logo-title`      | Text to display below the banner.                                                | Any string (e.g., `"Welcome to Emacs!"`)                                                               |
 | `dashboard-center-content`         | Center the content horizontally.                                                 | `t`: Enable, `nil`: Disable                                                                             |
+| `dashboard-init-info`              | Custom variable, could be a string or a function that returns a string           | default: `dashboard-init--info`                                                                   |
 | `dashboard-vertically-center-content` | Center the content vertically.                                                  | `t`: Enable, `nil`: Disable                                                                             |
 | `dashboard-page-separator`         | String used to separate sections in the buffer.                                  | Any string (default: `"\n\n"`)                                                                         |
 | `dashboard-set-heading-icons`      | Show icons next to section headings.                                             | `t`: Enable, `nil`: Disable                                                                             |
@@ -73,6 +74,9 @@ These are the variables available to users out of the box:
 | `dashboard-cycle-current-section-forward` | Cycle forward through entries in the current section.                | None                    |
 | `dashboard-cycle-current-section-backward` | Cycle backward through entries in the current section.               | None                    |
 | `dashboard-remove-item-under`       | Remove the current item from the dashboard.                           | None                    |
+| `dashboard-init--info`              | Build a string with the init-time and package-count                       |                             |
+| `dashboard-init--time`              | Same as `emacs-init-time` and support elpaca init time                    |                             |
+| `dashboard-init--package-count      | Return the number of installed packages                                   |                             |
 | `dashboard-insert-items`            | Insert all configured dashboard items into the buffer.                | None                    |
 | `dashboard-insert-banner`           | Insert the banner into the dashboard buffer.                          | None                    |
 | `dashboard-insert-newline`          | Insert a newline in the dashboard buffer.                             | None                    |

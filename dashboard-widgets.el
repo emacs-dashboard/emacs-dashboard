@@ -135,13 +135,6 @@ See `create-image' and Info node `(elisp)Image Descriptors'."
 (make-obsolete-variable 'dashboard-set-navigator
                         'dashboard-startupify-list "1.9.0")
 
-(defcustom dashboard-set-init-info t
-  "When non nil, init info will be displayed under the banner."
-  :type 'boolean
-  :group 'dashboard)
-(make-obsolete-variable 'dashboard-set-init-info
-                        'dashboard-startupify-list "1.9.0")
-
 (defcustom dashboard-set-footer t
   "When non nil, a footer will be displayed at the bottom."
   :type 'boolean
@@ -288,23 +281,44 @@ Example:
                                        (const nil)))))
   :group 'dashboard)
 
-(defcustom dashboard-init-info
-  (lambda ()
-    (let ((package-count 0) (time (emacs-init-time)))
-      (when (bound-and-true-p package-alist)
-        (setq package-count (length package-activated-list)))
-      (when (boundp 'straight--profile-cache)
-        (setq package-count (+ (hash-table-count straight--profile-cache) package-count)))
-      (when (fboundp 'elpaca--queued)
-        (setq time (format "%f seconds" (float-time (time-subtract elpaca-after-init-time
-                                                                   before-init-time))))
-        (setq package-count (length (elpaca--queued))))
-      (if (zerop package-count)
-          (format "Emacs started in %s" time)
-        (format "%d packages loaded in %s" package-count time))))
-  "Init info with packages loaded and init time."
-  :type '(function string)
+(defcustom dashboard-init-info #'dashboard-init--info
+  "Custom function that must return a string to place instead of init-info."
+  :type 'function
   :group 'dashboard)
+
+(defun dashboard-init--time ()
+  "Return Emacs starting time in string including seconds ending."
+  (if (fboundp 'elpaca--queued)
+      (format "%s seconds"
+              (float-time (time-subtract elpaca-after-init-time
+                                         before-init-time)))
+    (emacs-init-time)))
+
+(defun dashboard-init--packages-count ()
+  "Get the intalled package count depending on package manager.
+Supported package managers are: package.el, straight.el and elpaca.el."
+  (let* ((package-count (if (bound-and-true-p package-alist)
+                            (length package-activated-list)
+                          0))
+         (straight-count (if (boundp 'straight--profile-cache)
+                             (hash-table-count straight--profile-cache)
+                           0))
+         (elpaca-count (if (fboundp 'elpaca--queued)
+                           (length (elpaca--queued))
+                         0)))
+    (+ package-count straight-count elpaca-count)))
+
+
+(defun dashboard-init--info ()
+  "Format init message.
+Use `dashboard-init--time' and `dashboard-init--package-count' to generate
+init message."
+  (let ((init-time (dashboard-init--time))
+        (packages-count (dashboard-init--packages-count)))
+    (if (zerop packages-count)
+        (format "Emacs started in %s" init-time)
+      (format "%d packages installed. Emacs started in %s."
+              packages-count init-time))))
 
 (defcustom dashboard-display-icons-p #'display-graphic-p
   "Predicate to determine whether dashboard should show icons.
@@ -876,10 +890,15 @@ Argument IMAGE-PATH path to the image."
 ;;; Initialize info
 (defun dashboard-insert-init-info ()
   "Insert init info."
-  (let ((init-info (if (functionp dashboard-init-info)
-                       (funcall dashboard-init-info)
-                     dashboard-init-info)))
-    (dashboard-insert-center (propertize init-info 'face 'font-lock-comment-face))))
+  (let ((init-info (cond ((stringp dashboard-init-info)
+                          dashboard-init-info)
+                         ((functionp dashboard-init-info)
+                          (funcall dashboard-init-info))
+                         (t
+                          (user-error "Unknown init info type (%s): %s"
+                                      (type-of init-info) init-info)))))
+    (dashboard-insert-center
+     (propertize init-info 'face 'font-lock-comment-face))))
 
 (defun dashboard-insert-navigator ()
   "Insert Navigator of the dashboard."
