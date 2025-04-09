@@ -896,7 +896,7 @@ Argument IMAGE-PATH path to the image."
                           (funcall dashboard-init-info))
                          (t
                           (user-error "Unknown init info type (%s): %s"
-                                      (type-of init-info) init-info)))))
+                                      (type-of dashboard-init-info) dashboard-init-info)))))
     (dashboard-insert-center
      (propertize init-info 'face 'font-lock-comment-face))))
 
