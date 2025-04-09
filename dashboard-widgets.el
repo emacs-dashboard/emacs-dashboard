@@ -316,9 +316,9 @@ init message."
   (let ((init-time (dashboard-init--time))
         (packages-count (dashboard-init--packages-count)))
     (if (zerop packages-count)
-      (format "Emacs started in %s" init-time)
-    (format "%d packages installed. Emacs started in %s."
-            packages-count init-time))))
+        (format "Emacs started in %s" init-time)
+      (format "%d packages installed. Emacs started in %s."
+              packages-count init-time))))
 
 (defcustom dashboard-display-icons-p #'display-graphic-p
   "Predicate to determine whether dashboard should show icons.
