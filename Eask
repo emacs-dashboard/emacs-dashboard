@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "dashboard"
          "1.9.0snapshot"
          "A startup screen extracted from Spacemacs")
