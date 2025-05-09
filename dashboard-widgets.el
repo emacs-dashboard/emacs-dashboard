@@ -152,7 +152,7 @@ See `create-image' and Info node `(elisp)Image Descriptors'."
     "While any text editor can save your files, only Emacs can save your soul"
     "I showed you my source code, pls respond")
   "A list of messages, one of which dashboard chooses to display."
-  :type '(list string)
+  :type '(repeat string)
   :group 'dashboard)
 
 (defcustom dashboard-icon-type (and (or dashboard-set-heading-icons
