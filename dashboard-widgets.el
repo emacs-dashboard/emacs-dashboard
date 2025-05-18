@@ -667,30 +667,8 @@ When called with TIMES return a function that insert TIMES number of newlines."
 
 (defun dashboard-insert-heading (heading &optional shortcut icon)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT, ICON if provided."
-  (when (and (dashboard-display-icons-p) dashboard-set-heading-icons)
-    (let ((args `( :height   ,dashboard-heading-icon-height
-                   :v-adjust ,dashboard-heading-icon-v-adjust
-                   :face     dashboard-heading)))
-      (insert
-       (pcase heading
-         ("Recent Files:"
-          (apply #'dashboard-octicon (cdr (assoc 'recents dashboard-heading-icons)) args))
-         ("Bookmarks:"
-          (apply #'dashboard-octicon (cdr (assoc 'bookmarks dashboard-heading-icons)) args))
-         ((or "Agenda for today:"
-              "Agenda for the coming week:")
-          (apply #'dashboard-octicon (cdr (assoc 'agenda dashboard-heading-icons)) args))
-         ("Registers:"
-          (apply #'dashboard-octicon (cdr (assoc 'registers dashboard-heading-icons)) args))
-         ("Projects:"
-          (apply #'dashboard-octicon (cdr (assoc 'projects dashboard-heading-icons)) args))
-         ("List Directories:"
-          (apply #'dashboard-octicon (cdr (assoc 'ls-directories dashboard-heading-icons)) args))
-         ("List Files:"
-          (apply #'dashboard-octicon (cdr (assoc 'ls-files dashboard-heading-icons)) args))
-         (_
-          (if (null icon) " " icon))))
-      (insert " ")))
+  (when (and (dashboard-display-icons-p) dashboard-set-heading-icons icon)
+    (insert icon " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
 
@@ -949,7 +927,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                                (when (and ,list
                                           ,shortcut-char
                                           dashboard-show-shortcuts)
-                                 ,shortcut-char))
+                                 ,shortcut-char)
+                               (dashboard-heading-icon ,shortcut-id))
      (if ,list
          (when (and (dashboard-insert-section-list
                      ,section-name
@@ -959,6 +938,15 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                     ,shortcut-id ,shortcut-char)
            (dashboard-insert-shortcut ,shortcut-id ,shortcut-char ,section-name))
        (insert (propertize "\n    --- No items ---" 'face 'dashboard-no-items-face)))))
+
+(defun dashboard-heading-icon (section)
+  "Get the `dashboard-octicon' for SECTION from `dashboard-heading-icons'.
+Return a space if icon is not found."
+  (let ((args (list :height   dashboard-heading-icon-height
+                    :v-adjust dashboard-heading-icon-v-adjust
+                    :face     'dashboard-heading))
+        (icon (assoc section dashboard-heading-icons)))
+    (if icon (apply #'dashboard-octicon (cdr icon) args) " ")))
 
 ;;
 ;;; Section list
