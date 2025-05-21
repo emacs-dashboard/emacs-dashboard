@@ -187,10 +187,14 @@ The value can be one of: `all-the-icons', `nerd-icons'."
                    (projects  . "nf-oct-rocket")
                    (registers . "nf-oct-database"))))
   "Association list for the icons of the heading sections.
-Will be of the form `(list-type . icon-name-string)`.
-If nil it is disabled.  Possible values for list-type are:
-`recents' `bookmarks' `projects' `agenda' `registers'"
-  :type  '(alist :key-type symbol :value-type string)
+Will be of the form `(SECTION . ICON)`, where SECTION could be any dashboard
+section, for example: `recents' `bookmarks' `projects' `agenda' `registers'.
+
+ICON could be the name of the icon belonging to `octicon' family
+or (ICON-FUNCTION ICON-NAME), for example: \"nf-oct-file\" using
+nerd-icons or (all-the-icons-faicon \"newspaper-o\") using all-the-icons."
+  :type  '(alist :key-type symbol
+                 :value-type (choice string (cons function string)))
   :group 'dashboard)
 
 (defcustom dashboard-heading-icon-height 1.2
@@ -940,13 +944,17 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
        (insert (propertize "\n    --- No items ---" 'face 'dashboard-no-items-face)))))
 
 (defun dashboard-heading-icon (section)
-  "Get the `dashboard-octicon' for SECTION from `dashboard-heading-icons'.
+  "Get the icon for SECTION from `dashboard-heading-icons'.
 Return a space if icon is not found."
   (let ((args (list :height   dashboard-heading-icon-height
                     :v-adjust dashboard-heading-icon-v-adjust
                     :face     'dashboard-heading))
         (icon (assoc section dashboard-heading-icons)))
-    (if icon (apply #'dashboard-octicon (cdr icon) args) " ")))
+    (if icon (cond
+              ((stringp (cdr icon)) (apply #'dashboard-octicon (cdr icon) args))
+              ((listp (cdr icon)) (apply (cadr icon) (caddr icon) args))
+              (t (error "Bad value %s in `dashboard-heading-icons'" icon)))
+      "  ")))
 
 ;;
 ;;; Section list
