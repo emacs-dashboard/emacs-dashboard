@@ -187,10 +187,14 @@ The value can be one of: `all-the-icons', `nerd-icons'."
                    (projects  . "nf-oct-rocket")
                    (registers . "nf-oct-database"))))
   "Association list for the icons of the heading sections.
-Will be of the form `(list-type . icon-name-string)`.
-If nil it is disabled.  Possible values for list-type are:
-`recents' `bookmarks' `projects' `agenda' `registers'"
-  :type  '(alist :key-type symbol :value-type string)
+Will be of the form `(SECTION . ICON)`, where SECTION could be any dashboard
+section, for example: `recents' `bookmarks' `projects' `agenda' `registers'.
+
+ICON could be the name of the icon belonging to `octicon' family
+or (ICON-FUNCTION ICON-NAME), for example: \"nf-oct-file\" using
+nerd-icons or (all-the-icons-faicon \"newspaper-o\") using all-the-icons."
+  :type  '(alist :key-type symbol
+                 :value-type (choice string (cons function string)))
   :group 'dashboard)
 
 (defcustom dashboard-heading-icon-height 1.2
@@ -667,30 +671,8 @@ When called with TIMES return a function that insert TIMES number of newlines."
 
 (defun dashboard-insert-heading (heading &optional shortcut icon)
   "Insert a widget HEADING in dashboard buffer, adding SHORTCUT, ICON if provided."
-  (when (and (dashboard-display-icons-p) dashboard-set-heading-icons)
-    (let ((args `( :height   ,dashboard-heading-icon-height
-                   :v-adjust ,dashboard-heading-icon-v-adjust
-                   :face     dashboard-heading)))
-      (insert
-       (pcase heading
-         ("Recent Files:"
-          (apply #'dashboard-octicon (cdr (assoc 'recents dashboard-heading-icons)) args))
-         ("Bookmarks:"
-          (apply #'dashboard-octicon (cdr (assoc 'bookmarks dashboard-heading-icons)) args))
-         ((or "Agenda for today:"
-              "Agenda for the coming week:")
-          (apply #'dashboard-octicon (cdr (assoc 'agenda dashboard-heading-icons)) args))
-         ("Registers:"
-          (apply #'dashboard-octicon (cdr (assoc 'registers dashboard-heading-icons)) args))
-         ("Projects:"
-          (apply #'dashboard-octicon (cdr (assoc 'projects dashboard-heading-icons)) args))
-         ("List Directories:"
-          (apply #'dashboard-octicon (cdr (assoc 'ls-directories dashboard-heading-icons)) args))
-         ("List Files:"
-          (apply #'dashboard-octicon (cdr (assoc 'ls-files dashboard-heading-icons)) args))
-         (_
-          (if (null icon) " " icon))))
-      (insert " ")))
+  (when (and (dashboard-display-icons-p) dashboard-set-heading-icons icon)
+    (insert icon " "))
 
   (insert (propertize heading 'face 'dashboard-heading))
 
@@ -949,7 +931,8 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                                (when (and ,list
                                           ,shortcut-char
                                           dashboard-show-shortcuts)
-                                 ,shortcut-char))
+                                 ,shortcut-char)
+                               (dashboard-heading-icon ,shortcut-id))
      (if ,list
          (when (and (dashboard-insert-section-list
                      ,section-name
@@ -959,6 +942,19 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
                     ,shortcut-id ,shortcut-char)
            (dashboard-insert-shortcut ,shortcut-id ,shortcut-char ,section-name))
        (insert (propertize "\n    --- No items ---" 'face 'dashboard-no-items-face)))))
+
+(defun dashboard-heading-icon (section)
+  "Get the icon for SECTION from `dashboard-heading-icons'.
+Return a space if icon is not found."
+  (let ((args (list :height   dashboard-heading-icon-height
+                    :v-adjust dashboard-heading-icon-v-adjust
+                    :face     'dashboard-heading))
+        (icon (assoc section dashboard-heading-icons)))
+    (if icon (cond
+              ((stringp (cdr icon)) (apply #'dashboard-octicon (cdr icon) args))
+              ((listp (cdr icon)) (apply (cadr icon) (caddr icon) args))
+              (t (error "Bad value %s in `dashboard-heading-icons'" icon)))
+      "  ")))
 
 ;;
 ;;; Section list
