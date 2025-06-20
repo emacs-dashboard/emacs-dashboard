@@ -251,6 +251,18 @@ nerd-icons or (all-the-icons-faicon \"newspaper-o\") using all-the-icons."
   (concat dashboard-banners-directory "emacs.png")
   "Emacs banner image.")
 
+(defconst dashboard-banner-logo-ansi-256color
+  (concat dashboard-banners-directory "logo-256color.ans")
+  "Emacs banner image.")
+
+(defconst dashboard-banner-logo-ansi-truecolor
+  (concat dashboard-banners-directory "logo-truecolor.ans")
+  "Emacs banner image.")
+
+(defconst dashboard-banner-logo-braille
+  (concat dashboard-banners-directory "logo-braille.txt")
+  "Emacs banner image.")
+
 (defconst dashboard-banner-logo-png
   (concat dashboard-banners-directory "logo.png")
   "Emacs banner image.")
@@ -409,6 +421,17 @@ It can be a string or a string list for display random icons."
 Value can be
  - \\='official  displays the official Emacs logo.
  - \\='logo  displays an alternative Emacs logo.
+   The logo can be displayed as a PNG image, using
+   24 bit ANSI color escape sequences, using 256 color
+   escape sequences, or using unicode braille, depending
+   on what your device supports.
+- \\='logo-png displays the logo as PNG image, or
+   1 if not supported.
+- \\='logo-ansi-truecolor displays the logo using 24 bit
+   ANSI color escape sequences, or 1 if not supported.
+- \\='logo-ansi-256color displays the logo using 256 color
+   ANSI color escape sequences, or 1 if not supported.
+- \\='logo-braille displays the logo using braille.
  - an integer which displays one of the text banners.
  - a string that specifies the path of an custom banner
    supported files types are gif/image/text/xbm.
@@ -735,7 +758,25 @@ When called with TIMES return a function that insert TIMES number of newlines."
     ('logo
      (append (when (image-type-available-p 'png)
                (list :image dashboard-banner-logo-png))
+             (when (and (not (display-graphic-p)) (>= (display-color-cells) (expt 2 24)))
+               (list :text dashboard-banner-logo-ansi-truecolor))
+             (when (and (not (display-graphic-p)) (>= (display-color-cells) 256))
+               (list :text dashboard-banner-logo-ansi-256color))
+             (list :text dashboard-banner-logo-braille)))
+    ('logo-png
+     (append (when (image-type-available-p 'png)
+               (list :image dashboard-banner-logo-png))
              (list :text (dashboard-get-banner-path 1))))
+    ('logo-ansi-truecolor
+     (append (when (and (not (display-graphic-p)) (>= (display-color-cells) (expt 2 24)))
+               (list :text dashboard-banner-logo-ansi-truecolor))
+             (list :text (dashboard-get-banner-path 1))))
+    ('logo-ansi-256color
+     (append (when (and (not (display-graphic-p)) (>= (display-color-cells) 256))
+               (list :text dashboard-banner-logo-ansi-256color))
+             (list :text (dashboard-get-banner-path 1))))
+    ('logo-braille
+     (append (list :text dashboard-banner-logo-braille)))
     ('ascii
      (append (list :text dashboard-banner-ascii)))
     ((pred integerp)
@@ -809,6 +850,10 @@ Argument IMAGE-PATH path to the image."
           (if (file-exists-p txt)
               (insert-file-contents txt)
             (insert txt)))
+        ;; escape sequences will throw off text-width, must be done before
+        (message txt)
+        (when (member txt (list dashboard-banner-logo-ansi-256color dashboard-banner-logo-ansi-truecolor))
+          (ansi-color-apply-on-region start (point-max)))
         (put-text-property start (point-max) 'face 'dashboard-text-banner)
         (setq text-width (dashboard--find-max-width start (point-max)))
         (goto-char (point-max)))
