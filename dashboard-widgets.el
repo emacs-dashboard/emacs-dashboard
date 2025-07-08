@@ -798,25 +798,20 @@ Argument IMAGE-PATH path to the image."
   (goto-char (point-max))
   (when-let* ((banner (dashboard-choose-banner dashboard-startup-banner)))
     (insert "\n")
+    (when (display-graphic-p) (insert "\n"))
     (let ((start (point))
           buffer-read-only
           text-width
-          image-spec
-          (graphic-mode (display-graphic-p)))
-      (when graphic-mode (insert "\n"))
+          image-spec)
       ;; If specified, insert a text banner.
       (when-let* ((txt (plist-get banner :text)))
-        (if (file-exists-p txt)
-            (insert-file-contents txt)
-          (save-excursion (insert txt)))
-        (unless (text-properties-at 0 txt)
-          (put-text-property (point) (point-max) 'face 'dashboard-text-banner))
-        (setq text-width 0)
-        (while (not (eobp))
-          (let ((line-length (- (line-end-position) (line-beginning-position))))
-            (when (< text-width line-length)
-              (setq text-width line-length)))
-          (forward-line 1)))
+        (save-excursion
+          (if (file-exists-p txt)
+              (insert-file-contents txt)
+            (insert txt)))
+        (put-text-property start (point-max) 'face 'dashboard-text-banner)
+        (setq text-width (dashboard--find-max-width start (point-max)))
+        (goto-char (point-max)))
       ;; If specified, insert an image banner. When displayed in a graphical frame, this will
       ;; replace the text banner.
       (when-let* ((img (plist-get banner :image)))
