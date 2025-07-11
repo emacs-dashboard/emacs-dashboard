@@ -11,7 +11,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * fix: Make remove entry optional ([#480](../../pull/480))
 * Add dashboard icon face ([#483](../../pull/483))
 * Add customization option to hide the cursor on the dashboard ([#492](../../pull/492))
-* Add option to vertically center dashboard (#318 and #493)
+* Add option to vertically center dashboard ([#318](../../pull/318) and [#493](../../pull/493))
 * fix: Adding animation to webp image ([#502](../../pull/502))
 * feat: Support for insert startupify list in order ([#506](../../pull/506))
 * Support for random banners ([#510](../../pull/510))
@@ -59,7 +59,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Calculate truncate path length in pixel ([#402](../../pull/402))
 * Center banner with properties and combine text with image ([#407](../../pull/407))
 * Caculate line length in pixel width ([#427](../../pull/427))
-* Add ascii option to dashboard-startup-banner ([#436](../../pull/436))
+* Add ascii option to `dashboard-startup-banner` ([#436](../../pull/436))
 * Agenda tags format ([#441](../../pull/441))
 * Make icon display predicate customizeable ([#442](../../pull/442))
 * Add support for nerd-icons ([#451](../../pull/451))
@@ -78,7 +78,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Disable undo history for dashboard buffer ([#207](../../pull/207))
 * Avoid loading `all-the-icons` prematurely ([#209](../../pull/209))
 * Get elisp-lint path using find
-* Refactor: use all-the-icons-icon-for-dir ([#198](../../pull/198))
+* Refactor: use `all-the-icons-icon-for-dir` ([#198](../../pull/198))
 * Update Emacs 26 to 26.3
 * Update elisp-lint package
 * Update circe to 2.1
@@ -100,17 +100,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## 1.6.0
 > Released Jun 07, 2019
 
-* Added foot note plus several enhancements and code improvements ([#137](../../pull/137)) @romatthe
-* Do not require all-the-icons for footer icon, use it only if it is available ([#141](../../pull/141)) @JesusMtnez
-* Properly use footer icon fallback text ([#142](../../pull/142)) @JesusMtnez
-* Add face: dashboard-footer ([#145](../../pull/145)) @seagle0128
-* Clean up project list before loading it ([#144](../../pull/144)) @seagle0128
-* Add the navigator below the banner with the customized buttons. ([#143](../../pull/143)) @seagle0128
-* Support `straight.el` properly in `dashboard-init-info` ([#147](../../pull/147)) @JesusMtnez
-* Support multiple lines for the navigator. ([#150](../../pull/150)) @JesusMtnez
-* Add newline at the end of insert footer. ([#149](../../pull/149)) @jcs090218
-* Update metadata in comments @JesusMtnez
-* Drop 24.4 support, from now on checking from emacs 25.3 @JesusMtnez
+* Added foot note plus several enhancements and code improvements ([#137](../../pull/137)) **@romatthe**
+* Do not require all-the-icons for footer icon, use it only if it is available ([#141](../../pull/141)) **@JesusMtnez**
+* Properly use footer icon fallback text ([#142](../../pull/142)) **@JesusMtnez**
+* Add face: dashboard-footer ([#145](../../pull/145)) **@seagle0128**
+* Clean up project list before loading it ([#144](../../pull/144)) **@seagle0128**
+* Add the navigator below the banner with the customized buttons. ([#143](../../pull/143)) **@seagle0128**
+* Support `straight.el` properly in `dashboard-init-info` ([#147](../../pull/147)) **@JesusMtnez**
+* Support multiple lines for the navigator. ([#150](../../pull/150)) **@JesusMtnez**
+* Add newline at the end of insert footer. ([#149](../../pull/149)) **@jcs090218**
+* Update metadata in comments **@JesusMtnez**
+* Drop 24.4 support, from now on checking from emacs 25.3 **@JesusMtnez**
 
 ## 1.5.0
 > Released May 27, 2019
