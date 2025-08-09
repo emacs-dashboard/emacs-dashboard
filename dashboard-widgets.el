@@ -1315,19 +1315,20 @@ be called with the root directory of the project to switch to."
    `(lambda (&rest _)
       (funcall (dashboard-projects-backend-switch-function)
                (dashboard-expand-path-alist ,el dashboard-projects-alist)))
-   (let* ((file (dashboard-expand-path-alist el dashboard-projects-alist))
-          (filename (dashboard-f-base file))
-          (path (dashboard-extract-key-path-alist el dashboard-projects-alist)))
-     (cl-case dashboard-projects-show-base
-       (`align
-        (unless dashboard--projects-cache-item-format
-          (let* ((len-align (dashboard--align-length-by-type 'projects))
-                 (new-fmt (dashboard--generate-align-format
-                           dashboard-projects-item-format len-align)))
-            (setq dashboard--projects-cache-item-format new-fmt)))
-        (format dashboard--projects-cache-item-format filename path))
-       (`nil path)
-       (t (format dashboard-projects-item-format filename path))))))
+   (let ((path (dashboard-extract-key-path-alist el dashboard-projects-alist)))
+     (if dashboard-projects-show-base
+         (let* ((file (dashboard-expand-path-alist el dashboard-projects-alist))
+                (filename (dashboard-f-base file)))
+           (cl-case dashboard-projects-show-base
+             (`align
+              (unless dashboard--projects-cache-item-format
+                (let* ((len-align (dashboard--align-length-by-type 'projects))
+                       (new-fmt (dashboard--generate-align-format
+                                 dashboard-projects-item-format len-align)))
+                  (setq dashboard--projects-cache-item-format new-fmt)))
+              (format dashboard--projects-cache-item-format filename path))
+             (t (format dashboard-projects-item-format filename path))))
+       path))))
 
 (defun dashboard-projects-backend-load-projects ()
   "Depending on `dashboard-projects-backend' load corresponding backend.
