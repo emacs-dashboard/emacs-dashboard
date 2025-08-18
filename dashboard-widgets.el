@@ -428,8 +428,16 @@ Value can be
    1 if not supported.
 - \\='logo-ansi-truecolor displays the logo using 24 bit
    ANSI color escape sequences, or 1 if not supported.
+   Assumes the installed font supports unicode block characters,
+   without adding gaps around the edges of the cell.
+   See Terminal Image Viewer README for more information:
+   https://github.com/stefanhaustein/TerminalImageViewer
 - \\='logo-ansi-256color displays the logo using 256 color
    ANSI color escape sequences, or 1 if not supported.
+   Assumes the installed font supports unicode block characters,
+   without adding gaps around the edges of the cell.
+   See Terminal Image Viewer README for more information:
+   https://github.com/stefanhaustein/TerminalImageViewer
 - \\='logo-braille displays the logo using braille.
  - an integer which displays one of the text banners.
  - a string that specifies the path of an custom banner
