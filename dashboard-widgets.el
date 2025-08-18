@@ -422,8 +422,8 @@ Value can be
  - \\='official  displays the official Emacs logo.
  - \\='logo  displays an alternative Emacs logo.
    The logo can be displayed as a PNG image, or
-   using unicode braille, depending on what your
-   device supports.
+   using unicode braille, depending on if Emacs is
+   running as a GUI or in no-window mode.
    Assumes that the installed font includes braille.
 - \\='logo-ansi-truecolor displays the logo using 24 bit
    ANSI color escape sequences, or using unicode braille,
