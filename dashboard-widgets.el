@@ -421,10 +421,9 @@ It can be a string or a string list for display random icons."
 Value can be
  - \\='official  displays the official Emacs logo.
  - \\='logo  displays an alternative Emacs logo.
-   The logo can be displayed as a PNG image, using
-   24 bit ANSI color escape sequences, using 256 color
-   escape sequences, or using unicode braille, depending
-   on what your device supports.
+   The logo can be displayed as a PNG image, or
+   using unicode braille, depending on what your
+   device supports.
 - \\='logo-png displays the logo as PNG image, or
    1 if not supported.
 - \\='logo-ansi-truecolor displays the logo using 24 bit
@@ -758,10 +757,6 @@ When called with TIMES return a function that insert TIMES number of newlines."
     ('logo
      (append (when (image-type-available-p 'png)
                (list :image dashboard-banner-logo-png))
-             (when (and (not (display-graphic-p)) (>= (display-color-cells) (expt 2 24)))
-               (list :text dashboard-banner-logo-ansi-truecolor))
-             (when (and (not (display-graphic-p)) (>= (display-color-cells) 256))
-               (list :text dashboard-banner-logo-ansi-256color))
              (list :text dashboard-banner-logo-braille)))
     ('logo-png
      (append (when (image-type-available-p 'png)
