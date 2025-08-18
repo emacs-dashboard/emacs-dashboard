@@ -425,10 +425,6 @@ Value can be
    using unicode braille, depending on what your
    device supports.
    Assumes that the installed font includes braille.
-- \\='logo-png displays the logo as PNG image, or
-   using unicode braille, depending on what your
-   device supports.
-   Assumes that the installed font includes braille.
 - \\='logo-ansi-truecolor displays the logo using 24 bit
    ANSI color escape sequences, or using unicode braille,
    depending on what your device supports.
@@ -771,10 +767,6 @@ When called with TIMES return a function that insert TIMES number of newlines."
                (list :image dashboard-banner-official-png))
              (list :text (dashboard-get-banner-path 1))))
     ('logo
-     (append (when (image-type-available-p 'png)
-               (list :image dashboard-banner-logo-png))
-             (list :text dashboard-banner-logo-braille)))
-    ('logo-png
      (append (when (image-type-available-p 'png)
                (list :image dashboard-banner-logo-png))
              (list :text dashboard-banner-logo-braille)))
