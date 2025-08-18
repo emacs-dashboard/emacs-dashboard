@@ -96,7 +96,13 @@ To update the banner or banner title
   (setq dashboard-startup-banner [VALUE])
   ;; Value can be:
   ;;  - 'official which displays the official emacs logo.
-  ;;  - 'logo which displays an alternative emacs logo.
+  ;;  - 'logo which displays an alternative emacs logo PNG or braille.
+  ;;  - 'logo-ansi-truecolor which displays an alternative emacs logo
+  ;;    using unicode block characters and ANSI escape sequences.
+  ;;  - 'logo-ansi-256color which displays an alternative emacs logo
+  ;;    using unicode block characters and ANSI escape sequences.
+  ;;  - 'logo-braille which displays an alternative emacs logo
+  ;;    using unicode braille characters.
   ;;  - an integer which displays one of the text banners
   ;;    (see dashboard-banners-directory files).
   ;;  - a string that specifies a path for a custom banner
