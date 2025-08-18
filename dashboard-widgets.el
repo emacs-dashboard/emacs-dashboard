@@ -425,20 +425,23 @@ Value can be
    using unicode braille, depending on what your
    device supports.
 - \\='logo-png displays the logo as PNG image, or
-   1 if not supported.
+   using unicode braille, depending on what your
+   device supports.
 - \\='logo-ansi-truecolor displays the logo using 24 bit
-   ANSI color escape sequences, or 1 if not supported.
+   ANSI color escape sequences, or using unicode braille,
+   depending on what your device supports.
    Assumes the installed font supports unicode block characters,
    without adding gaps around the edges of the cell.
    See Terminal Image Viewer README for more information:
    https://github.com/stefanhaustein/TerminalImageViewer
 - \\='logo-ansi-256color displays the logo using 256 color
-   ANSI color escape sequences, or 1 if not supported.
+   ANSI color escape sequences, or using unicode braille,
+   depending on what your device supports.
    Assumes the installed font supports unicode block characters,
    without adding gaps around the edges of the cell.
    See Terminal Image Viewer README for more information:
    https://github.com/stefanhaustein/TerminalImageViewer
-- \\='logo-braille displays the logo using braille.
+- \\='logo-braille displays the logo using unicode braille.
  - an integer which displays one of the text banners.
  - a string that specifies the path of an custom banner
    supported files types are gif/image/text/xbm.
@@ -769,15 +772,15 @@ When called with TIMES return a function that insert TIMES number of newlines."
     ('logo-png
      (append (when (image-type-available-p 'png)
                (list :image dashboard-banner-logo-png))
-             (list :text (dashboard-get-banner-path 1))))
+             (list :text dashboard-banner-logo-braille)))
     ('logo-ansi-truecolor
      (append (when (and (not (display-graphic-p)) (>= (display-color-cells) (expt 2 24)))
                (list :text dashboard-banner-logo-ansi-truecolor))
-             (list :text (dashboard-get-banner-path 1))))
+             (list :text dashboard-banner-logo-braille)))
     ('logo-ansi-256color
      (append (when (and (not (display-graphic-p)) (>= (display-color-cells) 256))
                (list :text dashboard-banner-logo-ansi-256color))
-             (list :text (dashboard-get-banner-path 1))))
+             (list :text dashboard-banner-logo-braille)))
     ('logo-braille
      (append (list :text dashboard-banner-logo-braille)))
     ('ascii
