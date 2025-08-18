@@ -424,24 +424,29 @@ Value can be
    The logo can be displayed as a PNG image, or
    using unicode braille, depending on what your
    device supports.
+   Assumes that the installed font includes braille.
 - \\='logo-png displays the logo as PNG image, or
    using unicode braille, depending on what your
    device supports.
+   Assumes that the installed font includes braille.
 - \\='logo-ansi-truecolor displays the logo using 24 bit
    ANSI color escape sequences, or using unicode braille,
    depending on what your device supports.
-   Assumes the installed font supports unicode block characters,
+   Assumes that the installed font includes braille.
+   Assumes the installed font includes block characters,
    without adding gaps around the edges of the cell.
    See Terminal Image Viewer README for more information:
    https://github.com/stefanhaustein/TerminalImageViewer
 - \\='logo-ansi-256color displays the logo using 256 color
    ANSI color escape sequences, or using unicode braille,
    depending on what your device supports.
-   Assumes the installed font supports unicode block characters,
+   Assumes that the installed font includes braille.
+   Assumes the installed font includes block characters,
    without adding gaps around the edges of the cell.
    See Terminal Image Viewer README for more information:
    https://github.com/stefanhaustein/TerminalImageViewer
 - \\='logo-braille displays the logo using unicode braille.
+   Assumes that the installed font includes braille.
  - an integer which displays one of the text banners.
  - a string that specifies the path of an custom banner
    supported files types are gif/image/text/xbm.
