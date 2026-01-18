@@ -87,7 +87,7 @@ Dashboard in frames created with =emacsclient -c= as follows:
 
 [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] and 
 [[https://github.com/rainstormstudio/nerd-icons.el][nerd-icons]] may require 
-a refresh in order for them to be displayed correctly:
+a refresh in order to be displayed correctly:
 
 #+BEGIN_SRC elisp
 (defun my/dashboard-refresh-client-icons ()
