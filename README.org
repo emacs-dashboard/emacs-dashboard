@@ -85,6 +85,17 @@ Dashboard in frames created with =emacsclient -c= as follows:
   (setq initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name)))
 #+END_SRC
 
+Users of icons may need a refresh in order for them to be displayed correctly:
+
+#+BEGIN_SRC elisp
+(defun my/dashboard-refresh-client-icons ()
+  "Ensure icons render correctly when opening a new emacsclient frame."
+  (when-let ((buffer (get-buffer "*dashboard*")))
+    (with-current-buffer buffer
+      (dashboard-refresh-buffer))))
+(server-after-make-frame . my/dashboard-refresh-client-icons)
+#+END_SRC
+
 * Configuration
 
 To update the banner or banner title
