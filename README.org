@@ -82,7 +82,7 @@ In addition to the above, configure =initial-buffer-choice= to show
 Dashboard in frames created with =emacsclient -c= as follows:
 
 #+BEGIN_SRC elisp
-  (setq initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name)))
+  (setq initial-buffer-choice 'dashboard-open)
 #+END_SRC
 
 [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] and 
@@ -90,12 +90,7 @@ Dashboard in frames created with =emacsclient -c= as follows:
 a refresh in order to be displayed correctly:
 
 #+BEGIN_SRC elisp
-(defun my/dashboard-refresh-client-icons ()
-  "Ensure icons render correctly when opening a new emacsclient frame."
-  (when-let ((buffer (get-buffer "*dashboard*")))
-    (with-current-buffer buffer
-      (dashboard-refresh-buffer))))
-(server-after-make-frame . my/dashboard-refresh-client-icons)
+  (add-hook 'server-after-make-frame-hook 'dashboard-open)
 #+END_SRC
 
 * Configuration
