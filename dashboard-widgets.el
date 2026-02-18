@@ -1358,11 +1358,7 @@ over custom backends."
   (or dashboard-projects-switch-function
       (cl-case dashboard-projects-backend
         (`projectile 'projectile-switch-project-by-name)
-        (`project-el
-         (lambda (project)
-           "This function is used to switch to `PROJECT'."
-           (let ((default-directory project))
-             (project-find-file))))
+        (`project-el 'project-switch-project)
         (t
          (display-warning '(dashboard)
                           "Invalid value for `dashboard-projects-backend'"
