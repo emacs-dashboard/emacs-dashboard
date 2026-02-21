@@ -425,6 +425,7 @@ Value can be
    using unicode braille, depending on if Emacs is
    running as a GUI or in no-window mode.
    Assumes that the installed font includes braille.
+- \\='ascii: displays the logo using ASCII characters.
 - \\='logo-ansi-truecolor displays the logo using 24 bit
    ANSI color escape sequences, or using unicode braille,
    depending on what your device supports.
@@ -450,9 +451,12 @@ Value can be
    and other path of a text file to use if image isn't supported.
  - a list that can display an random banner, supported values are:
    string (filepath), \\='official, \\='logo and integers."
-  :type '(choice (const   :tag "official"  official)
-                 (const   :tag "logo"      logo)
-                 (const   :tag "ascii"     ascii)
+  :type '(choice (const   :tag "official"            official)
+                 (const   :tag "logo"                logo)
+                 (const   :tag "ascii"               ascii)
+                 (const   :tag "logo-ansi-truecolor" logo-ansi-truecolor)
+                 (const   :tag "logo-ansi-256color"  logo-ansi-256color)
+                 (const   :tag "logo-braille"        logo-braille)
                  (integer :tag "index of a text banner")
                  (string  :tag "path to an image or text banner")
                  (cons    :tag "image and text banner"
@@ -460,9 +464,12 @@ Value can be
                           (string :tag "text banner path"))
                  (repeat :tag "random banners"
                          (choice (string  :tag "a path to an image or text banner")
-                                 (const   :tag "official" official)
-                                 (const   :tag "logo"     logo)
-                                 (const   :tag "ascii"    ascii)
+                                 (const   :tag "official"            official)
+                                 (const   :tag "logo"                logo)
+                                 (const   :tag "ascii"               ascii)
+                                 (const   :tag "logo-ansi-truecolor" logo-ansi-truecolor)
+                                 (const   :tag "logo-ansi-256color"  logo-ansi-256color)
+                                 (const   :tag "logo-braille"        logo-braille)
                                  (integer :tag "index of a text banner"))))
   :group 'dashboard)
 
