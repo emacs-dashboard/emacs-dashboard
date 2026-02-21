@@ -778,11 +778,11 @@ When called with TIMES return a function that insert TIMES number of newlines."
                (list :image dashboard-banner-logo-png))
              (list :text dashboard-banner-logo-braille)))
     ('logo-ansi-truecolor
-     (append (when (and (not (display-graphic-p)) (>= (display-color-cells) (expt 2 24)))
+     (append (when (>= (display-color-cells) (expt 2 24))
                (list :text dashboard-banner-logo-ansi-truecolor))
              (list :text dashboard-banner-logo-braille)))
     ('logo-ansi-256color
-     (append (when (and (not (display-graphic-p)) (>= (display-color-cells) 256))
+     (append (when (>= (display-color-cells) 256)
                (list :text dashboard-banner-logo-ansi-256color))
              (list :text dashboard-banner-logo-braille)))
     ('logo-braille
@@ -861,8 +861,8 @@ Argument IMAGE-PATH path to the image."
               (insert-file-contents txt)
             (insert txt)))
         ;; escape sequences will throw off text-width, must be done before
-        (message txt)
-        (when (member txt (list dashboard-banner-logo-ansi-256color dashboard-banner-logo-ansi-truecolor))
+        (when (member txt (list dashboard-banner-logo-ansi-256color
+                                dashboard-banner-logo-ansi-truecolor))
           (ansi-color-apply-on-region start (point-max)))
         (put-text-property start (point-max) 'face 'dashboard-text-banner)
         (setq text-width (dashboard--find-max-width start (point-max)))
