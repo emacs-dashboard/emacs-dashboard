@@ -251,6 +251,18 @@ nerd-icons or (all-the-icons-faicon \"newspaper-o\") using all-the-icons."
   (concat dashboard-banners-directory "emacs.png")
   "Emacs banner image.")
 
+(defconst dashboard-banner-logo-ansi-256color
+  (concat dashboard-banners-directory "logo-256color.ans")
+  "Emacs banner image.")
+
+(defconst dashboard-banner-logo-ansi-truecolor
+  (concat dashboard-banners-directory "logo-truecolor.ans")
+  "Emacs banner image.")
+
+(defconst dashboard-banner-logo-braille
+  (concat dashboard-banners-directory "logo-braille.txt")
+  "Emacs banner image.")
+
 (defconst dashboard-banner-logo-png
   (concat dashboard-banners-directory "logo.png")
   "Emacs banner image.")
@@ -409,6 +421,29 @@ It can be a string or a string list for display random icons."
 Value can be
  - \\='official  displays the official Emacs logo.
  - \\='logo  displays an alternative Emacs logo.
+   The logo can be displayed as a PNG image, or
+   using unicode braille, depending on if Emacs is
+   running as a GUI or in no-window mode.
+   Assumes that the installed font includes braille.
+- \\='ascii: displays the logo using ASCII characters.
+- \\='logo-ansi-truecolor displays the logo using 24 bit
+   ANSI color escape sequences, or using unicode braille,
+   depending on what your device supports.
+   Assumes that the installed font includes braille.
+   Assumes the installed font includes block characters,
+   without adding gaps around the edges of the cell.
+   See Terminal Image Viewer README for more information:
+   https://github.com/stefanhaustein/TerminalImageViewer
+- \\='logo-ansi-256color displays the logo using 256 color
+   ANSI color escape sequences, or using unicode braille,
+   depending on what your device supports.
+   Assumes that the installed font includes braille.
+   Assumes the installed font includes block characters,
+   without adding gaps around the edges of the cell.
+   See Terminal Image Viewer README for more information:
+   https://github.com/stefanhaustein/TerminalImageViewer
+- \\='logo-braille displays the logo using unicode braille.
+   Assumes that the installed font includes braille.
  - an integer which displays one of the text banners.
  - a string that specifies the path of an custom banner
    supported files types are gif/image/text/xbm.
@@ -416,9 +451,12 @@ Value can be
    and other path of a text file to use if image isn't supported.
  - a list that can display an random banner, supported values are:
    string (filepath), \\='official, \\='logo and integers."
-  :type '(choice (const   :tag "official"  official)
-                 (const   :tag "logo"      logo)
-                 (const   :tag "ascii"     ascii)
+  :type '(choice (const   :tag "official"            official)
+                 (const   :tag "logo"                logo)
+                 (const   :tag "ascii"               ascii)
+                 (const   :tag "logo-ansi-truecolor" logo-ansi-truecolor)
+                 (const   :tag "logo-ansi-256color"  logo-ansi-256color)
+                 (const   :tag "logo-braille"        logo-braille)
                  (integer :tag "index of a text banner")
                  (string  :tag "path to an image or text banner")
                  (cons    :tag "image and text banner"
@@ -426,9 +464,12 @@ Value can be
                           (string :tag "text banner path"))
                  (repeat :tag "random banners"
                          (choice (string  :tag "a path to an image or text banner")
-                                 (const   :tag "official" official)
-                                 (const   :tag "logo"     logo)
-                                 (const   :tag "ascii"    ascii)
+                                 (const   :tag "official"            official)
+                                 (const   :tag "logo"                logo)
+                                 (const   :tag "ascii"               ascii)
+                                 (const   :tag "logo-ansi-truecolor" logo-ansi-truecolor)
+                                 (const   :tag "logo-ansi-256color"  logo-ansi-256color)
+                                 (const   :tag "logo-braille"        logo-braille)
                                  (integer :tag "index of a text banner"))))
   :group 'dashboard)
 
@@ -735,7 +776,17 @@ When called with TIMES return a function that insert TIMES number of newlines."
     ('logo
      (append (when (image-type-available-p 'png)
                (list :image dashboard-banner-logo-png))
-             (list :text (dashboard-get-banner-path 1))))
+             (list :text dashboard-banner-logo-braille)))
+    ('logo-ansi-truecolor
+     (append (when (>= (display-color-cells) (expt 2 24))
+               (list :text dashboard-banner-logo-ansi-truecolor))
+             (list :text dashboard-banner-logo-braille)))
+    ('logo-ansi-256color
+     (append (when (>= (display-color-cells) 256)
+               (list :text dashboard-banner-logo-ansi-256color))
+             (list :text dashboard-banner-logo-braille)))
+    ('logo-braille
+     (append (list :text dashboard-banner-logo-braille)))
     ('ascii
      (append (list :text dashboard-banner-ascii)))
     ((pred integerp)
@@ -809,6 +860,10 @@ Argument IMAGE-PATH path to the image."
           (if (file-exists-p txt)
               (insert-file-contents txt)
             (insert txt)))
+        ;; escape sequences will throw off text-width, must be done before
+        (when (member txt (list dashboard-banner-logo-ansi-256color
+                                dashboard-banner-logo-ansi-truecolor))
+          (ansi-color-apply-on-region start (point-max)))
         (put-text-property start (point-max) 'face 'dashboard-text-banner)
         (setq text-width (dashboard--find-max-width start (point-max)))
         (goto-char (point-max)))
