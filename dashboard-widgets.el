@@ -1,6 +1,6 @@
 ;;; dashboard-widgets.el --- A startup screen extracted from Spacemacs  -*- lexical-binding: t -*-
 
-;; Copyright (c) 2016-2025 emacs-dashboard maintainers
+;; Copyright (c) 2016-2026 emacs-dashboard maintainers
 
 ;; This file is not part of GNU Emacs.
 ;;
@@ -1294,6 +1294,29 @@ to widget creation."
 (defvar dashboard--bookmarks-cache-item-format nil
   "Cache to record the new generated align format.")
 
+(defun dashboard-bookmarks--format-name-and-path (filename short-path)
+  "Format FILENAME and SHORT-PATH according to `dashboard-bookmarks-show-base'.
+Populate cache if needed."
+  (cl-case dashboard-bookmarks-show-base
+    (`align
+     (unless dashboard--bookmarks-cache-item-format
+       (let* ((len-align (dashboard--align-length-by-type 'bookmarks))
+              (new-fmt (dashboard--generate-align-format
+                        dashboard-bookmarks-item-format len-align)))
+         (setq dashboard--bookmarks-cache-item-format new-fmt)))
+     (format dashboard--bookmarks-cache-item-format filename short-path))
+    (`nil short-path)
+    (t (format dashboard-bookmarks-item-format filename short-path))))
+
+(defun dashboard-bookmarks--propertize-name-and-path (bookmark)
+  "Format BOOKMARK before insertion.
+Get path and name from bookmark and add `dashboard-bookmarks-name' to properties"
+  (if-let* ((path (bookmark-get-filename bookmark))
+            (short-path (dashboard-shorten-path path 'bookmarks)))
+      (propertize (dashboard-bookmarks--format-name-and-path bookmark short-path)
+                  'dashboard-bookmarks-name bookmark)
+    bookmark))
+
 (defun dashboard-insert-bookmarks (list-size)
   "Add the list of LIST-SIZE items of bookmarks."
   (require 'bookmark)
@@ -1304,20 +1327,7 @@ to widget creation."
    'bookmarks
    (dashboard-get-shortcut 'bookmarks)
    `(lambda (&rest _) (bookmark-jump ,el))
-   (if-let* ((filename el)
-             (path (bookmark-get-filename el))
-             (path-shorten (dashboard-shorten-path path 'bookmarks)))
-       (cl-case dashboard-bookmarks-show-base
-         (`align
-          (unless dashboard--bookmarks-cache-item-format
-            (let* ((len-align (dashboard--align-length-by-type 'bookmarks))
-                   (new-fmt (dashboard--generate-align-format
-                             dashboard-bookmarks-item-format len-align)))
-              (setq dashboard--bookmarks-cache-item-format new-fmt)))
-          (format dashboard--bookmarks-cache-item-format filename path-shorten))
-         (`nil path-shorten)
-         (t (format dashboard-bookmarks-item-format filename path-shorten)))
-     el)))
+   (dashboard-bookmarks--propertize-name-and-path el)))
 
 ;;
 ;;; Projects
@@ -1406,11 +1416,7 @@ over custom backends."
   (or dashboard-projects-switch-function
       (cl-case dashboard-projects-backend
         (`projectile 'projectile-switch-project-by-name)
-        (`project-el
-         (lambda (project)
-           "This function is used to switch to `PROJECT'."
-           (let ((default-directory project))
-             (project-find-file))))
+        (`project-el 'project-switch-project)
         (t
          (display-warning '(dashboard)
                           "Invalid value for `dashboard-projects-backend'"

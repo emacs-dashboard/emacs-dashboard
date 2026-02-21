@@ -1,6 +1,6 @@
 ;;; dashboard.el --- A startup screen extracted from Spacemacs  -*- lexical-binding: t -*-
 
-;; Copyright (c) 2016-2025 emacs-dashboard maintainers
+;; Copyright (c) 2016-2026 emacs-dashboard maintainers
 ;;
 ;; Author     : Rakan Al-Hneiti <rakan.alhneiti@gmail.com>
 ;; Maintainer : Shen, Jen-Chieh <jcs090218@gmail.com>
@@ -31,8 +31,9 @@
 ;;
 ;;; Externals
 
-(declare-function bookmark-get-filename "ext:bookmark.el")
 (declare-function bookmark-all-names "ext:bookmark.el")
+(declare-function bookmark-get-filename "ext:bookmark.el")
+(declare-function bookmark-delete "ext:bookmark.el")
 (declare-function dashboard-ls--dirs "ext:dashboard-ls.el")
 (declare-function dashboard-ls--files "ext:dashboard-ls.el")
 (declare-function page-break-lines-mode "ext:page-break-lines.el")
@@ -428,7 +429,9 @@ Optional argument ARGS adviced function arguments."
 
 (defun dashboard-remove-item-bookmarks ()
   "Remove a bookmarks from `bookmark-alist'."
-  (interactive))  ; TODO: ..
+  (interactive)
+  (let ((bookmark-name (get-text-property (point) 'dashboard-bookmarks-name)))
+    (bookmark-delete bookmark-name)))
 
 (defun dashboard-remove-item-agenda ()
   "Remove an agenda from `org-agenda-files'."
