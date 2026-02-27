@@ -527,6 +527,8 @@ See `dashboard-item-generators' for all items available."
 (defun dashboard-insert-startupify-lists (&optional force-refresh)
   "Insert the list of widgets into the buffer, FORCE-REFRESH is optional."
   (interactive)
+  (when (assq 'recents dashboard-items)
+    (dashboard-mute-apply (recentf-mode 1)))
   (let ((inhibit-redisplay t)
         (recentf-is-on (recentf-enabled-p))
         (origial-recentf-list recentf-list)
