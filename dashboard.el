@@ -5,7 +5,7 @@
 ;; Author     : Rakan Al-Hneiti <rakan.alhneiti@gmail.com>
 ;; Maintainer : Shen, Jen-Chieh <jcs090218@gmail.com>
 ;;              Ricardo Arredondo <ricardo.richo@gmail.com>
-;; URL        : https://github.com/emacs-dashboard/emacs-dashboard
+;; URL        : https://github.com/emacs-dashboard/dashboard
 ;;
 ;; This file is not part of GNU Emacs.
 ;;

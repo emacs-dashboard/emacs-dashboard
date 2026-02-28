@@ -4,7 +4,7 @@
          "1.9.0snapshot"
          "A startup screen extracted from Spacemacs")
 
-(website-url "https://github.com/emacs-dashboard/emacs-dashboard")
+(website-url "https://github.com/emacs-dashboard/dashboard")
 (keywords "startup" "screen" "tools" "dashboard")
 
 (package-file "dashboard.el")

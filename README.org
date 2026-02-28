@@ -5,8 +5,8 @@
 
 * Emacs Dashboard
 
-[[https://github.com/emacs-dashboard/emacs-dashboard/actions/workflows/test.yml][https://github.com/emacs-dashboard/emacs-dashboard/workflows/CI/badge.svg]]
-[[https://github.com/emacs-dashboard/emacs-dashboard/actions/workflows/activate.yml][https://github.com/emacs-dashboard/emacs-dashboard/workflows/Activate/badge.svg]]
+[[https://github.com/emacs-dashboard/dashboard/actions/workflows/test.yml][https://github.com/emacs-dashboard/dashboard/workflows/CI/badge.svg]]
+[[https://github.com/emacs-dashboard/dashboard/actions/workflows/activate.yml][https://github.com/emacs-dashboard/dashboard/workflows/Activate/badge.svg]]
 
 An extensible emacs startup screen showing you what's most important.
 
