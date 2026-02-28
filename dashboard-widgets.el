@@ -1015,28 +1015,39 @@ to widget creation."
   `(when (car ,list)
      (mapc
       (lambda (el)
-        (let ((tag ,@rest))
+        (let* ((item (progn ,@rest))
+               (tag item))
           (insert "\n")
           (insert (spaces-string (or standard-indent tab-width 4)))
 
           (when (and (dashboard-display-icons-p)
                      dashboard-set-file-icons)
-            (let* ((path (car (last (split-string ,@rest " - "))))
-                   (icon (if (and (not (file-remote-p path))
-                                  (file-directory-p path))
-                             (dashboard-icon-for-dir path
-                                                     :height dashboard-icon-file-height
-                                                     :v-adjust dashboard-icon-file-v-adjust)
-                           (cond
-                            ((or (string-equal ,section-name "Agenda for today:")
-                                 (string-equal ,section-name "Agenda for the coming week:"))
-                             dashboard-agenda-item-icon)
-                            ((file-remote-p path)
-                             dashboard-remote-path-icon)
-                            (t (dashboard-icon-for-file (file-name-nondirectory path)
-                                                        :height dashboard-icon-file-height
-                                                        :v-adjust dashboard-icon-file-v-adjust))))))
-              (setq tag (concat icon " " ,@rest))))
+            (let* ((path (or (get-text-property 0 'dashboard-path item)
+							 (and (stringp item)
+                             (car (last (split-string item " - "))))))
+                   (icon (cond
+                          ((or (string-equal ,section-name
+                                             "Agenda for today:")
+                               (string-equal ,section-name
+                                             "Agenda for the coming week:"))
+                           dashboard-agenda-item-icon)
+                          ((and (stringp path)
+                                (not (file-remote-p path))
+                                (file-directory-p path))
+                           (dashboard-icon-for-dir
+                            path
+                            :height dashboard-icon-file-height
+                            :v-adjust dashboard-icon-file-v-adjust))
+                          ((and (stringp path)
+                                (file-remote-p path))
+                           dashboard-remote-path-icon)
+                          ((stringp path)
+                           (dashboard-icon-for-file
+                            (file-name-nondirectory path)
+                            :height dashboard-icon-file-height
+                            :v-adjust dashboard-icon-file-v-adjust))
+                          (t ""))))
+              (setq tag (concat icon " " item))))
 
           (widget-create 'item
                          :tag tag
@@ -1047,7 +1058,6 @@ to widget creation."
                          :button-suffix ""
                          :format "%[%t%]")))
       ,list)))
-
 ;;
 ;;; Footer
 
@@ -1267,20 +1277,26 @@ to widget creation."
    'recents
    (dashboard-get-shortcut 'recents)
    `(lambda (&rest _)
-      (find-file-existing (dashboard-expand-path-alist ,el dashboard-recentf-alist)))
+      (find-file-existing
+       (dashboard-expand-path-alist ,el dashboard-recentf-alist)))
    (let* ((file (dashboard-expand-path-alist el dashboard-recentf-alist))
           (filename (dashboard-f-filename file))
           (path (dashboard-extract-key-path-alist el dashboard-recentf-alist)))
-     (cl-case dashboard-recentf-show-base
-       (`align
-        (unless dashboard--recentf-cache-item-format
-          (let* ((len-align (dashboard--align-length-by-type 'recents))
-                 (new-fmt (dashboard--generate-align-format
-                           dashboard-recentf-item-format len-align)))
-            (setq dashboard--recentf-cache-item-format new-fmt)))
-        (format dashboard--recentf-cache-item-format filename path))
-       (`nil path)
-       (t (format dashboard-recentf-item-format filename path))))))
+     (let ((display
+            (cl-case dashboard-recentf-show-base
+              (`align
+               (unless dashboard--recentf-cache-item-format
+                 (let* ((len-align (dashboard--align-length-by-type
+                                    'recents))
+                        (new-fmt (dashboard--generate-align-format
+                                  dashboard-recentf-item-format len-align)))
+                   (setq dashboard--recentf-cache-item-format new-fmt)))
+               (format dashboard--recentf-cache-item-format filename path))
+              (`nil path)
+              (t (format dashboard-recentf-item-format filename path)))))
+       (if file
+           (propertize display 'dashboard-path file)
+         display)))))
 
 ;;
 ;;; Bookmarks
@@ -1320,8 +1336,10 @@ Populate cache if needed."
 Get path and name from bookmark and add `dashboard-bookmarks-name' to properties"
   (if-let* ((path (bookmark-get-filename bookmark))
             (short-path (dashboard-shorten-path path 'bookmarks)))
-      (propertize (dashboard-bookmarks--format-name-and-path bookmark short-path)
-                  'dashboard-bookmarks-name bookmark)
+      (propertize (dashboard-bookmarks--format-name-and-path
+                   bookmark short-path)
+                  'dashboard-bookmarks-name bookmark
+                  'dashboard-path path)
     bookmark))
 
 (defun dashboard-insert-bookmarks (list-size)
@@ -1383,16 +1401,21 @@ be called with the root directory of the project to switch to."
    (let* ((file (dashboard-expand-path-alist el dashboard-projects-alist))
           (filename (dashboard-f-base file))
           (path (dashboard-extract-key-path-alist el dashboard-projects-alist)))
-     (cl-case dashboard-projects-show-base
-       (`align
-        (unless dashboard--projects-cache-item-format
-          (let* ((len-align (dashboard--align-length-by-type 'projects))
-                 (new-fmt (dashboard--generate-align-format
-                           dashboard-projects-item-format len-align)))
-            (setq dashboard--projects-cache-item-format new-fmt)))
-        (format dashboard--projects-cache-item-format filename path))
-       (`nil path)
-       (t (format dashboard-projects-item-format filename path))))))
+     (let ((display
+            (cl-case dashboard-projects-show-base
+              (`align
+               (unless dashboard--projects-cache-item-format
+                 (let* ((len-align (dashboard--align-length-by-type
+                                    'projects))
+                        (new-fmt (dashboard--generate-align-format
+                                  dashboard-projects-item-format len-align)))
+                   (setq dashboard--projects-cache-item-format new-fmt)))
+               (format dashboard--projects-cache-item-format filename path))
+              (`nil path)
+              (t (format dashboard-projects-item-format filename path)))))
+       (if file
+           (propertize display 'dashboard-path file)
+         display)))))
 
 (defun dashboard-projects-backend-load-projects ()
   "Depending on `dashboard-projects-backend' load corresponding backend.
