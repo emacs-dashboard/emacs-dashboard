@@ -1,5 +1,7 @@
 ;;; test-recentf.el --- Test recentf initialization  -*- lexical-binding: t; -*-
 
+;; Copyright (c) 2026 emacs-dashboard maintainers
+
 ;; This file is NOT part of GNU Emacs.
 
 ;; This program is free software; you can redistribute it and/or modify
